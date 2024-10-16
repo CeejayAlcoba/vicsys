@@ -14,6 +14,7 @@ export default function AppRoute() {
   const { user } = useUserContext();
   const router = createBrowserRouter([
     {
+      element: user && <Navigate to="/" />,
       children: [
         {
           path: "login",
