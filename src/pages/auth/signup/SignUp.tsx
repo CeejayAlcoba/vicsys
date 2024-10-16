@@ -59,7 +59,7 @@ export default function SignUp() {
       <div className="form-signin w-100 m-auto">
         <Form onFinish={onFinish}>
           <center>
-            <img className="mb-4" src={vicsys1} style={{ width: 200 }} />
+            <img src={vicsys1} style={{ width: 300 }} />
             <h4 className=" mb-3 fw-normal">Register</h4>
             <p className="text-danger"> {error}</p>
           </center>

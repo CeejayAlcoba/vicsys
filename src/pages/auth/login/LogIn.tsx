@@ -8,6 +8,7 @@ import accountService from "../../../firebase/services/accountService";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import vicsys1 from "../../../assets/vicsys1.png";
+import { useState } from "react";
 
 const formGroupItems: FormGroupItemsProps[] = [
   {
@@ -26,12 +27,15 @@ const formGroupItems: FormGroupItemsProps[] = [
 export default function LogIn() {
   const _accounService = accountService();
   const navigate = useNavigate();
+  const [error, setError] = useState<string>("");
   const onFinish = async (values: IUserLogin) => {
     try {
+      setError("");
       await _accounService.login(values);
       navigate("/");
-    } catch (ex: any) {
-      console.log(ex);
+    } catch (_e: any) {
+      let e: Error = _e;
+      setError(e.message);
     }
   };
 
@@ -39,9 +43,11 @@ export default function LogIn() {
     <>
       <main className="form-signin">
         <Form onFinish={onFinish}>
-          <img src={vicsys1} className="img-fluid mx-auto d-block" alt="" />
-          <br />
-
+          <center>
+            <img src={vicsys1} style={{ width: 300 }} />
+            <h4 className=" mb-3 fw-normal">Login</h4>
+            <p className="text-danger"> {error}</p>
+          </center>
           <FormGroupItems items={formGroupItems} />
 
           <div className="forgot-password">
