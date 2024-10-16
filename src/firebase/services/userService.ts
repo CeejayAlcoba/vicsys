@@ -5,22 +5,29 @@ export default function userService() {
   const _userRepository = userRepository();
 
   const add = async (data: IUser) => {
-    _userRepository.add(data);
+    const isEmailExisted = await _userRepository.isEmailExisted(data.email);
+    if (isEmailExisted)
+      throw new Error(
+        "Email already in use. Try logging in or use a different email to sign up."
+      );
+
+    await _userRepository.add(data);
   };
+
   const getAll = async () => {
     console.log(_userRepository.getAll());
-    return _userRepository.getAll();
+    return await _userRepository.getAll();
   };
 
   const getById = async (id: string) => {
-    return _userRepository.getById(id);
+    return await _userRepository.getById(id);
   };
 
   const update = async (id: string, data: IUser) => {
-    return _userRepository.update(id, data);
+    return await _userRepository.update(id, data);
   };
   const deleteById = async (id: string) => {
-    _userRepository.deleteById(id);
+    await _userRepository.deleteById(id);
   };
   const getUserLocalStorage = (): IUserPublic | null => {
     const user = localStorage.getItem("user");
