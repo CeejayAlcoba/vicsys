@@ -51,12 +51,16 @@ export default function LogIn() {
           <FormGroupItems items={formGroupItems} />
 
           <div className="forgot-password">
-            <a href="adminlogin.php">Forgot Password?</a>
+            <a href="">Forgot Password?</a>
           </div>
 
-          <button className="btn btn-success w-100" type="submit">
-            Sign in
+          <button className="mb-3 btn btn-primary w-100" type="submit">
+            Login
           </button>
+          <p>
+            New here? <a href="signup"> Create an account.</a>
+          </p>
+          <br />
         </Form>
       </main>
       <p className="bottom">&copy;2024</p>

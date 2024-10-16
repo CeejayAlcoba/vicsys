@@ -60,7 +60,7 @@ export default function SignUp() {
         <Form onFinish={onFinish}>
           <center>
             <img src={vicsys1} style={{ width: 300 }} />
-            <h4 className=" mb-3 fw-normal">Register</h4>
+            <h4 className=" mb-3 fw-normal">Signup</h4>
             <p className="text-danger"> {error}</p>
           </center>
 
@@ -75,18 +75,12 @@ export default function SignUp() {
             />
             <label className="form-check-label">Remember me</label>
           </div>
-          <button
-            className="btn btn-success w-100"
-            type="button"
-            onClick={() => navigate("/login")}
-          >
-            Sign in
+          <button className="mb-3 btn btn-primary w-100" type="submit">
+            Signup
           </button>
-          <br />
-          <div className="w-100 text-center">or</div>
-          <button className="btn btn-primary w-100" type="submit">
-            Register
-          </button>
+          <p>
+            Already have an account? <a href="login"> Log in.</a>
+          </p>
           <p className="mt-5 mb-3 text-body-secondary">&copy; Bentayarn 2024</p>
         </Form>
       </div>
