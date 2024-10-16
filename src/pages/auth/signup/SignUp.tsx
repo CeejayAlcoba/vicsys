@@ -3,17 +3,23 @@ import FormGroupItems, {
   FormGroupItemsProps,
 } from "../../../components/FormControl";
 import userService from "../../../firebase/services/userService";
-import { Form, Input, notification } from "antd";
+import { Form, Input } from "antd";
 import { useNavigate } from "react-router-dom";
-import { CheckOutlined } from "@ant-design/icons";
 import "./SignUp.css";
 import vicsys1 from "../../../assets/vicsys1.png";
+import Swal from "sweetalert2";
+import { useState } from "react";
 
 export default function SignUp() {
   const _userService = userService();
   const navigate = useNavigate();
-
+  const [error, setError] = useState<string>("");
   const formGroupItems: FormGroupItemsProps[] = [
+    {
+      name: "name",
+      rules: [{ required: true, message: "Please input the name!" }],
+      component: <Input placeholder="Name" />,
+    },
     {
       name: "email",
       rules: [{ required: true, message: "Please input the email!" }],
@@ -32,12 +38,20 @@ export default function SignUp() {
   ];
 
   const onFinish = async (data: IUser) => {
-    await _userService.add(data);
-    notification.open({
-      icon: <CheckOutlined style={{ color: "green" }} />,
-      message: "Successfully signed up",
-    });
-    navigate("/login");
+    try {
+      setError("");
+      await _userService.add(data);
+      Swal.fire({
+        icon: "success",
+        title: "Successfully signup!",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      navigate("/login");
+    } catch (_e: any) {
+      let e: Error = _e;
+      setError(e.message);
+    }
   };
 
   return (
@@ -45,8 +59,9 @@ export default function SignUp() {
       <div className="form-signin w-100 m-auto">
         <Form onFinish={onFinish}>
           <center>
-            <img className="mb-4" src={vicsys1} style={{ width: 200 }} />
-            <h4 className=" mb-3 fw-normal">Register</h4>
+            <img src={vicsys1} style={{ width: 300 }} />
+            <h4 className=" mb-3 fw-normal">Signup</h4>
+            <p className="text-danger"> {error}</p>
           </center>
 
           <FormGroupItems items={formGroupItems} />
@@ -60,18 +75,12 @@ export default function SignUp() {
             />
             <label className="form-check-label">Remember me</label>
           </div>
-          <button
-            className="btn btn-success w-100"
-            type="button"
-            onClick={() => navigate("/login")}
-          >
-            Sign in
+          <button className="mb-3 btn btn-primary w-100" type="submit">
+            Signup
           </button>
-          <br />
-          <div className="w-100 text-center">or</div>
-          <button className="btn btn-primary w-100" type="submit">
-            Register
-          </button>
+          <p>
+            Already have an account? <a href="login"> Log in.</a>
+          </p>
           <p className="mt-5 mb-3 text-body-secondary">&copy; Bentayarn 2024</p>
         </Form>
       </div>
