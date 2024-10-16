@@ -7,7 +7,7 @@ export default function accountService() {
   const { setUser } = useUserContext();
   const login = async (data: IUserLogin) => {
     const user = await _userRepository.validateEmailAndPassword(data);
-    if (!user) throw new Error("Invalid email and password");
+    if (!user) throw new Error("Invalid email and password.");
 
     const { password, ...rest } = user;
     localStorage.setItem("user", JSON.stringify(rest));
