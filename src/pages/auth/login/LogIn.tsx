@@ -14,7 +14,9 @@ const formGroupItems: FormGroupItemsProps[] = [
   {
     name: "email",
     rules: [{ required: true, message: "Please input the email!" }],
-    component: <Input prefix={<UserOutlined />} placeholder="Email" />,
+    component: (
+      <Input type="email" prefix={<UserOutlined />} placeholder="Email" />
+    ),
   },
   {
     name: "password",
