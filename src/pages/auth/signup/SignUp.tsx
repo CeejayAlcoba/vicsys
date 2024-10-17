@@ -9,9 +9,10 @@ import "./SignUp.css";
 import vicsys1 from "../../../assets/vicsys1.png";
 import Swal from "sweetalert2";
 import { useState } from "react";
+import accountService from "../../../firebase/services/accountService";
 
 export default function SignUp() {
-  const _userService = userService();
+  const _accountService = accountService();
   const navigate = useNavigate();
   const [error, setError] = useState<string>("");
   const formGroupItems: FormGroupItemsProps[] = [
@@ -27,7 +28,10 @@ export default function SignUp() {
     },
     {
       name: "password",
-      rules: [{ required: true, message: "Please input the password!" }],
+      rules: [
+        { required: true, message: "Please input the password!" },
+        { min: 6, message: "Password should be at least 6 characters" },
+      ],
       component: <Input.Password placeholder="Password" />,
     },
     {
@@ -40,7 +44,7 @@ export default function SignUp() {
   const onFinish = async (data: IUser) => {
     try {
       setError("");
-      await _userService.add(data);
+      await _accountService.signup(data);
       Swal.fire({
         icon: "success",
         title: "Successfully signup!",

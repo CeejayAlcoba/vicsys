@@ -4,11 +4,11 @@ import FormGroupItems, {
   FormGroupItemsProps,
 } from "../../../components/FormControl";
 import { IUserLogin } from "../../../interfaces/firebase/IUser";
-import accountService from "../../../firebase/services/accountService";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import vicsys1 from "../../../assets/vicsys1.png";
 import { useState } from "react";
+import accountService from "../../../firebase/services/accountService";
 
 const formGroupItems: FormGroupItemsProps[] = [
   {
@@ -25,13 +25,13 @@ const formGroupItems: FormGroupItemsProps[] = [
   },
 ];
 export default function LogIn() {
-  const _accounService = accountService();
+  const _accountService = accountService();
   const navigate = useNavigate();
   const [error, setError] = useState<string>("");
   const onFinish = async (values: IUserLogin) => {
     try {
       setError("");
-      await _accounService.login(values);
+      await _accountService.login(values);
       navigate("/");
     } catch (_e: any) {
       let e: Error = _e;

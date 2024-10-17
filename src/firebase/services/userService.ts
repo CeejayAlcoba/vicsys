@@ -1,18 +1,10 @@
+import { onAuthStateChanged } from "firebase/auth";
 import { IUser, IUserPublic } from "../../interfaces/firebase/IUser";
 import userRepository from "../repositories/userRepository";
+import { auth } from "../firebaseConfig";
 
 export default function userService() {
   const _userRepository = userRepository();
-
-  const add = async (data: IUser) => {
-    const isEmailExisted = await _userRepository.isEmailExisted(data.email);
-    if (isEmailExisted)
-      throw new Error(
-        "Email already in use. Try logging in or use a different email to sign up."
-      );
-
-    await _userRepository.add(data);
-  };
 
   const getAll = async () => {
     console.log(_userRepository.getAll());
@@ -33,6 +25,26 @@ export default function userService() {
     const user = localStorage.getItem("user");
     return user ? (JSON.parse(user) as IUserPublic) : null;
   };
+  const getUserLoggedIn = async (): Promise<IUserPublic | null> => {
+    return new Promise((resolve) => {
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          const users = await _userRepository.getAll();
+          const foundUser = users.find((c) => c.id === user.uid);
+          resolve(foundUser as IUserPublic);
+        } else {
+          resolve(null);
+        }
+      });
+    });
+  };
 
-  return { getUserLocalStorage, add, getAll, getById, update, deleteById };
+  return {
+    getUserLoggedIn,
+    getUserLocalStorage,
+    getAll,
+    getById,
+    update,
+    deleteById,
+  };
 }

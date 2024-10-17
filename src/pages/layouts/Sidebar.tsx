@@ -9,8 +9,8 @@ import type { MenuProps } from "antd";
 import useSidebarContext from "./contexts/useSidebarContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import accountService from "../../firebase/services/accountService";
 import Swal from "sweetalert2";
+import accountService from "../../firebase/services/accountService";
 
 type MenuItem = Required<MenuProps>["items"][number];
 

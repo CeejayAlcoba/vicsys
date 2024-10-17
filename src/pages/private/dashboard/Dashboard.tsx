@@ -2,8 +2,11 @@ import "./Dashboard.css";
 import TotalKidsPieChart from "./TotalKidsPieChart";
 import TotalUsersPieChart from "./TotalUsersPieChart";
 import CalendarLayout from "./CalendarLayout";
+import userService from "../../../firebase/services/userService";
 
 export default function Dashboard() {
+  const _userService = userService();
+  _userService.getUserLoggedIn();
   return (
     <div className="row">
       {/* <!-- Main content --> */}

@@ -15,5 +15,9 @@ export default function userRepository() {
     return users.find((c) => c.email == email && c.password == password);
   };
 
-  return { isEmailExisted, validateEmailAndPassword, ..._genericRepository };
+  return {
+    isEmailExisted,
+    validateEmailAndPassword,
+    ..._genericRepository,
+  };
 }
