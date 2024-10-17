@@ -9,11 +9,15 @@ import DataTable from "../../../components/DataTable";
 import FormGroupItems, {
   FormGroupItemsProps,
 } from "../../../components/FormControl";
+import accountService from "../../../firebase/services/accountService";
 export default function UserPage() {
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
   const [isOpenSaveModal, setIsOpenSaveModal] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
+  const [error, setError] = useState<string>("");
+  const [form] = Form.useForm();
   const _userService = userService();
+  const _accounService = accountService();
   const { data, refetch } = useQuery({
     queryKey: ["users"],
     queryFn: async () => await _userService.getAll(),
@@ -37,6 +41,7 @@ export default function UserPage() {
       label: "Password",
       rules: [
         { required: !selectedUser, message: "Please input the password!" },
+        { min: 6, message: "Password should be at least 6 characters" },
       ],
       component: <Input type="password" />,
     },
@@ -99,13 +104,21 @@ export default function UserPage() {
   ];
 
   const handleSave = async (values: IUser) => {
-    if (selectedUser) {
-      await _userService.update(selectedUser.id || "", values);
-    } else {
-      await _userService.add(values);
+    setError("");
+    try {
+      if (selectedUser) {
+        await _userService.update(selectedUser.id || "", values);
+      } else {
+        await _accounService.signup(values);
+      }
+    } catch (_e: any) {
+      let e: Error = _e;
+      setError(e.message);
     }
-    refetch();
-    setIsOpenSaveModal(false);
+    if (!error) {
+      refetch();
+      setIsOpenSaveModal(false);
+    }
   };
 
   const DeleteModalConfirmation = () => (
@@ -124,8 +137,6 @@ export default function UserPage() {
   );
 
   const SaveUserModal = () => {
-    const [form] = Form.useForm();
-
     const handleFormSubmit = async () => {
       try {
         const values = await form.validateFields();
@@ -157,6 +168,7 @@ export default function UserPage() {
           }}
           layout="vertical"
         >
+          <p className="text-danger">{error}</p>
           <FormGroupItems
             items={selectedUser ? updateFromGroups : addFormGroups}
           />
