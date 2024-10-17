@@ -2,7 +2,6 @@ import { IUser } from "../../../interfaces/firebase/IUser";
 import FormGroupItems, {
   FormGroupItemsProps,
 } from "../../../components/FormControl";
-import userService from "../../../firebase/services/userService";
 import { Form, Input } from "antd";
 import { useNavigate } from "react-router-dom";
 import "./SignUp.css";

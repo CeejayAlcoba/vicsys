@@ -9,12 +9,11 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
-export default function genericRepository<T>(documentName: string) {
-  const myCollections = collection(db, documentName);
+export default function genericRepository<T>(collectionName: string) {
+  const myCollections = collection(db, collectionName);
 
   const add = async (data: T) => {
-    const tCollections = collection(db, "users");
-    await addDoc(tCollections, data as { [key: string]: any });
+    await addDoc(myCollections, data as { [key: string]: any });
   };
   const getAll = async () => {
     const snapshot = await getDocs(myCollections);

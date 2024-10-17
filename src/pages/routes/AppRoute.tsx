@@ -9,6 +9,8 @@ import UserPage from "../private/user/UserPage";
 import Main from "../layouts/Main";
 import useUserContext from "../../contexts/useUserContext";
 import Dashboard from "../private/dashboard/Dashboard";
+import Test from "../private/test/Test";
+import TicketQR from "../private/ticket/qr/TicketQR";
 
 export default function AppRoute() {
   const { user } = useUserContext();
@@ -36,6 +38,14 @@ export default function AppRoute() {
         {
           path: "/",
           element: <Dashboard />,
+        },
+        {
+          path: "/test",
+          element: <Test />,
+        },
+        {
+          path: "ticket-qr/:value",
+          element: <TicketQR />,
         },
       ],
     },

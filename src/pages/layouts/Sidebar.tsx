@@ -49,6 +49,18 @@ export default function Sidebar() {
       ],
     },
     {
+      label: "Test",
+      key: "sub2",
+      icon: <DesktopOutlined />,
+      children: [
+        {
+          label: "QR",
+          key: "3",
+          onClick: () => navigate("test"),
+        },
+      ],
+    },
+    {
       label: "Logout",
       key: "5",
       icon: <DesktopOutlined />,
