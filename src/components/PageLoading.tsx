@@ -15,7 +15,7 @@ const containerStyle: React.CSSProperties = {
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  height: "100vh",
+  height: "50vh",
 };
 
 export default PageLoading;

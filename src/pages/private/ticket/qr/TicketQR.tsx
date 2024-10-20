@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import ticketService from "../../../../firebase/services/ticketService";
 import { useParams } from "react-router-dom";
 import documentService from "../../../../firebase/services/documentService";
+import PageLoading from "../../../../components/PageLoading";
 
 export default function TicketQR() {
   const { value = "" } = useParams<{ value: string }>();
@@ -26,6 +27,7 @@ export default function TicketQR() {
       });
     }
   };
+  if (!isGenerated) return <PageLoading />;
 
   return (
     <div>
