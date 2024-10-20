@@ -14,15 +14,16 @@ export default function TicketQR() {
 
   useEffect(() => {
     handleAddTicket();
+
+    return () => {};
   }, []);
 
   const handleAddTicket = async () => {
-    if (!isGenerated) {
-      const canvas = qrCodeRef.current?.querySelector("canvas");
-      if (canvas) {
-        await _ticketService.add(canvas, "sample-web-qr.png");
+    const canvas = qrCodeRef.current?.querySelector("canvas");
+    if (canvas && !isGenerated) {
+      await _ticketService.add(canvas, "sample-web-qr.png").then(() => {
         setIsGenerated(true);
-      }
+      });
     }
   };
 
