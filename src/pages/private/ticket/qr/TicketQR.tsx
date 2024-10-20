@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import ticketService from "../../../../firebase/services/ticketService";
 import { useParams } from "react-router-dom";
 import documentService from "../../../../firebase/services/documentService";
-import PageLoading from "../../../../components/PageLoading";
 
 export default function TicketQR() {
   const { value = "" } = useParams<{ value: string }>();
@@ -15,31 +14,31 @@ export default function TicketQR() {
 
   useEffect(() => {
     handleAddTicket();
-
-    return () => {};
   }, []);
 
   const handleAddTicket = async () => {
     const canvas = qrCodeRef.current?.querySelector("canvas");
     if (canvas && !isGenerated) {
-      await _ticketService.add(canvas, "sample-web-qr.png").then(() => {
-        setIsGenerated(true);
-      });
+      await _ticketService.add(canvas, "sample-web-qr.png");
+      setIsGenerated(true);
     }
   };
-  if (!isGenerated) return <PageLoading />;
-
   return (
     <div>
       <div ref={qrCodeLayoutRef} style={{ background: "white" }}>
         <h1>Test QR layout</h1>
         <div ref={qrCodeRef} style={{ background: "transparent" }}>
-          <QRCode value={value} style={{ backgroundColor: "transparent" }} />
+          <QRCode
+            value={value}
+            style={{ backgroundColor: "transparent" }}
+            status={isGenerated ? "active" : "loading"}
+          />
         </div>
       </div>
 
       <Button
         type="primary"
+        disabled={!isGenerated}
         onClick={() => _documentService.downloadHTMLToImage(qrCodeLayoutRef)}
       >
         Download QR Code
