@@ -32,6 +32,12 @@ export default function Sidebar() {
       onClick: () => navigate("user"),
     },
     {
+      label: "Events",
+      key: "3",
+      icon: <UserOutlined />,
+      onClick: () => navigate("event"),
+    },
+    {
       label: "Auth",
       key: "sub1",
       icon: <DesktopOutlined />,

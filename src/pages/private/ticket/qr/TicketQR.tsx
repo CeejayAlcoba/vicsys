@@ -19,7 +19,7 @@ export default function TicketQR() {
   const handleAddTicket = async () => {
     const canvas = qrCodeRef.current?.querySelector("canvas");
     if (canvas && !isGenerated) {
-      await _ticketService.add(canvas, "sample-web-qr.png");
+      await _ticketService.add(canvas);
       setIsGenerated(true);
     }
   };
