@@ -1,4 +1,4 @@
-import { IUser, IUserLogin } from "../../interfaces/firebase/IUser";
+import { IUser } from "../../interfaces/firebase/IUser";
 import genericRepository from "./genericRepository";
 
 export default function userRepository() {
@@ -9,15 +9,8 @@ export default function userRepository() {
     return !!users.find((u) => u.email == email);
   };
 
-  const validateEmailAndPassword = async (data: IUserLogin) => {
-    const { email, password } = data;
-    const users = await _genericRepository.getAll();
-    return users.find((c) => c.email == email && c.password == password);
-  };
-
   return {
     isEmailExisted,
-    validateEmailAndPassword,
     ..._genericRepository,
   };
 }
