@@ -38,6 +38,12 @@ export default function Sidebar() {
       onClick: () => navigate("user"),
     },
     {
+      label: "Events",
+      key: "3",
+      icon: <UserOutlined />,
+      onClick: () => navigate("event"),
+    },
+    {
       label: "Non-Tech Users",
       key: "4",
       icon: <UserOutlined />,

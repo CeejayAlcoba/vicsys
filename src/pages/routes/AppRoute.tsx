@@ -13,6 +13,7 @@ import useUserContext from "../../contexts/useUserContext";
 import Dashboard from "../private/dashboard/Dashboard";
 import Test from "../private/test/Test";
 import TicketQR from "../private/ticket/qr/TicketQR";
+import EventPage from "../private/event/EventPage";
 
 export default function AppRoute() {
   const { user } = useUserContext();
@@ -56,6 +57,10 @@ export default function AppRoute() {
         {
           path: "ticket-qr/:value",
           element: <TicketQR />,
+        },
+        {
+          path: "event",
+          element: <EventPage />,
         },
       ],
     },

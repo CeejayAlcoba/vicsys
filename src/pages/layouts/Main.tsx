@@ -28,7 +28,7 @@ export default function Main() {
             }}
           >
             <HeaderLayout />
-            <Content style={{ margin: "24px 16px 0", overflow: "initial" }}>
+            <Content style={{ margin: "24px 16px 0" }}>
               <div className="container-fluid">
                 <Outlet />
               </div>
