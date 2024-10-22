@@ -12,6 +12,8 @@ import Dashboard from "../private/dashboard/Dashboard";
 import Test from "../private/test/Test";
 import TicketQR from "../private/ticket/qr/TicketQR";
 import EventPage from "../private/event/EventPage";
+import AccountSettingPage from "../private/account-settings/AccountSettingPage";
+import EmailVerificationPage from "../private/email-verification/EmailVerificationPage";
 
 export default function AppRoute() {
   const { user } = useUserContext();
@@ -51,6 +53,14 @@ export default function AppRoute() {
         {
           path: "event",
           element: <EventPage />,
+        },
+        {
+          path: "account-settings",
+          element: <AccountSettingPage />,
+        },
+        {
+          path: "email-verification",
+          element: <EmailVerificationPage />,
         },
       ],
     },

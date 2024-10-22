@@ -16,3 +16,8 @@ export interface IUserPublic {
   email: string;
   birthday: Date | "";
 }
+
+export interface IUserChangePassword {
+  currentPassword: string;
+  newPassword: string;
+}

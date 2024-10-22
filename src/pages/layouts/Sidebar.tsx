@@ -1,9 +1,12 @@
 import { Menu, Modal } from "antd";
 import Sider from "antd/es/layout/Sider";
 import {
-  DesktopOutlined,
   PieChartOutlined,
   UserOutlined,
+  SettingOutlined,
+  LogoutOutlined,
+  QrcodeOutlined,
+  HomeOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import useSidebarContext from "./contexts/useSidebarContext";
@@ -22,7 +25,7 @@ export default function Sidebar() {
     {
       label: "Dashboard",
       key: "1",
-      icon: <PieChartOutlined />,
+      icon: <HomeOutlined />,
       onClick: () => navigate("/"),
     },
     {
@@ -34,45 +37,42 @@ export default function Sidebar() {
     {
       label: "Events",
       key: "3",
-      icon: <UserOutlined />,
+      icon: <PieChartOutlined />,
       onClick: () => navigate("event"),
     },
     {
-      label: "Auth",
+      label: "Account",
       key: "sub1",
-      icon: <DesktopOutlined />,
+      icon: <SettingOutlined />,
       children: [
         {
-          label: "Login",
-          key: "3",
-          onClick: () => navigate("login"),
+          label: "Settings",
+          key: "4",
+          icon: <SettingOutlined />,
+          onClick: () => navigate("account-settings"),
         },
         {
-          label: "Signup",
-          key: "4",
-          onClick: () => navigate("signup"),
+          label: "Logout",
+          key: "5",
+          icon: <LogoutOutlined />,
+          onClick: () => {
+            handleLogout();
+          },
         },
       ],
     },
     {
       label: "Test",
       key: "sub2",
-      icon: <DesktopOutlined />,
+      icon: <QrcodeOutlined />,
       children: [
         {
           label: "QR",
-          key: "3",
+          key: "6",
+          icon: <QrcodeOutlined />,
           onClick: () => navigate("test"),
         },
       ],
-    },
-    {
-      label: "Logout",
-      key: "5",
-      icon: <DesktopOutlined />,
-      onClick: () => {
-        handleLogout();
-      },
     },
   ];
 
@@ -86,6 +86,7 @@ export default function Sidebar() {
     scrollbarWidth: "thin",
     scrollbarColor: "unset",
   };
+
   const handleLogout = async () => {
     Swal.fire({
       title: "Are you sure you want to logout?",
@@ -99,6 +100,7 @@ export default function Sidebar() {
       }
     });
   };
+
   const LogoutConfimationModal = () => {
     return (
       <Modal

@@ -7,15 +7,13 @@ export default function userService() {
   const _userRepository = userRepository();
 
   const getAll = async () => {
-    console.log(_userRepository.getAll());
     return await _userRepository.getAll();
   };
 
   const getById = async (id: string) => {
     return await _userRepository.getById(id);
   };
-
-  const update = async (id: string, data: IUser) => {
+  const update = async (id: string, data: IUserPublic) => {
     return await _userRepository.update(id, data);
   };
   const deleteById = async (id: string) => {

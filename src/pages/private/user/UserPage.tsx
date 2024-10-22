@@ -93,7 +93,7 @@ export default function UserPage() {
             icon={<EditOutlined />}
             style={{ marginLeft: 8 }}
             onClick={() => {
-              console.log(data);
+              form.setFieldsValue(data);
               setSelectedUser(data);
               setIsOpenSaveModal(true);
             }}
