@@ -58,16 +58,16 @@ export default function Sidebar() {
       icon: <SettingOutlined />,
       children: [
         {
-          label: "Login",
-          key: "6",
-          icon: <LogoutOutlined />,
-          onClick: () => navigate("login"),
-        },
-        {
           label: "Settings",
-          key: "4",
+          key: "6",
           icon: <SettingOutlined />,
           onClick: () => navigate("account-settings"),
+        },
+        {
+          label: "Logout",
+          key: "7",
+          icon: <LogoutOutlined />,
+          onClick: () => handleLogout(),
         },
       ],
     },
