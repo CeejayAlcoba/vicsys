@@ -8,7 +8,7 @@ export interface IEvent {
   startTime: Date;
   image: string;
   venue: string;
-  ticketCategories: ITicketCategory[];
+  ticketCategories?: ITicketCategory[];
 }
 export interface IEventSave {
   id?: string;
@@ -19,9 +19,4 @@ export interface IEventSave {
   image: string | File;
   venue: string;
   ticketCategories: ITicketCategory[];
-}
-interface EventDate {
-  moment(arg0: string): unknown;
-  seconds: number;
-  nanoseconds: number;
 }

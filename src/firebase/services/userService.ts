@@ -1,21 +1,20 @@
 import { onAuthStateChanged } from "firebase/auth";
-import { IUser, IUserPublic } from "../../interfaces/firebase/IUser";
+import { IUserPublic } from "../../interfaces/firebase/IUser";
 import userRepository from "../repositories/userRepository";
 import { auth } from "../firebaseConfig";
+import PeopleRepository from "../repositories/peopleRepository";
 
 export default function userService() {
   const _userRepository = userRepository();
-
+  const _peopleRepository = PeopleRepository();
   const getAll = async () => {
-    console.log(_userRepository.getAll());
     return await _userRepository.getAll();
   };
 
   const getById = async (id: string) => {
     return await _userRepository.getById(id);
   };
-
-  const update = async (id: string, data: IUser) => {
+  const update = async (id: string, data: IUserPublic) => {
     return await _userRepository.update(id, data);
   };
   const deleteById = async (id: string) => {
@@ -38,8 +37,14 @@ export default function userService() {
       });
     });
   };
+  const getTotalUsers = async () => {
+    const users = await _userRepository.getAll();
+    const peoples = await _peopleRepository.getAll();
+    return users.length + peoples.length;
+  };
 
   return {
+    getTotalUsers,
     getUserLoggedIn,
     getUserLocalStorage,
     getAll,

@@ -16,6 +16,11 @@ export default function ticketService() {
             `qrcodes/${uuidv4()}.png`
           );
           const entity: ITIcket = {
+            eventId: "YYFUN2bLM3XRhFaQxJbi",
+            ticketBooks: [
+              { category: "Attendees", price: 800, totalTickets: 2 },
+              { category: "Test", price: 100, totalTickets: 3 },
+            ],
             created: new Date(),
             qrcodeUrl: url,
           };
@@ -26,6 +31,17 @@ export default function ticketService() {
       throw new Error(`Error uploading: ${error}`);
     }
   };
+  const getTotalTicketSold = async () => {
+    const tickets = await _ticketRepository.getAll();
 
-  return { add };
+    return tickets?.reduce(
+      (currT, prevT) =>
+        (currT += prevT?.ticketBooks.reduce(
+          (curr, prev) => (curr += prev?.totalTickets * prev?.price),
+          0
+        )),
+      0
+    );
+  };
+  return { add, getTotalTicketSold };
 }
