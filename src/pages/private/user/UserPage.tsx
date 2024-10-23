@@ -58,10 +58,6 @@ export default function UserPage() {
 
   const columns: ColumnsType<IUser> = [
     {
-      title: "Id",
-      dataIndex: "id",
-    },
-    {
       title: "Name",
       dataIndex: "name",
     },
@@ -93,7 +89,7 @@ export default function UserPage() {
             icon={<EditOutlined />}
             style={{ marginLeft: 8 }}
             onClick={() => {
-              console.log(data);
+              form.setFieldsValue(data);
               setSelectedUser(data);
               setIsOpenSaveModal(true);
             }}

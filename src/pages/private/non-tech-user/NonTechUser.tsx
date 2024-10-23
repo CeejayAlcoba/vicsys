@@ -56,10 +56,6 @@ export default function NonTechUserPage() {
 
   const columns: ColumnsType<INonTechUser> = [
     {
-      title: "Id",
-      dataIndex: "id",
-    },
-    {
       title: "Name",
       dataIndex: "name",
     },
@@ -81,6 +77,7 @@ export default function NonTechUserPage() {
             shape="circle"
             icon={<DeleteOutlined />}
             onClick={() => {
+              form.setFieldsValue(data);
               setSelectedUser(data);
               setIsOpenDeleteModal(true);
             }}

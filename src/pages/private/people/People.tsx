@@ -17,7 +17,7 @@ export default function NonTechUserPage() {
   const [error, setError] = useState<string>("");
   const [form] = Form.useForm();
   const _peopleService = peopleService();
-  const { data, refetch } = useQuery({
+  const { data : peoplelist, refetch } = useQuery({
     queryKey: ["peoplelist"],
     queryFn: async () => await _peopleService.getAll(),
     initialData: [],
@@ -67,8 +67,8 @@ export default function NonTechUserPage() {
       rules: [{ required: true, message: "Please input the gender!" }],
       component: (
         <Select placeholder="Select Gender">
-          <Select.Option value="male">Male</Select.Option>
-          <Select.Option value="female">Female</Select.Option>
+          <Select.Option value="Male">Male</Select.Option>
+          <Select.Option value="Female">Female</Select.Option>
         </Select>
       ),
     },
@@ -99,6 +99,23 @@ export default function NonTechUserPage() {
     {
       title: "Ministry",
       dataIndex: "ministry",
+    //   render: (data: IPeople) => (
+    //     <>
+    //     <Select defaultValue={data.ministry} style={{ width: 200 }}>
+    //     <Select.Option value="Victory Group Leaders">Victory Group Leaders</Select.Option>
+    //       <Select.Option value="Ushering Ministry">Ushering Ministry</Select.Option>
+    //       <Select.Option value="Music Ministry">Music Ministry</Select.Option>
+    //       <Select.Option value="Kids Ministry">Kids Ministry</Select.Option>
+    //       <Select.Option value="Stage Management">Stage Management</Select.Option>
+    //       <Select.Option value="Technical Support">Technical Support</Select.Option>
+    //       <Select.Option value="Communication">Communication</Select.Option>
+    //       <Select.Option value="Prayer Ministry">Prayer Ministry</Select.Option>
+    //       <Select.Option value="Admin Support">Admin Support</Select.Option>
+    //       <Select.Option value="Real Life Coaches">Real Life Coaches</Select.Option>
+    //       <Select.Option value="Special Project Teams">Special Project teams</Select.Option>
+    //     </Select>
+    //     </>
+    //   )
     },
     {
       title: "Gender",
@@ -128,7 +145,7 @@ export default function NonTechUserPage() {
             icon={<EditOutlined />}
             style={{ marginLeft: 8 }}
             onClick={() => {
-              console.log(data);
+              form.setFieldsValue(data);
               setSelectedUser(data);
               setIsOpenSaveModal(true);
             }}
@@ -196,7 +213,10 @@ export default function NonTechUserPage() {
           form={form}
           initialValues={{
             name: selectedUser?.name || "",
-
+            age: selectedUser?.age || "",
+            contact: selectedUser?.contact || "",
+            ministry: selectedUser?.ministry || "",
+            gender: selectedUser?.gender || "",
             birthday: selectedUser?.birthday || "",
           }}
           layout="vertical"
@@ -225,7 +245,7 @@ export default function NonTechUserPage() {
       </Button>
       <DeleteModalConfirmation />
       <SaveUserModal />
-      <DataTable dataSource={data} columns={columns} />
+      <DataTable dataSource={peoplelist} columns={columns} />
     </>
   );
 }
