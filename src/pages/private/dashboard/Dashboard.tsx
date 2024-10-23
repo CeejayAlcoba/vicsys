@@ -2,11 +2,19 @@ import "./Dashboard.css";
 import TotalKidsPieChart from "./TotalKidsPieChart";
 import TotalUsersPieChart from "./TotalUsersPieChart";
 import CalendarLayout from "./CalendarLayout";
-import userService from "../../../firebase/services/userService";
+import { useQuery } from "@tanstack/react-query";
+import dashboardService from "../../../firebase/services/dasboardService";
+import moneyFormat from "../../../utils/moneyFormat";
+import TicketDetails from "./TicketDetails";
 
 export default function Dashboard() {
-  const _userService = userService();
-  _userService.getUserLoggedIn();
+  const _dahsboardService = dashboardService();
+  const { data } = useQuery({
+    queryKey: ["dashboardDetails"],
+    queryFn: _dahsboardService.getDashboardDetails,
+  });
+
+  console.log(data);
   return (
     <div className="row">
       {/* <!-- Main content --> */}
@@ -20,7 +28,7 @@ export default function Dashboard() {
           <div className="card text-white bg-primary mb-3">
             <div className="card-body">
               <h5 className="card-title text-center">Total Registration</h5>
-              <p className="card-text text-center">1152</p>
+              <p className="card-text text-center">{data?.totalRegistration}</p>
             </div>
           </div>
         </div>
@@ -28,16 +36,16 @@ export default function Dashboard() {
           <div className="card text-white bg-success mb-3">
             <div className="card-body">
               <h5 className="card-title text-center">Total of Kids</h5>
-              <p className="card-text text-center">174</p>
+              <p className="card-text text-center">{data?.totalKids}</p>
             </div>
           </div>
         </div>
         <div className="col-md-3">
           <div className="card text-white bg-info mb-3">
             <div className="card-body">
-              <h5 className="card-title text-center">Events</h5>
+              <h5 className="card-title text-center">Total Events</h5>
               <p className="card-text text-center" id="eventCount">
-                ...
+                {data?.totalEvents}
               </p>
               {/* <!-- Dynamic event count --> */}
             </div>
@@ -47,7 +55,9 @@ export default function Dashboard() {
           <div className="card text-white bg-warning mb-3">
             <div className="card-body">
               <h5 className="card-title text-center">Total Ticket Sold</h5>
-              <p className="card-text text-center">₱3,452</p>
+              <p className="card-text text-center">
+                ₱{moneyFormat(data?.totalTicketSold || 0)}
+              </p>
             </div>
           </div>
         </div>
@@ -59,29 +69,9 @@ export default function Dashboard() {
           <div className="card mb-3">
             <div className="card-header">Ticket Sold</div>
             <div className="card-body">
-              <div className="event-item" data-sold="100" data-total="225">
-                <img src="https://via.placeholder.com/50" alt="Event 1" />
-                <div className="event-details">
-                  <p className="event-title">Youth Bible Study</p>
-                  <p className="event-time">9:00am - 4:00pm</p>
-                  <div className="progress">
-                    <div className="progress-bar"></div>
-                  </div>
-                  <p className="ticket-count">100 / 225</p>
-                </div>
-              </div>
-
-              <div className="event-item" data-sold="50" data-total="100">
-                <img src="https://via.placeholder.com/50" alt="Event 2" />
-                <div className="event-details">
-                  <p className="event-title">Victory Lipa Church Anniversary</p>
-                  <p className="event-time">8:00am - 2:00pm</p>
-                  <div className="progress">
-                    <div className="progress-bar"></div>
-                  </div>
-                  <p className="ticket-count">50 / 100</p>
-                </div>
-              </div>
+              {data?.ticketDetails.map((td) => (
+                <TicketDetails {...td} />
+              ))}
             </div>
           </div>
         </div>

@@ -15,6 +15,7 @@ export default function EventPage() {
     queryKey: ["events"],
     queryFn: _eventService.getAll,
   });
+  console.log(events);
 
   const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
   const [isSaveModalOpen, setIsSaveModalOpen] = useState<boolean>(false);

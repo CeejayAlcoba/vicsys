@@ -5,10 +5,7 @@ import { useState } from "react";
 import { AccountSettingContext } from "./useAccountSettingContext";
 import ChangePasswordModal from "./modal/ChangePasswordModal";
 import { IUserPublic } from "../../../interfaces/firebase/IUser";
-import {
-  convertUnixToDate,
-  convertUnixToDateText,
-} from "../../../utils/dateTimeFormat";
+import { convertUnixToDate } from "../../../utils/dateTimeFormat";
 import PasswordConfirmationModal from "./modal/PasswordConfirmationModal";
 import { auth } from "../../../firebase/firebaseConfig";
 

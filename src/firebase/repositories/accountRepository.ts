@@ -1,12 +1,9 @@
 import {
   createUserWithEmailAndPassword,
-  getAuth,
   sendEmailVerification,
   signInWithEmailAndPassword,
   signOut,
-  updateEmail,
   updatePassword,
-  updateProfile,
   verifyBeforeUpdateEmail,
 } from "firebase/auth";
 import { auth, db } from "../firebaseConfig";
@@ -79,6 +76,7 @@ export default function accountRepository() {
   const getCurrentUser = async () => {
     return await auth.currentUser;
   };
+
   return {
     getCurrentUser,
     isEmailVerified,

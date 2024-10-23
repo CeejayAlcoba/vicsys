@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button, Typography, Card, Alert } from "antd";
 import { useNavigate } from "react-router-dom";
-import { sendEmailVerification } from "firebase/auth";
 import { auth } from "../../../firebase/firebaseConfig";
 import accountService from "../../../firebase/services/accountService";
 import Swal from "sweetalert2";

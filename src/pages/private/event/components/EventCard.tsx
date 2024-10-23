@@ -64,7 +64,7 @@ export default function EventCard(props: IEvent) {
         <p key={index}>
           {ticket.category} - ₱{ticket.price}
           <br />
-          Tickets Available: {ticket.totalTickets}
+          Tickets Available: {ticket.currentTotalTickets}
         </p>
       ))}
     </Card>
