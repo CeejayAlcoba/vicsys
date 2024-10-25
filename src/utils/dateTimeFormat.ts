@@ -20,5 +20,6 @@ export const convertUnixToTimeText = (date: any): string => {
 };
 
 export const convertUnixToDate = (date: any): Moment => {
+  console.log(date);
   return moment.unix(date?.seconds);
 };

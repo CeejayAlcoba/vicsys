@@ -4,13 +4,16 @@ import userService from "../../../firebase/services/userService";
 import { useState } from "react";
 import { AccountSettingContext } from "./useAccountSettingContext";
 import ChangePasswordModal from "./modal/ChangePasswordModal";
-import { IUserPublic } from "../../../interfaces/firebase/IUser";
+import { IUserProvider, IUserPublic } from "../../../interfaces/firebase/IUser";
 import { convertUnixToDate } from "../../../utils/dateTimeFormat";
 import PasswordConfirmationModal from "./modal/PasswordConfirmationModal";
 import { auth } from "../../../firebase/firebaseConfig";
+import Swal from "sweetalert2";
+import useUserContext from "../../../contexts/useUserContext";
 
 export default function AccountSettingPage() {
   const _userService = userService();
+  const { user } = useUserContext();
   const [form] = Form.useForm();
   const [newUserDetails, setNewUserDetails] = useState<IUserPublic | null>(
     null
@@ -24,26 +27,37 @@ export default function AccountSettingPage() {
   useQuery({
     queryKey: ["user"],
     queryFn: async () => {
-      const response = await _userService.getUserLoggedIn();
-
-      if (response) {
-        console.log(response);
+      const user = await _userService.getUserLoggedIn();
+      if (user) {
+        const newUser = await _userService.getByEmail(user.email ?? "");
         form.setFieldsValue({
-          ...response,
-          birthday: convertUnixToDate(response.birthday),
+          name: newUser?.name ?? user.displayName,
+          email: user.email,
+          birthday: newUser?.birthday
+            ? convertUnixToDate(newUser?.birthday)
+            : "",
         });
       }
 
-      return response;
+      return user;
     },
   });
 
   const onFinish = async (values: IUserPublic) => {
-    setIsLoginConfirmationModalOpen(true);
     const newValue: IUserPublic = {
       ...values,
       birthday: new Date(values.birthday),
     };
+    if (user?.provider != IUserProvider.password && user?.uid) {
+      await _userService.add(newValue, user.uid);
+      return Swal.fire({
+        icon: "success",
+        title: "Successfully updated",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+    setIsLoginConfirmationModalOpen(true);
     setNewUserDetails(newValue);
   };
   if (!auth.currentUser?.emailVerified)
@@ -52,7 +66,6 @@ export default function AccountSettingPage() {
         You cannot use this feature because your email is not verified.
       </center>
     );
-
   return (
     <AccountSettingContext.Provider
       value={{
@@ -122,14 +135,17 @@ export default function AccountSettingPage() {
           </Form.Item>
 
           {/* Submit Buttons */}
+
           <Form.Item className="d-flex justify-content-end">
-            <Button
-              type="primary"
-              danger
-              onClick={() => setIsChangePasswordModalOpen(true)}
-            >
-              Change Password
-            </Button>
+            {user?.provider == IUserProvider.password && (
+              <Button
+                type="primary"
+                danger
+                onClick={() => setIsChangePasswordModalOpen(true)}
+              >
+                Change Password
+              </Button>
+            )}
             <Button type="primary" htmlType="submit">
               Save
             </Button>

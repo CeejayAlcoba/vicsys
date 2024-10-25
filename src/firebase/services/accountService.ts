@@ -3,6 +3,7 @@ import {
   IUser,
   IUserChangePassword,
   IUserLogin,
+  IUserProvider,
   IUserPublic,
 } from "../../interfaces/firebase/IUser";
 import { auth } from "../firebaseConfig";
@@ -16,12 +17,13 @@ export default function accountService() {
 
   const signup = async (data: IUser) => {
     const { email } = data;
-    await _accountRepository.emailVerification();
+
     const isEmailExisted = await _userRepository.isEmailExisted(email);
     if (isEmailExisted)
       throw new Error(
         "Email already in use. Try logging in or use a different email to sign up."
       );
+    await _accountRepository.emailVerification();
     await _accountRepository.signup(data);
   };
 
@@ -30,8 +32,11 @@ export default function accountService() {
   };
   const login = async (data: IUserLogin) => {
     const user = await _accountRepository.login(data);
-    localStorage.setItem("user", JSON.stringify(user));
-    setUser(user);
+    const provider = await _accountRepository.getUserProvider();
+    if (user && provider) {
+      localStorage.setItem("user", JSON.stringify(user));
+      setUser({ ...user, provider });
+    }
   };
 
   const logout = async () => {
@@ -65,11 +70,34 @@ export default function accountService() {
       throw new Error(e.message);
     }
   };
+
   const emailVerification = async () => {
     await _accountRepository.emailVerification();
   };
 
+  const loginWithGoogle = async () => {
+    const { user } = await _accountRepository.loginWithGoogle();
+    const provider = await _accountRepository.getUserProvider();
+    if (user && provider) {
+      setUser({ ...user, provider });
+    }
+  };
+
+  const loginWithFacebook = async () => {
+    const { user } = await _accountRepository.loginWithFacebook();
+    const provider = await _accountRepository.getUserProvider();
+    if (user && provider) {
+      setUser({ ...user, provider });
+    }
+  };
+  const getUserProvider = async (): Promise<IUserProvider | null> => {
+    return await _accountRepository.getUserProvider();
+  };
+
   return {
+    getUserProvider,
+    loginWithGoogle,
+    loginWithFacebook,
     getCurrentUser,
     emailVerification,
     signup,
