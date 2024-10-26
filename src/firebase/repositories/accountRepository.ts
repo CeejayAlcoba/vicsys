@@ -1,7 +1,10 @@
 import {
   createUserWithEmailAndPassword,
+  FacebookAuthProvider,
+  GoogleAuthProvider,
   sendEmailVerification,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
   updatePassword,
   verifyBeforeUpdateEmail,
@@ -10,26 +13,23 @@ import { auth, db } from "../firebaseConfig";
 import {
   IUser,
   IUserLogin,
+  IUserProvider,
   IUserPublic,
 } from "../../interfaces/firebase/IUser";
 import { doc, setDoc } from "firebase/firestore";
-import genericRepository from "./genericRepository";
 import userRepository from "./userRepository";
 
 export default function accountRepository() {
-  const _genericRepository = genericRepository<IUser>("users");
   const _userRepository = userRepository();
   const login = async (data: IUserLogin) => {
     const { email, password } = data;
     return await signInWithEmailAndPassword(auth, email, password)
-      .then(async (userCredential) => {
-        const { uid } = userCredential.user;
-        const user = (await _genericRepository.getAll()).find(
-          (c) => c.id == uid
-        );
-        return user as IUserPublic;
+      .then(async ({ user }) => {
+        return user;
       })
-      .catch(() => {
+      .catch((_e: any) => {
+        let e: Error = _e;
+        console.log(e.message);
         throw new Error("Invalid email or password.");
       });
   };
@@ -76,8 +76,28 @@ export default function accountRepository() {
   const getCurrentUser = async () => {
     return await auth.currentUser;
   };
-
+  const loginWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    return await signInWithPopup(auth, provider);
+  };
+  const loginWithFacebook = async () => {
+    const provider = new FacebookAuthProvider();
+    return await signInWithPopup(auth, provider);
+  };
+  const getUserProvider = async (): Promise<IUserProvider | null> => {
+    const user = auth.currentUser;
+    if (!user) return null;
+    const sortedProviders = user.providerData.sort((a, b) => {
+      if (a.providerId === "password") return -1;
+      if (b.providerId === "password") return 1;
+      return 0;
+    });
+    return sortedProviders[0].providerId as IUserProvider;
+  };
   return {
+    getUserProvider,
+    loginWithGoogle,
+    loginWithFacebook,
     getCurrentUser,
     isEmailVerified,
     profileUpdate,

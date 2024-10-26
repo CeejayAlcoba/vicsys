@@ -1,5 +1,10 @@
-import { Form, Input } from "antd";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { Button, Divider, Form, Input } from "antd";
+import {
+  UserOutlined,
+  LockOutlined,
+  GoogleOutlined,
+  FacebookOutlined,
+} from "@ant-design/icons";
 import FormGroupItems, {
   FormGroupItemsProps,
 } from "../../../components/FormControl";
@@ -40,7 +45,23 @@ export default function LogIn() {
       setError(e.message);
     }
   };
+  const handleGoogleLogin = async () => {
+    try {
+      await _accountService.loginWithGoogle();
+      navigate("/");
+    } catch (error: any) {
+      setError(error.message);
+    }
+  };
 
+  const handleFacebookLogin = async () => {
+    try {
+      await _accountService.loginWithFacebook();
+      navigate("/");
+    } catch (error: any) {
+      setError(error.message);
+    }
+  };
   return (
     <>
       <main className="form-signin">
@@ -55,10 +76,39 @@ export default function LogIn() {
           <div className="forgot-password">
             <a href="">Forgot Password?</a>
           </div>
-
-          <button className="mb-3 btn btn-primary w-100" type="submit">
+          <Button type="primary" className="w-100" htmlType="submit">
             Login
-          </button>
+          </Button>
+          <Divider
+            style={{
+              color: "#A0A0A0",
+              fontSize: "10px",
+              borderColor: "#A0A0A0",
+            }}
+            plain
+          >
+            or
+          </Divider>
+          <div className="social-login-buttons">
+            <Button
+              type="primary"
+              style={{ backgroundColor: "#AC4D41" }}
+              icon={<GoogleOutlined />}
+              className="mb-2 w-100"
+              onClick={handleGoogleLogin}
+            >
+              Login with Google
+            </Button>
+            <Button
+              type="primary"
+              style={{ backgroundColor: "#50618C" }}
+              icon={<FacebookOutlined />}
+              className="mb-2 w-100"
+              onClick={handleFacebookLogin}
+            >
+              Login with Facebook
+            </Button>
+          </div>
           <p>
             New here? <a href="signup"> Create an account.</a>
           </p>

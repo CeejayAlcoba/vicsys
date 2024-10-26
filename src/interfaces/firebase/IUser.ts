@@ -1,3 +1,14 @@
+import { User } from "firebase/auth";
+
+export interface IUserDetails extends User {
+  provider: IUserProvider;
+}
+export enum IUserProvider {
+  password = "password",
+  facebook = "facebook.com",
+  google = "google.com",
+}
+
 export interface IUser {
   id?: string;
   name: string;

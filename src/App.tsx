@@ -3,14 +3,14 @@ import "./App.css";
 import AppRoute from "./pages/routes/AppRoute";
 import { UserContext } from "./contexts/useUserContext";
 import { useEffect, useState } from "react";
-import { IUserPublic } from "./interfaces/firebase/IUser";
 import userService from "./firebase/services/userService";
 import PageLoading from "./components/PageLoading";
+import { IUserDetails } from "./interfaces/firebase/IUser";
 
 const queryClient = new QueryClient();
 function App() {
   const _userService = userService();
-  const [user, setUser] = useState<IUserPublic | null>(null);
+  const [user, setUser] = useState<IUserDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const getUserLoggedIn = async () => {
     const newUser = await _userService.getUserLoggedIn();

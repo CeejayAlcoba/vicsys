@@ -1,9 +1,9 @@
 import { createContext, useContext } from "react";
-import { IUserPublic } from "../interfaces/firebase/IUser";
+import { IUserDetails } from "../interfaces/firebase/IUser";
 
 export const UserContext = createContext<null | {
-  user: IUserPublic | null;
-  setUser: React.Dispatch<React.SetStateAction<IUserPublic | null>>;
+  user: IUserDetails | null;
+  setUser: React.Dispatch<React.SetStateAction<IUserDetails | null>>;
 }>(null);
 
 export default function useUserContext() {
