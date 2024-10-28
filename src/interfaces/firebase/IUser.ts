@@ -15,6 +15,10 @@ export interface IUser {
   email: string;
   password: string;
   birthday: Date | "";
+  age: number;
+  gender: string;
+  contact: string;
+  ministry: string;
 }
 
 export interface IUserLogin {
@@ -26,6 +30,10 @@ export interface IUserPublic {
   name: string;
   email: string;
   birthday: Date | "";
+  age: number;
+  gender: string;
+  contact: string;
+  ministry: string;
 }
 
 export interface IUserChangePassword {

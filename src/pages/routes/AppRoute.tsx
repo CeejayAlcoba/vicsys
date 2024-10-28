@@ -5,7 +5,6 @@ import {
 } from "react-router-dom";
 import LogIn from "../auth/login/LogIn";
 import SignUp from "../auth/signup/SignUp";
-import People from "../private/people/People";
 import UserPage from "../private/user/UserPage";
 import NonTechUserPage from "../private/non-tech-user/NonTechUser";
 import Main from "../layouts/Main";
@@ -39,10 +38,6 @@ export default function AppRoute() {
         {
           path: "user",
           element: <UserPage />,
-        },
-        {
-          path: "people",
-          element: <People />,
         },
         {
           path: "nontechuser",

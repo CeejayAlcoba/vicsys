@@ -1,5 +1,9 @@
 import { ITicketCategory } from "./ITicket";
 
+export interface IAttendee {
+  userId : string;
+}
+
 export interface IEvent {
   id?: string;
   eventName: string;
@@ -9,6 +13,7 @@ export interface IEvent {
   image: string;
   venue: string;
   ticketCategories?: ITicketCategory[];
+  attendees?: IAttendee[];
 }
 export interface IEventSave {
   id?: string;

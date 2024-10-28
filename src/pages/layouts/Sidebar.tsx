@@ -32,23 +32,17 @@ export default function Sidebar() {
       label: "People",
       key: "2",
       icon: <UserOutlined />,
-      onClick: () => navigate("people"),
-    },
-    {
-      label: "Users",
-      key: "3",
-      icon: <UserOutlined />,
       onClick: () => navigate("user"),
     },
     {
       label: "Non-Tech Users",
-      key: "4",
+      key: "3",
       icon: <UserOutlined />,
       onClick: () => navigate("nontechuser"),
     },
     {
       label: "Events",
-      key: "5",
+      key: "4",
       icon: <PieChartOutlined />,
       onClick: () => navigate("event"),
     },
@@ -59,13 +53,13 @@ export default function Sidebar() {
       children: [
         {
           label: "Settings",
-          key: "6",
+          key: "5",
           icon: <SettingOutlined />,
           onClick: () => navigate("account-settings"),
         },
         {
           label: "Logout",
-          key: "7",
+          key: "6",
           icon: <LogoutOutlined />,
           onClick: () => handleLogout(),
         },
@@ -78,7 +72,7 @@ export default function Sidebar() {
       children: [
         {
           label: "QR",
-          key: "8",
+          key: "7",
           onClick: () => navigate("test"),
         },
       ],
