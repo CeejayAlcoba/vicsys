@@ -70,13 +70,13 @@ export default function EventPage() {
         </div>
       </div>
 
-      <Row gutter={5}>
+      <div className="row gap-2">
         {events?.map((event, index) => (
-          <Col key={index} span={8}>
+          <div key={index} className="col-lg-4">
             <EventCard {...event} />
-          </Col>
+          </div>
         ))}
-      </Row>
+      </div>
     </EventContext.Provider>
   );
 }
