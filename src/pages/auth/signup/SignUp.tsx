@@ -2,18 +2,19 @@ import { IUser } from "../../../interfaces/firebase/IUser";
 import FormGroupItems, {
   FormGroupItemsProps,
 } from "../../../components/FormControl";
-import { Button, Form, Input } from "antd";
+import { Badge, Button, Form, Input } from "antd";
 import { useNavigate } from "react-router-dom";
 import "./SignUp.css";
 import vicsys1 from "../../../assets/vicsys1.png";
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import accountService from "../../../firebase/services/accountService";
-import IChild from "../../../interfaces/firebase/IChild";
-import AddChildModal from "./modal/ChildrenModal";
 import childrenService from "../../../firebase/services/childrenService";
 import useUserContext from "../../../contexts/useUserContext";
 import { useForm } from "antd/es/form/Form";
+import ChildrenModal, {
+  useChildrenModal,
+} from "../../../components/ChildrenModal";
 
 export default function SignUp() {
   const _accountService = accountService();
@@ -21,18 +22,14 @@ export default function SignUp() {
   const { user } = useUserContext();
   const navigate = useNavigate();
   const [error, setError] = useState<string>("");
-  const [children, setChildren] = useState<IChild[]>([]);
-  const [isAddChildModalVisible, setIsAddChildModalVisible] = useState(false);
-  const [childData, setChildData] = useState<IChild>({
-    firstName: "",
-    lastName: "",
-    nickname: "",
-    dateOfBirth: "",
-    gender: "Male",
-    age: 0,
-    hasFoodAllergies: false,
-    foodAllergies: "",
-  });
+  const {
+    children,
+    setChildren,
+    isChildrenModalVisible,
+    setIsChildrenModalVisible,
+    childData,
+    setChildData,
+  } = useChildrenModal();
   const [form] = useForm();
 
   const formGroupItems: FormGroupItemsProps[] = [
@@ -89,11 +86,10 @@ export default function SignUp() {
 
   return (
     <div className="d-flex justify-content-between">
-      <AddChildModal
-        isModalVisible={isAddChildModalVisible}
-        setIsModalVisible={setIsAddChildModalVisible}
+      <ChildrenModal
+        isModalVisible={isChildrenModalVisible}
+        setIsModalVisible={setIsChildrenModalVisible}
         setChildren={setChildren}
-        setChildData={setChildData}
         childData={childData}
         children={children}
       />
@@ -106,9 +102,25 @@ export default function SignUp() {
           </center>
 
           <FormGroupItems items={formGroupItems} />
-          <Button onClick={() => setIsAddChildModalVisible(true)}>
-            Add Child
-          </Button>
+          <Badge count={children.length} color="blue" showZero>
+            <Button
+              onClick={() => {
+                setIsChildrenModalVisible(true);
+                setChildData({
+                  firstName: "",
+                  lastName: "",
+                  nickname: "",
+                  dateOfBirth: "",
+                  gender: "Male",
+                  age: 0,
+                  hasFoodAllergies: false,
+                  foodAllergies: "",
+                });
+              }}
+            >
+              Your Children
+            </Button>
+          </Badge>
 
           <div className="form-check text-start my-3">
             <input

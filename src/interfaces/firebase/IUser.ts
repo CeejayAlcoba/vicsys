@@ -1,4 +1,5 @@
 import { User } from "firebase/auth";
+import IChild from "./IChild";
 
 export interface IUserDetails extends User {
   provider: IUserProvider;
@@ -19,6 +20,7 @@ export interface IUser {
   gender: string;
   contact: string;
   ministry: string;
+  children?: IChild[];
 }
 
 export interface IUserLogin {

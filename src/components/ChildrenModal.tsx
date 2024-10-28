@@ -1,36 +1,70 @@
 import { Button, Form, Input, Modal, Radio } from "antd";
-import IChild from "../../../../interfaces/firebase/IChild";
-import FormGroupItems, {
-  FormGroupItemsProps,
-} from "../../../../components/FormControl";
 import { useForm } from "antd/es/form/Form";
 import { ColumnsType } from "antd/es/table";
-import DataTable from "../../../../components/DataTable";
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import IChild from "../interfaces/firebase/IChild";
+import FormGroupItems, { FormGroupItemsProps } from "./FormControl";
+import DataTable from "./DataTable";
+import { useState } from "react";
 
 type AddChildModalProps = {
   isModalVisible: boolean;
   setIsModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setChildren: React.Dispatch<React.SetStateAction<IChild[]>>;
-  setChildData: React.Dispatch<React.SetStateAction<IChild>>;
   childData: IChild;
   children: IChild[];
 };
 
-export default function AddChildModal(props: AddChildModalProps) {
+export function useChildrenModal() {
+  const [children, setChildren] = useState<IChild[]>([]);
+  const [isChildrenModalVisible, setIsChildrenModalVisible] = useState(false);
+  const [childData, setChildData] = useState<IChild>({
+    firstName: "",
+    lastName: "",
+    nickname: "",
+    dateOfBirth: "",
+    gender: "Male",
+    age: 0,
+    hasFoodAllergies: false,
+    foodAllergies: "",
+  });
+
+  return {
+    children,
+    setChildren,
+    isChildrenModalVisible,
+    setIsChildrenModalVisible,
+    childData,
+    setChildData,
+  };
+}
+
+export default function ChildrenModal(props: AddChildModalProps) {
   const {
     isModalVisible,
     setChildren,
-    setChildData,
     childData,
     children,
     setIsModalVisible,
   } = props;
 
+  const [child, setChild] = useState<IChild>(childData);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [form] = useForm();
+
+  const handleEditChild = (child: IChild, index: number) => {
+    setChild(child);
+    setEditingIndex(index);
+    form.setFieldsValue(child);
+    setIsEditing(true);
+    setIsModalVisible(true);
+  };
+
   const handleRemoveChild = (index: number) => {
     setChildren(children.filter((_, i) => i !== index));
   };
+
   const childFormGroupItems: FormGroupItemsProps[] = [
     {
       label: "First Name",
@@ -80,7 +114,7 @@ export default function AddChildModal(props: AddChildModalProps) {
       component: (
         <Radio.Group
           onChange={(e) => {
-            setChildData((prev) => ({
+            setChild((prev) => ({
               ...prev,
               hasFoodAllergies: e.target.value,
             }));
@@ -121,9 +155,24 @@ export default function AddChildModal(props: AddChildModalProps) {
 
   const onOk = async () => {
     const values: IChild = await form.validateFields();
-    setChildren((prev) => [...prev, values]);
+    const modifiedValues = {
+      ...values,
+      foodAllergies: values.foodAllergies ?? "",
+    };
+    if (isEditing && editingIndex !== null) {
+      setChildren((prev) =>
+        prev.map((child, index) =>
+          index === editingIndex ? modifiedValues : child
+        )
+      );
+    } else {
+      setChildren((prev) => [...prev, modifiedValues]);
+    }
     form.resetFields();
+    setIsEditing(false);
+    setEditingIndex(null);
   };
+
   const columns: ColumnsType<IChild> = [
     {
       title: "Name",
@@ -162,6 +211,9 @@ export default function AddChildModal(props: AddChildModalProps) {
       title: "Actions",
       render: (data: IChild, _: any, index: number) => (
         <>
+          <Button type="link" onClick={() => handleEditChild(data, index)}>
+            Edit
+          </Button>
           <Button type="link" danger onClick={() => handleRemoveChild(index)}>
             Remove
           </Button>
@@ -175,9 +227,13 @@ export default function AddChildModal(props: AddChildModalProps) {
       title="Children"
       width={1200}
       visible={isModalVisible}
-      okText="Add"
+      okText={isEditing ? "Update" : "Add"}
       onOk={onOk}
-      onCancel={() => setIsModalVisible(false)}
+      onCancel={() => {
+        setIsEditing(false);
+        setEditingIndex(null);
+        setIsModalVisible(false);
+      }}
     >
       <div className="d-flex justify-content-center gap-5">
         <DataTable
@@ -185,12 +241,7 @@ export default function AddChildModal(props: AddChildModalProps) {
           dataSource={children}
           style={{ width: 700 }}
         />
-        <Form
-          layout="vertical"
-          style={{ width: 400 }}
-          form={form}
-          initialValues={childData}
-        >
+        <Form layout="vertical" style={{ width: 400 }} form={form}>
           <FormGroupItems items={childFormGroupItems} />
         </Form>
       </div>

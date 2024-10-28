@@ -1,28 +1,53 @@
 import { useQuery } from "@tanstack/react-query";
 import userService from "../../../firebase/services/userService";
-import { Button, Modal, Form, Input, Select } from "antd";
+import { Button, Modal, Form, Input, Select, Space, Badge } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { IUser } from "../../../interfaces/firebase/IUser";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import DataTable from "../../../components/DataTable";
-import FormGroupItems, {
-  FormGroupItemsProps,
-} from "../../../components/FormControl";
+import { FormGroupItemsProps } from "../../../components/FormControl";
 import accountService from "../../../firebase/services/accountService";
+
+import SaveUserModal from "./modal/SaveUserModal";
+import childrenService from "../../../firebase/services/childrenService";
+import Swal from "sweetalert2";
+import ChildrenModal, {
+  useChildrenModal,
+} from "../../../components/ChildrenModal";
 export default function UserPage() {
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
   const [isOpenSaveModal, setIsOpenSaveModal] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
+
   const [error, setError] = useState<string>("");
   const [form] = Form.useForm();
   const _userService = userService();
+  const _childrenService = childrenService();
   const _accounService = accountService();
-  const { data, refetch } = useQuery({
+  const { data: users, refetch } = useQuery({
     queryKey: ["users"],
     queryFn: async () => await _userService.getAll(),
     initialData: [],
   });
+  const {
+    children,
+    setChildren,
+    isChildrenModalVisible,
+    setIsChildrenModalVisible,
+    childData,
+  } = useChildrenModal();
+  useQuery({
+    queryKey: ["users", selectedUser],
+    queryFn: async () => {
+      const result = await _childrenService.getByUserId(selectedUser?.id ?? "");
+      setChildren(result);
+      return result;
+    },
+
+    initialData: [],
+  });
+
   const addFormGroups: FormGroupItemsProps[] = [
     {
       name: "name",
@@ -141,7 +166,6 @@ export default function UserPage() {
       dataIndex: "ministry",
       render: (data: string) => (
         <>
-          {console.log(data)}
           <Select defaultValue={data} style={{ width: 180 }}>
             <Select.Option value="Victory Group Leaders">
               Victory Group Leaders
@@ -207,9 +231,19 @@ export default function UserPage() {
     try {
       if (selectedUser) {
         await _userService.update(selectedUser.id || "", values);
+        await _childrenService.updateManyByUserId(
+          selectedUser.id || "",
+          children
+        );
       } else {
         await _accounService.signup(values);
       }
+      Swal.fire({
+        icon: "success",
+        title: "User successfully saved!",
+        showConfirmButton: false,
+        timer: 1500,
+      });
     } catch (_e: any) {
       let e: Error = _e;
       setError(e.message);
@@ -234,52 +268,6 @@ export default function UserPage() {
       <p>Email: {selectedUser?.email}</p>
     </Modal>
   );
-
-  const SaveUserModal = () => {
-    const handleFormSubmit = async () => {
-      try {
-        const values = await form.validateFields();
-        await handleSave(values);
-        form.resetFields();
-        setSelectedUser(null);
-      } catch (error) {
-        console.error("Failed to save user:", error);
-      }
-    };
-
-    return (
-      <Modal
-        title={selectedUser ? "Update User Information" : "Add New User"}
-        open={isOpenSaveModal}
-        onOk={handleFormSubmit}
-        onCancel={() => {
-          setIsOpenSaveModal(false);
-          form.resetFields();
-          setSelectedUser(null);
-        }}
-      >
-        <Form
-          form={form}
-          initialValues={{
-            name: selectedUser?.name || "",
-            contact: selectedUser?.contact || "",
-            age: selectedUser?.age || "",
-            email: selectedUser?.email || "",
-            birthday: selectedUser?.birthday || "",
-            gender: selectedUser?.gender || "",
-            ministry: selectedUser?.ministry || "",
-          }}
-          layout="vertical"
-        >
-          <p className="text-danger">{error}</p>
-          <FormGroupItems
-            items={selectedUser ? updateFromGroups : addFormGroups}
-          />
-        </Form>
-      </Modal>
-    );
-  };
-
   return (
     <>
       <Button
@@ -293,9 +281,30 @@ export default function UserPage() {
       >
         Add User
       </Button>
+
+      <SaveUserModal
+        form={form}
+        handleSave={handleSave}
+        setSelectedUser={setSelectedUser}
+        selectedUser={selectedUser}
+        isOpenSaveModal={isOpenSaveModal}
+        setIsOpenSaveModal={setIsOpenSaveModal}
+        setIsChildrenModalVisible={setIsChildrenModalVisible}
+        updateFromGroups={updateFromGroups}
+        addFormGroups={addFormGroups}
+        children={children}
+        error={error}
+      />
+      <ChildrenModal
+        children={children}
+        setChildren={setChildren}
+        isModalVisible={isChildrenModalVisible}
+        setIsModalVisible={setIsChildrenModalVisible}
+        childData={childData}
+      />
       <DeleteModalConfirmation />
-      <SaveUserModal />
-      <DataTable dataSource={data} columns={columns} />
+
+      <DataTable dataSource={users} columns={columns} />
     </>
   );
 }

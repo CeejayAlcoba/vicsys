@@ -1,38 +1,38 @@
-import { INonTechUserPublic } from "../../interfaces/firebase/INonTechUser";
 import childrenRepository from "../repositories/childrenRepository";
 import IChild from "../../interfaces/firebase/IChild";
 
 export default function childrenService() {
-  const _childrenReository = childrenRepository();
+  const _childrenRepository = childrenRepository();
 
   const getAll = async () => {
-    return await _childrenReository.getAll();
+    return await _childrenRepository.getAll();
   };
 
   const addMany = async (userId: string, data: IChild[]) => {
-    data.map(async (child) => {
-      await _childrenReository.add({ ...child, userId });
-    });
-    return data;
+    return await _childrenRepository.addMany(userId, data);
+  };
+  const getByUserId = async (userId: string) => {
+    return await _childrenRepository.getByUserId(userId);
   };
 
   const getById = async (id: string) => {
-    return await _childrenReository.getById(id);
+    return await _childrenRepository.getById(id);
   };
 
   const update = async (id: string, data: IChild) => {
-    return await _childrenReository.update(id, data);
+    return await _childrenRepository.update(id, data);
+  };
+  const updateManyByUserId = async (userId: string, data: IChild[]) => {
+    await _childrenRepository.deleteManyByUserId(userId);
+    return await _childrenRepository.addMany(userId, data);
   };
   const deleteById = async (id: string) => {
-    await _childrenReository.deleteById(id);
-  };
-  const getUserLocalStorage = (): INonTechUserPublic | null => {
-    const nontechuser = localStorage.getItem("nontechusers");
-    return nontechuser ? (JSON.parse(nontechuser) as INonTechUserPublic) : null;
+    await _childrenRepository.deleteById(id);
   };
 
   return {
-    getUserLocalStorage,
+    updateManyByUserId,
+    getByUserId,
     getAll,
     getById,
     addMany,

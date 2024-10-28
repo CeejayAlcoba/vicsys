@@ -7,5 +7,5 @@ export default interface IChild {
   gender: "Male" | "Female";
   age: number;
   hasFoodAllergies: boolean;
-  foodAllergies?: string;
+  foodAllergies: string;
 }
