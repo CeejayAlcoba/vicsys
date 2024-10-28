@@ -15,6 +15,7 @@ import Swal from "sweetalert2";
 import ChildrenModal, {
   useChildrenModal,
 } from "../../../components/ChildrenModal";
+import { Role } from "../../../interfaces/firebase/Role";
 export default function UserPage() {
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
   const [isOpenSaveModal, setIsOpenSaveModal] = useState<boolean>(false);
@@ -131,6 +132,18 @@ export default function UserPage() {
         </Select>
       ),
     },
+    {
+      name: "role",
+      label: "Role",
+      rules: [{ required: true, message: "Please input the role!" }],
+      component: (
+        <Select placeholder="Select Role">
+          <Select.Option value={Role.Attendee}>{Role.Attendee}</Select.Option>
+          <Select.Option value={Role.Volunteer}>{Role.Volunteer}</Select.Option>
+          <Select.Option value={Role.Admin}>{Role.Admin}</Select.Option>
+        </Select>
+      ),
+    },
   ];
   const updateFromGroups: FormGroupItemsProps[] = addFormGroups.filter(
     (c) => c.name !== "password"
@@ -195,6 +208,21 @@ export default function UserPage() {
           </Select>
         </>
       ),
+    },
+    {
+      title: "Role",
+      dataIndex: "role",
+      render: (role: string) => {
+        if (role == Role.Attendee)
+          return <span className="text-success">{role}</span>;
+        if (role == Role.Volunteer)
+          return <span className="text-info">{role}</span>;
+        if (role == Role.Admin)
+          return <span className="text-primary">{role}</span>;
+        if (role == Role.SuperAdmin)
+          return <span className="text-danger">{role}</span>;
+        return role;
+      },
     },
     {
       title: "Actions",

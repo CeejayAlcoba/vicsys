@@ -1,5 +1,5 @@
 import { User } from "firebase/auth";
-import IChild from "./IChild";
+import { Role } from "./Role";
 
 export interface IUserDetails extends User {
   provider: IUserProvider;
@@ -20,7 +20,7 @@ export interface IUser {
   gender: string;
   contact: string;
   ministry: string;
-  children?: IChild[];
+  role: Role;
 }
 
 export interface IUserLogin {
@@ -36,6 +36,7 @@ export interface IUserPublic {
   gender: string;
   contact: string;
   ministry: string;
+  role: Role;
 }
 
 export interface IUserChangePassword {

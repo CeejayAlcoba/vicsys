@@ -15,6 +15,7 @@ import { useForm } from "antd/es/form/Form";
 import ChildrenModal, {
   useChildrenModal,
 } from "../../../components/ChildrenModal";
+import { Role } from "../../../interfaces/firebase/Role";
 
 export default function SignUp() {
   const _accountService = accountService();
@@ -61,7 +62,10 @@ export default function SignUp() {
   const onFinish = async (data: IUser) => {
     try {
       setError("");
-      const { uid } = await _accountService.signup(data);
+      const { uid } = await _accountService.signup({
+        ...data,
+        role: Role.Attendee,
+      });
       if (children) {
         await _childService.addMany(uid, children);
       }

@@ -46,7 +46,7 @@ export default function accountRepository() {
     }
   };
   const signup = async (data: IUser) => {
-    const { email, password, birthday, name } = data;
+    const { email, password, birthday, name, role } = data;
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
@@ -58,6 +58,7 @@ export default function accountRepository() {
       email: email,
       birthday: birthday,
       userId: user.uid,
+      role: role,
     });
     return user;
   };
