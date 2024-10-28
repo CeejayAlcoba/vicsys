@@ -9,3 +9,10 @@ export default interface IChild {
   hasFoodAllergies: boolean;
   foodAllergies: string;
 }
+
+export enum ChildCategory {
+  FamilyRoom = "Family Room",
+  Preschool = "Preschool",
+  Primary = "Primary",
+  Preteens = "Preteens",
+}

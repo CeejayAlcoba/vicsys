@@ -13,8 +13,6 @@ export default function Dashboard() {
     queryKey: ["dashboardDetails"],
     queryFn: _dahsboardService.getDashboardDetails,
   });
-
-  console.log(data);
   return (
     <div className="row">
       {/* <!-- Main content --> */}

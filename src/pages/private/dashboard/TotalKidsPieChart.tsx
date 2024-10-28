@@ -1,23 +1,14 @@
 import { Chart, Pie, PieConfig } from "@ant-design/charts";
-import { useEffect, useState } from "react";
-
-type DataType = {
-  type: string;
-  value: number;
-};
+import childrenService from "../../../firebase/services/childrenService";
+import { useQuery } from "@tanstack/react-query";
 
 export default function TotalKidsPieChart() {
-  const [data, setData] = useState<DataType[]>([]);
-  useEffect(() => {
-    setTimeout(() => {
-      setData([
-        { type: "Preschool", value: 27 },
-        { type: "Todlers", value: 25 },
-        { type: "Grade School", value: 18 },
-        { type: "Teens", value: 15 },
-      ]);
-    }, 1000);
-  }, []);
+  const _childrenService = childrenService();
+  const { data } = useQuery({
+    queryKey: ["childrenCategories"],
+    queryFn: _childrenService.getChildrenCategoryPieChart,
+  });
+
   const config: React.PropsWithoutRef<PieConfig> & React.RefAttributes<Chart> =
     {
       data,

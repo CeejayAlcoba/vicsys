@@ -1,5 +1,6 @@
 import childrenRepository from "../repositories/childrenRepository";
-import IChild from "../../interfaces/firebase/IChild";
+import IChild, { ChildCategory } from "../../interfaces/firebase/IChild";
+import IPieValue from "../../interfaces/components/IPieValue";
 
 export default function childrenService() {
   const _childrenRepository = childrenRepository();
@@ -29,8 +30,31 @@ export default function childrenService() {
   const deleteById = async (id: string) => {
     await _childrenRepository.deleteById(id);
   };
+  const getTotalChildren = async () => {
+    const children = await _childrenRepository.getAll();
+    return children.length;
+  };
+
+  const getChildrenCategoryPieChart = async (): Promise<IPieValue[]> => {
+    const children = await _childrenRepository.getAll();
+    const familyRoom = children.filter((c) => c.age >= 0 && c.age <= 3).length;
+    const preschool = children.filter((c) => c.age >= 4 && c.age <= 6).length;
+    const primary = children.filter((c) => c.age >= 7 && c.age <= 9).length;
+    const preteens = children.filter((c) => c.age >= 10 && c.age <= 12).length;
+
+    const result: IPieValue[] = [
+      { type: ChildCategory.FamilyRoom, value: familyRoom },
+      { type: ChildCategory.Preschool, value: preschool },
+      { type: ChildCategory.Primary, value: primary },
+      { type: ChildCategory.Preteens, value: preteens },
+    ];
+
+    return result;
+  };
 
   return {
+    getChildrenCategoryPieChart,
+    getTotalChildren,
     updateManyByUserId,
     getByUserId,
     getAll,
