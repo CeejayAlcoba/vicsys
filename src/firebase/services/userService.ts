@@ -3,6 +3,8 @@ import { IUserDetails, IUserPublic } from "../../interfaces/firebase/IUser";
 import userRepository from "../repositories/userRepository";
 import { auth } from "../firebaseConfig";
 import accountRepository from "../repositories/accountRepository";
+import { Role } from "../../interfaces/firebase/Role";
+import IPieValue from "../../interfaces/components/IPieValue";
 
 export default function userService() {
   const _accountRepository = accountRepository();
@@ -46,7 +48,22 @@ export default function userService() {
     return await _userRepository.add(user, uid);
   };
 
+  const getUserRolePieChart = async (): Promise<IPieValue[]> => {
+    const users = await _userRepository.getAll();
+    const adminCount = users.filter((u) => u.role == Role.Admin).length;
+    const attendeeCount = users.filter((u) => u.role == Role.Attendee).length;
+    const volunteerCount = users.filter((u) => u.role == Role.Volunteer).length;
+
+    const result: IPieValue[] = [
+      { type: Role.Admin, value: adminCount },
+      { type: Role.Attendee, value: attendeeCount },
+      { type: Role.Volunteer, value: volunteerCount },
+    ];
+
+    return result;
+  };
   return {
+    getUserRolePieChart,
     add,
     getByEmail,
     getTotalUsers,

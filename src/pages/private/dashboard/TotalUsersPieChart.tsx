@@ -1,22 +1,14 @@
 import { Pie } from "@ant-design/charts";
-import { useEffect, useState } from "react";
-
-type DataType = {
-  type: string;
-  value: number;
-};
+import { useQuery } from "@tanstack/react-query";
+import userService from "../../../firebase/services/userService";
 
 export default function TotalUsersPieChart() {
-  const [data, setData] = useState<DataType[]>([]);
-  useEffect(() => {
-    setTimeout(() => {
-      setData([
-        { type: "Admin", value: 27 },
-        { type: "Volunteers", value: 25 },
-        { type: "Attendees", value: 18 },
-      ]);
-    }, 1000);
-  }, []);
+  const _userService = userService();
+  const { data } = useQuery({
+    queryKey: ["roleCounts"],
+    queryFn: _userService.getUserRolePieChart,
+  });
+
   const config = {
     data,
     angleField: "value",
