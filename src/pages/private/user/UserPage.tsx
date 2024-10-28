@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import userService from "../../../firebase/services/userService";
-import { Button, Modal, Form, Input } from "antd";
+import { Button, Modal, Form, Input, Select } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { IUser } from "../../../interfaces/firebase/IUser";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
@@ -31,6 +31,18 @@ export default function UserPage() {
       component: <Input />,
     },
     {
+      name: "contact",
+      label: "Contact",
+      rules: [{ required: true, message: "Please input the contact!" }],
+      component: <Input />,
+    },
+    {
+      name: "age",
+      label: "Age",
+      rules: [{ required: true, message: "Please input the age!" }],
+      component: <Input type="number" />,
+    },
+    {
       name: "email",
       label: "Email",
       rules: [{ required: true, message: "Please input the email!" }],
@@ -51,6 +63,49 @@ export default function UserPage() {
       rules: [{ required: true, message: "Please input the birthday!" }],
       component: <Input type="date" />,
     },
+    {
+      name: "gender",
+      label: "Gender",
+      rules: [{ required: true, message: "Please input the gender!" }],
+      component: (
+        <Select placeholder="Select Gender">
+          <Select.Option value="Male">Male</Select.Option>
+          <Select.Option value="Female">Female</Select.Option>
+        </Select>
+      ),
+    },
+    {
+      name: "ministry",
+      label: "Ministry",
+      rules: [{ required: true, message: "Please input the ministry!" }],
+      component: (
+        <Select placeholder="Select Ministry">
+          <Select.Option value="Victory Group Leaders">
+            Victory Group Leaders
+          </Select.Option>
+          <Select.Option value="Ushering Ministry">
+            Ushering Ministry
+          </Select.Option>
+          <Select.Option value="Music Ministry">Music Ministry</Select.Option>
+          <Select.Option value="Kids Ministry">Kids Ministry</Select.Option>
+          <Select.Option value="Stage Management">
+            Stage Management
+          </Select.Option>
+          <Select.Option value="Technical Support">
+            Technical Support
+          </Select.Option>
+          <Select.Option value="Communication">Communication</Select.Option>
+          <Select.Option value="Prayer Ministry">Prayer Ministry</Select.Option>
+          <Select.Option value="Admin Support">Admin Support</Select.Option>
+          <Select.Option value="Real Life Coaches">
+            Real Life Coaches
+          </Select.Option>
+          <Select.Option value="Special Project Teams">
+            Special Project teams
+          </Select.Option>
+        </Select>
+      ),
+    },
   ];
   const updateFromGroups: FormGroupItemsProps[] = addFormGroups.filter(
     (c) => c.name !== "password"
@@ -62,12 +117,60 @@ export default function UserPage() {
       dataIndex: "name",
     },
     {
+      title: "Contact",
+      dataIndex: "contact",
+    },
+    {
+      title: "Age",
+      dataIndex: "age",
+    },
+    {
       title: "Email",
       dataIndex: "email",
     },
     {
       title: "Birthday",
       dataIndex: "birthday",
+    },
+    {
+      title: "Gender",
+      dataIndex: "gender",
+    },
+    {
+      title: "Ministry",
+      dataIndex: "ministry",
+      render: (data: string) => (
+        <>
+          {console.log(data)}
+          <Select defaultValue={data} style={{ width: 180 }}>
+            <Select.Option value="Victory Group Leaders">
+              Victory Group Leaders
+            </Select.Option>
+            <Select.Option value="Ushering Ministry">
+              Ushering Ministry
+            </Select.Option>
+            <Select.Option value="Music Ministry">Music Ministry</Select.Option>
+            <Select.Option value="Kids Ministry">Kids Ministry</Select.Option>
+            <Select.Option value="Stage Management">
+              Stage Management
+            </Select.Option>
+            <Select.Option value="Technical Support">
+              Technical Support
+            </Select.Option>
+            <Select.Option value="Communication">Communication</Select.Option>
+            <Select.Option value="Prayer Ministry">
+              Prayer Ministry
+            </Select.Option>
+            <Select.Option value="Admin Support">Admin Support</Select.Option>
+            <Select.Option value="Real Life Coaches">
+              Real Life Coaches
+            </Select.Option>
+            <Select.Option value="Special Project Teams">
+              Special Project teams
+            </Select.Option>
+          </Select>
+        </>
+      ),
     },
     {
       title: "Actions",
@@ -159,8 +262,12 @@ export default function UserPage() {
           form={form}
           initialValues={{
             name: selectedUser?.name || "",
+            contact: selectedUser?.contact || "",
+            age: selectedUser?.age || "",
             email: selectedUser?.email || "",
             birthday: selectedUser?.birthday || "",
+            gender: selectedUser?.gender || "",
+            ministry: selectedUser?.ministry || "",
           }}
           layout="vertical"
         >

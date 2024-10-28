@@ -2,13 +2,11 @@ import { onAuthStateChanged } from "firebase/auth";
 import { IUserDetails, IUserPublic } from "../../interfaces/firebase/IUser";
 import userRepository from "../repositories/userRepository";
 import { auth } from "../firebaseConfig";
-import PeopleRepository from "../repositories/peopleRepository";
 import accountRepository from "../repositories/accountRepository";
 
 export default function userService() {
   const _accountRepository = accountRepository();
   const _userRepository = userRepository();
-  const _peopleRepository = PeopleRepository();
   const getAll = async () => {
     return await _userRepository.getAll();
   };
@@ -39,8 +37,7 @@ export default function userService() {
   };
   const getTotalUsers = async () => {
     const users = await _userRepository.getAll();
-    const peoples = await _peopleRepository.getAll();
-    return users.length + peoples.length;
+    return users.length;
   };
   const getByEmail = async (email: string) => {
     return await _userRepository.getUserByEmail(email);
