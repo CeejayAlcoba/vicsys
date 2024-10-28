@@ -5,6 +5,6 @@
   padding: 1rem;
 }
 
-.form-signin .form-floating:focus-within {
-  z-index: 2;
+.children-list{
+  max-width: 530px;
 }

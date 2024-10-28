@@ -11,7 +11,6 @@ import {
   Typography,
   Tag,
   Image,
-  Flex,
 } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { IPeople } from "../../../interfaces/firebase/IPeople";
@@ -269,7 +268,7 @@ export default function NonTechUserPage() {
   const AssignToEventModal = () => {
     const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
     console.log(selectedEvent);
-    
+
     const handleEvents = async () => {
       try {
         if (!selectedEventId) {
@@ -283,7 +282,7 @@ export default function NonTechUserPage() {
         console.error("Failed to save user:", error);
       }
     };
-  
+
     return (
       <Modal
         title="Select Event"
@@ -300,8 +299,8 @@ export default function NonTechUserPage() {
             <Card
               key={events.id}
               className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
-                selectedEventId === events.id 
-                  ? "border-2 border-blue-500 bg-blue-50 shadow-lg transform scale-[1.02]" 
+                selectedEventId === events.id
+                  ? "border-2 border-blue-500 bg-blue-50 shadow-lg transform scale-[1.02]"
                   : "border border-gray-200 hover:border-blue-300"
               }`}
               onClick={() => {
@@ -331,7 +330,8 @@ export default function NonTechUserPage() {
                     <div className="flex flex-col gap-1">
                       {events.ticketCategories?.map((category, index) => (
                         <Tag key={index} color="blue">
-                          {category.currentTotalTickets}/{category.totalTickets} Available
+                          {category.currentTotalTickets}/{category.totalTickets}{" "}
+                          Available
                         </Tag>
                       ))}
                     </div>
@@ -344,7 +344,10 @@ export default function NonTechUserPage() {
                       <CalendarOutlined className="mr-2" />
                       {convertUnixToTimeText(events.startTime)}
                     </Typography.Text>
-                    <div className="flex flex-col items-end" style={{display:"flex", flexDirection:"column"}}>
+                    <div
+                      className="flex flex-col items-end"
+                      style={{ display: "flex", flexDirection: "column" }}
+                    >
                       {events.ticketCategories?.map((category, index) => (
                         <Typography.Text key={index}>
                           {category.category}: ₱{category.price}
@@ -360,7 +363,6 @@ export default function NonTechUserPage() {
       </Modal>
     );
   };
-  
 
   const SaveUserModal = () => {
     const handleFormSubmit = async () => {

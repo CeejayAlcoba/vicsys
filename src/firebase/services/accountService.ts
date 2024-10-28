@@ -24,7 +24,7 @@ export default function accountService() {
         "Email already in use. Try logging in or use a different email to sign up."
       );
     await _accountRepository.emailVerification();
-    await _accountRepository.signup(data);
+    return await _accountRepository.signup(data);
   };
 
   const getCurrentUser = async () => {
@@ -81,6 +81,7 @@ export default function accountService() {
     if (user && provider) {
       setUser({ ...user, provider });
     }
+    return user;
   };
 
   const loginWithFacebook = async () => {

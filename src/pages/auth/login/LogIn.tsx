@@ -14,6 +14,7 @@ import "./Login.css";
 import vicsys1 from "../../../assets/vicsys1.png";
 import { useState } from "react";
 import accountService from "../../../firebase/services/accountService";
+import userService from "../../../firebase/services/userService";
 
 const formGroupItems: FormGroupItemsProps[] = [
   {
@@ -32,6 +33,7 @@ const formGroupItems: FormGroupItemsProps[] = [
   },
 ];
 export default function LogIn() {
+  const _userService = userService();
   const _accountService = accountService();
   const navigate = useNavigate();
   const [error, setError] = useState<string>("");
@@ -39,6 +41,7 @@ export default function LogIn() {
     try {
       setError("");
       await _accountService.login(values);
+
       navigate("/");
     } catch (_e: any) {
       let e: Error = _e;
@@ -47,8 +50,13 @@ export default function LogIn() {
   };
   const handleGoogleLogin = async () => {
     try {
-      await _accountService.loginWithGoogle();
-      navigate("/");
+      const newUser = await _accountService.loginWithGoogle();
+      const resultUser = await _userService.getByEmail(newUser.email || "");
+
+      if (!resultUser) {
+        return location.assign("/signup");
+      }
+      location.assign("/");
     } catch (error: any) {
       setError(error.message);
     }

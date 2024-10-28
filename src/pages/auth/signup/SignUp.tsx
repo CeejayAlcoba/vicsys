@@ -2,18 +2,39 @@ import { IUser } from "../../../interfaces/firebase/IUser";
 import FormGroupItems, {
   FormGroupItemsProps,
 } from "../../../components/FormControl";
-import { Form, Input } from "antd";
+import { Button, Form, Input } from "antd";
 import { useNavigate } from "react-router-dom";
 import "./SignUp.css";
 import vicsys1 from "../../../assets/vicsys1.png";
 import Swal from "sweetalert2";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import accountService from "../../../firebase/services/accountService";
+import IChild from "../../../interfaces/firebase/IChild";
+import AddChildModal from "./modal/ChildrenModal";
+import childrenService from "../../../firebase/services/childrenService";
+import useUserContext from "../../../contexts/useUserContext";
+import { useForm } from "antd/es/form/Form";
 
 export default function SignUp() {
   const _accountService = accountService();
+  const _childService = childrenService();
+  const { user } = useUserContext();
   const navigate = useNavigate();
   const [error, setError] = useState<string>("");
+  const [children, setChildren] = useState<IChild[]>([]);
+  const [isAddChildModalVisible, setIsAddChildModalVisible] = useState(false);
+  const [childData, setChildData] = useState<IChild>({
+    firstName: "",
+    lastName: "",
+    nickname: "",
+    dateOfBirth: "",
+    gender: "Male",
+    age: 0,
+    hasFoodAllergies: false,
+    foodAllergies: "",
+  });
+  const [form] = useForm();
+
   const formGroupItems: FormGroupItemsProps[] = [
     {
       name: "name",
@@ -23,7 +44,7 @@ export default function SignUp() {
     {
       name: "email",
       rules: [{ required: true, message: "Please input the email!" }],
-      component: <Input type="email" placeholder="Email" />,
+      component: <Input type="email" placeholder="Email" disabled={!!user} />,
     },
     {
       name: "password",
@@ -43,31 +64,51 @@ export default function SignUp() {
   const onFinish = async (data: IUser) => {
     try {
       setError("");
-      await _accountService.signup(data);
+      const { uid } = await _accountService.signup(data);
+      if (children) {
+        await _childService.addMany(uid, children);
+      }
+
       Swal.fire({
         icon: "success",
-        title: "Successfully signup!",
+        title: "Successfully signed up!",
         showConfirmButton: false,
         timer: 1500,
       });
       navigate("/login");
     } catch (_e: any) {
-      let e: Error = _e;
+      const e: Error = _e;
       setError(e.message);
     }
   };
+  useEffect(() => {
+    if (user) {
+      form.setFieldValue("email", user.email);
+    }
+  }, []);
 
   return (
-    <>
-      <div className="form-signin w-100 m-auto">
-        <Form onFinish={onFinish}>
+    <div className="d-flex justify-content-between">
+      <AddChildModal
+        isModalVisible={isAddChildModalVisible}
+        setIsModalVisible={setIsAddChildModalVisible}
+        setChildren={setChildren}
+        setChildData={setChildData}
+        childData={childData}
+        children={children}
+      />
+      <div className="form-signin">
+        <Form onFinish={onFinish} form={form}>
           <center>
             <img src={vicsys1} style={{ width: 300 }} />
-            <h4 className=" mb-3 fw-normal">Signup</h4>
+            <h4 className="mb-3 fw-normal">Signup</h4>
             <p className="text-danger"> {error}</p>
           </center>
 
           <FormGroupItems items={formGroupItems} />
+          <Button onClick={() => setIsAddChildModalVisible(true)}>
+            Add Child
+          </Button>
 
           <div className="form-check text-start my-3">
             <input
@@ -87,6 +128,6 @@ export default function SignUp() {
           <p className="mt-5 mb-3 text-body-secondary">&copy; Bentayarn 2024</p>
         </Form>
       </div>
-    </>
+    </div>
   );
 }

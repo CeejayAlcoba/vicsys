@@ -59,6 +59,7 @@ export default function accountRepository() {
       birthday: birthday,
       userId: user.uid,
     });
+    return user;
   };
 
   const emailVerification = async () => {

@@ -1,6 +1,7 @@
 import {
   createBrowserRouter,
   Navigate,
+  Outlet,
   RouterProvider,
 } from "react-router-dom";
 import LogIn from "../auth/login/LogIn";
@@ -21,7 +22,7 @@ export default function AppRoute() {
   const { user } = useUserContext();
   const router = createBrowserRouter([
     {
-      element: user && <Navigate to="/" />,
+      element: <Outlet />,
       children: [
         {
           path: "login",
