@@ -35,16 +35,19 @@ export default function ticketService() {
     }
   };
   const getTotalTicketSold = async () => {
-    const tickets = await _ticketRepository.getAll();
+    const users = await _userService.getAll();
 
-    return tickets?.reduce(
-      (currT, prevT) =>
-        (currT += prevT?.ticketBooks.reduce(
-          (curr, prev) => (curr += prev?.totalTickets * prev?.price),
-          0
-        )),
-      0
-    );
+    return users?.reduce((currT, user) => {
+      if (!user?.myPurchaseEvents || user.myPurchaseEvents.length === 0) {
+        return currT;
+      }
+
+      const userTotal = user.myPurchaseEvents.reduce((curr, event) => {
+        return curr + (event?.totalTickets ?? 0) * (event?.price ?? 0);
+      }, 0);
+
+      return currT + userTotal;
+    }, 0);
   };
   return { add, getTotalTicketSold };
 }
