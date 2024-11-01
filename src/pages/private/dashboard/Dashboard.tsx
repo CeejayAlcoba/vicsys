@@ -5,7 +5,10 @@ import CalendarLayout from "./CalendarLayout";
 import { useQuery } from "@tanstack/react-query";
 import dashboardService from "../../../firebase/services/dasboardService";
 import moneyFormat from "../../../utils/moneyFormat";
-import TicketDetails from "./TicketDetails";
+import TicketDetails, { TicketDetailModal } from "./TicketDetails";
+import eventService from "../../../firebase/services/eventService";
+import { useState } from "react";
+import { ITicketDetails } from "../../../interfaces/firebase/IDashboard";
 
 export default function Dashboard() {
   const _dahsboardService = dashboardService();
@@ -13,8 +16,29 @@ export default function Dashboard() {
     queryKey: ["dashboardDetails"],
     queryFn: _dahsboardService.getDashboardDetails,
   });
+  const [selectedEvent, setSelectedEvent] = useState<ITicketDetails | null>(
+    null
+  );
+  const _eventService = eventService();
+  const { data: users, refetch } = useQuery({
+    queryKey: ["s", selectedEvent?.id],
+    queryFn: async () =>
+      await _eventService.getAttendeesByEventId(selectedEvent?.id ?? ""),
+    initialData: [],
+  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleClose = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="row">
+      <TicketDetailModal
+        eventName={selectedEvent?.eventName || ""}
+        users={users}
+        isModalOpen={isModalOpen}
+        handleClose={handleClose}
+      />
       {/* <!-- Main content --> */}
       <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
         <h1 className="h2">Dashboard</h1>
@@ -68,7 +92,15 @@ export default function Dashboard() {
             <div className="card-header">Ticket Sold</div>
             <div className="card-body">
               {data?.ticketDetails.map((td) => (
-                <TicketDetails {...td} />
+                <div
+                  onClick={() => {
+                    setIsModalOpen(true);
+                    setSelectedEvent(td);
+                    refetch();
+                  }}
+                >
+                  <TicketDetails {...td} />
+                </div>
               ))}
             </div>
           </div>

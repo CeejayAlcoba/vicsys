@@ -107,7 +107,6 @@ export default function userRepository() {
   return {
     ..._genericRepository,
     getPurchasesByEventId,
-    // getUserPurchases,
     getUserByEmail,
     isEmailExisted,
     addMyPurchaseEvents,

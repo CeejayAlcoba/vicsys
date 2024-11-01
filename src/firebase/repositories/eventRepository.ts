@@ -3,6 +3,7 @@ import { IEvent } from "../../interfaces/firebase/IEvent";
 import genericRepository from "./genericRepository";
 import ticketCategoryRepository from "./ticketCategoryRepository";
 import userRepository from "./userRepository";
+import { IUser, IUserPublic } from "../../interfaces/firebase/IUser";
 
 export default function eventRepository() {
   const _genericRepository = genericRepository<IEvent>("events");
@@ -56,8 +57,29 @@ export default function eventRepository() {
     const eventRef = doc(db, "events", eventId);
 
     await updateDoc(eventRef, {
-      attendees: arrayUnion(userId),
+      attendees: arrayUnion({ userId: userId }),
     });
   };
-  return { ..._genericRepository, getAll, addAttendee };
+  const getAttendeesByEventId = async (id: string): Promise<IUserPublic[]> => {
+    const event = await _genericRepository.getById(id);
+
+    if (!event?.attendees?.length) {
+      return [];
+    }
+
+    const userDetails = await Promise.all(
+      event.attendees.map((attendee) =>
+        _userRepository.getById(attendee.userId)
+      )
+    );
+    return userDetails
+      .filter((user): user is IUser => user !== null)
+      .map(
+        (user): IUserPublic => ({
+          ...user,
+          id: user.id,
+        })
+      );
+  };
+  return { ..._genericRepository, getAttendeesByEventId, getAll, addAttendee };
 }

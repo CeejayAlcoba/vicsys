@@ -3,13 +3,11 @@ import { IEvent, IEventSave } from "../../interfaces/firebase/IEvent";
 import documentRepository from "../repositories/documentRepository";
 import eventRepository from "../repositories/eventRepository";
 import { v4 as uuidv4 } from "uuid";
-import ticketRepository from "../repositories/ticketRepository";
 import userRepository from "../repositories/userRepository";
 
 export default function eventService() {
   const _eventRepository = eventRepository();
   const _documentRepository = documentRepository();
-  const _ticketRepositry = ticketRepository();
   const _userRepository = userRepository();
   const add = async (data: IEventSave) => {
     let imageUrl = "";
@@ -82,6 +80,7 @@ export default function eventService() {
           0
         );
         return {
+          id: e.id,
           image: e.image,
           eventName: e.eventName,
           endTime: e.endTime,
@@ -103,7 +102,11 @@ export default function eventService() {
   const addAttendee = async (eventId: string, userId: string) => {
     return await _eventRepository.addAttendee(eventId, userId);
   };
+  const getAttendeesByEventId = async (eventId: string) => {
+    return await _eventRepository.getAttendeesByEventId(eventId);
+  };
   return {
+    getAttendeesByEventId,
     add,
     update,
     deleteById,

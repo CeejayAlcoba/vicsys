@@ -75,6 +75,7 @@ export default function userService() {
   const getPurchasesByEventId = async (eventId: string) => {
     return await _userRepository.getPurchasesByEventId(eventId);
   };
+
   return {
     getPurchasesByEventId,
     addMyPurchaseEvents,

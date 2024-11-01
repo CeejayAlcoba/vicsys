@@ -8,6 +8,7 @@ export default interface IDahsboard {
   totalUserPieChart: ITotalUsersPieChart[];
 }
 export interface ITicketDetails {
+  id?: string;
   image: string;
   eventName: string;
   endTime: Date;
