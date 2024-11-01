@@ -6,6 +6,7 @@ import {
   InputNumber,
   Space,
   Modal,
+  Select,
 } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import useEventContext from "../useEventContext";
@@ -15,6 +16,9 @@ import EventImageUpload from "../components/EventImageUpload";
 import { IEventSave } from "../../../../interfaces/firebase/IEvent";
 import eventService from "../../../../firebase/services/eventService";
 import Swal from "sweetalert2";
+import { useQuery } from "@tanstack/react-query";
+import ticketCategoryService from "../../../../firebase/services/ticketCategoryService";
+import ITicketCategory from "../../../../interfaces/firebase/ITicketCategory";
 
 export default function EventSaveModal() {
   const {
@@ -27,7 +31,13 @@ export default function EventSaveModal() {
     refetch,
   } = useEventContext();
   const _eventService = eventService();
+  const _ticketCategoryService = ticketCategoryService();
   const [form] = Form.useForm();
+
+  const { data: ticketCategories } = useQuery({
+    queryKey: ["ticketCategories"],
+    queryFn: _ticketCategoryService.getAll,
+  });
   const onFinish = async (values: IEventSave) => {
     try {
       const formattedValues: IEventSave = {
@@ -74,6 +84,7 @@ export default function EventSaveModal() {
       image: "",
       venue: "",
       ticketCategories: [],
+      attendees: [],
     });
   }, [isSaveModalOpen]);
 
@@ -174,10 +185,19 @@ export default function EventSaveModal() {
                   >
                     <Form.Item
                       {...restField}
-                      name={[name, "category"]}
+                      name={[name, "categoryId"]}
                       rules={[{ required: true, message: "Missing category" }]}
                     >
-                      <Input placeholder="Category" />
+                      <Select
+                        placeholder="Select an option"
+                        style={{ width: 200 }}
+                      >
+                        {ticketCategories?.map((category: ITicketCategory) => (
+                          <Select.Option value={category.id}>
+                            {category.description}
+                          </Select.Option>
+                        ))}
+                      </Select>
                     </Form.Item>
 
                     <Form.Item

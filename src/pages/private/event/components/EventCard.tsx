@@ -1,5 +1,5 @@
 import { Button, Card } from "antd";
-import { IEvent } from "../../../../interfaces/firebase/IEvent";
+import { IEvent, IEventSave } from "../../../../interfaces/firebase/IEvent";
 import { convertUnixToDateText } from "../../../../utils/dateTimeFormat";
 import useEventContext from "../useEventContext";
 
@@ -13,6 +13,7 @@ export default function EventCard(props: IEvent) {
     startTime,
     endTime,
   } = props;
+  console.log(props);
   const {
     handleDeleteConfirmation,
     setSelectedEvent,
@@ -23,7 +24,11 @@ export default function EventCard(props: IEvent) {
     <Card
       style={{ width: 350, marginBottom: 20 }}
       cover={
-        <img alt={eventName} src={image} style={{ width: 350, height: 150 }} />
+        <img
+          alt={eventName}
+          src={typeof image == "string" ? image : ""}
+          style={{ width: 350, height: 150 }}
+        />
       }
       actions={[
         <Button
@@ -64,7 +69,7 @@ export default function EventCard(props: IEvent) {
         <p key={index}>
           {ticket.category} - ₱{ticket.price}
           <br />
-          Tickets Available: {ticket.currentTotalTickets}
+          Tickets Available: {ticket.remainingTickets}
         </p>
       ))}
     </Card>

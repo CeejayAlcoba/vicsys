@@ -4,12 +4,13 @@ import documentRepository from "../repositories/documentRepository";
 import eventRepository from "../repositories/eventRepository";
 import { v4 as uuidv4 } from "uuid";
 import ticketRepository from "../repositories/ticketRepository";
+import userRepository from "../repositories/userRepository";
 
 export default function eventService() {
   const _eventRepository = eventRepository();
   const _documentRepository = documentRepository();
   const _ticketRepositry = ticketRepository();
-
+  const _userRepository = userRepository();
   const add = async (data: IEventSave) => {
     let imageUrl = "";
     if (data.image instanceof File) {
@@ -66,13 +67,18 @@ export default function eventService() {
 
     const result = await Promise.all(
       events.map(async (e) => {
-        const tickets = await _ticketRepositry.getByEventId(e.id ?? "");
-        const ticketSold = tickets.reduce(
-          (currT, prevT) =>
-            (currT += prevT.ticketBooks.reduce(
-              (currTB, prevTB) => (currTB += prevTB.totalTickets),
+        const users = await _userRepository.getPurchasesByEventId(e.id || "");
+        const ticketSolds = users.reduce(
+          (uCurr, uPrev) =>
+            (uCurr += uPrev.purchases.reduce(
+              (pCurr, pPrev) => (pCurr += pPrev.totalTickets),
               0
             )),
+          0
+        );
+        const events = await _eventRepository.getById(e.id ?? "");
+        const totalTickets = events?.ticketCategories.reduce(
+          (currT, prevT) => (currT += prevT.totalTickets),
           0
         );
         return {
@@ -80,12 +86,8 @@ export default function eventService() {
           eventName: e.eventName,
           endTime: e.endTime,
           startTime: e.startTime,
-          totalTickets:
-            e.ticketCategories?.reduce(
-              (curr, prev) => curr + (prev.totalTickets ?? 0),
-              0
-            ) ?? 0,
-          ticketSolds: ticketSold,
+          totalTickets: totalTickets ?? 0,
+          ticketSolds: ticketSolds ?? 0,
         };
       })
     );
@@ -97,6 +99,10 @@ export default function eventService() {
     const events = await _eventRepository.getAll();
     return events.length;
   };
+
+  const addAttendee = async (eventId: string, userId: string) => {
+    return await _eventRepository.addAttendee(eventId, userId);
+  };
   return {
     add,
     update,
@@ -105,5 +111,6 @@ export default function eventService() {
     getById,
     getTotalTicketPerEvent,
     getTotalEvents,
+    addAttendee,
   };
 }

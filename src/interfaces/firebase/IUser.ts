@@ -21,6 +21,7 @@ export interface IUser {
   contact: string;
   ministry: string;
   role: Role;
+  myPurchaseEvents: IMyPuchaseEvent[];
 }
 
 export interface IUserLogin {
@@ -37,9 +38,18 @@ export interface IUserPublic {
   contact: string;
   ministry: string;
   role: Role;
+  myPurchaseEvents: IMyPuchaseEvent[];
 }
 
 export interface IUserChangePassword {
   currentPassword: string;
   newPassword: string;
+}
+
+export interface IMyPuchaseEvent {
+  eventId: string;
+  ticketCategoryId: string;
+  price: number;
+  totalTickets: number;
+  qrcodeUrl: string;
 }

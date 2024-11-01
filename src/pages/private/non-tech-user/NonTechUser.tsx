@@ -1,9 +1,30 @@
 import { useQuery } from "@tanstack/react-query";
 import nonTechUserService from "../../../firebase/services/nonTechUserService";
-import { Button, Modal, Form, Input, message, Card, Image, Typography, Tag, Select, Collapse } from "antd";
+import {
+  Button,
+  Modal,
+  Form,
+  Input,
+  message,
+  Card,
+  Image,
+  Typography,
+  Tag,
+  Select,
+  Collapse,
+} from "antd";
 import { ColumnsType } from "antd/es/table";
-import { INonTechUser, IPurchaseEvent } from "../../../interfaces/firebase/INonTechUser";
-import { BookOutlined, CalendarOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  INonTechUser,
+  IPurchaseEvent,
+} from "../../../interfaces/firebase/INonTechUser";
+import {
+  BookOutlined,
+  CalendarOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import { useState } from "react";
 import DataTable from "../../../components/DataTable";
 import FormGroupItems, {
@@ -16,7 +37,8 @@ import { convertUnixToTimeText } from "../../../utils/dateTimeFormat";
 export default function NonTechUserPage() {
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
   const [isOpenSaveModal, setIsOpenSaveModal] = useState<boolean>(false);
-  const [isOpenAssignEventModal, setIsOpenAssignEventModal] = useState<boolean>(false);
+  const [isOpenAssignEventModal, setIsOpenAssignEventModal] =
+    useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<INonTechUser | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
   const [error, setError] = useState<string>("");
@@ -187,33 +209,30 @@ export default function NonTechUserPage() {
     {
       title: "My Purchased Events",
       dataIndex: "myPurchaseEvents",
-      key: 'myPurchaseEvents',
+      key: "myPurchaseEvents",
       render: (events: IPurchaseEvent[]) => {
         if (!events?.length) {
           return <span className="text-sm text-gray-500">No events</span>;
         }
-    
+
         return (
-          <Collapse 
+          <Collapse
             bordered={false}
             size="small"
             className="bg-transparent"
             items={[
               {
-                key: '1',
-                label: `${events.length} Event${events.length > 1 ? 's' : ''}`,
+                key: "1",
+                label: `${events.length} Event${events.length > 1 ? "s" : ""}`,
                 children: (
                   <div className="space-y-2">
                     {events.map((event, index) => (
-                      <div 
-                        key={event.eventId} 
-                        className="text-sm"
-                      >
+                      <div key={event.eventId} className="text-sm">
                         <span className="font-medium">Event {index + 1}</span>
                         <br />
                         ID: {event.eventId}
                         <br />
-                        <a 
+                        <a
                           href={event.qrcodeUrl}
                           className="text-blue-600 hover:underline"
                           target="_blank"
@@ -301,26 +320,25 @@ export default function NonTechUserPage() {
       }
 
       const qrcodeUrl = `https://victorysys.com/verify/${selectedUser.id}/${eventId}}`;
-  
+
       const purchaseEvent: IPurchaseEvent = {
         eventId,
-        qrcodeUrl
+        qrcodeUrl,
       };
-  
+
       const currentPurchaseEvents = selectedUser.myPurchaseEvents || [];
-  
+
       const updatedUser: INonTechUser = {
         ...selectedUser,
-        myPurchaseEvents: [...currentPurchaseEvents, purchaseEvent]
+        myPurchaseEvents: [...currentPurchaseEvents, purchaseEvent],
       };
-  
+
       await _nonTechUserService.update(selectedUser.id, updatedUser);
     } catch (error) {
       console.error("Failed to save purchase:", error);
       throw error;
     }
   };
-
 
   const DeleteModalConfirmation = () => (
     <Modal
@@ -349,21 +367,21 @@ export default function NonTechUserPage() {
         }
 
         await handleSaveToPurchase(selectedEventId);
-  
+
         await refetchnontechuser();
         await refetchevent();
 
         setIsOpenAssignEventModal(false);
         setSelectedEvent(null);
         setSelectedEventId(null);
-  
+
         message.success("Event booked successfully!");
       } catch (error) {
         console.error("Booking failed:", error);
         message.error("Failed to book the event. Please try again.");
       }
     };
-    
+
     return (
       <Modal
         title="Book an Event"
@@ -380,8 +398,8 @@ export default function NonTechUserPage() {
             <Card
               key={events.id}
               className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
-                selectedEventId === events.id 
-                  ? "border-2 border-blue-500 bg-blue-50 shadow-lg transform scale-[1.02]" 
+                selectedEventId === events.id
+                  ? "border-2 border-blue-500 bg-blue-50 shadow-lg transform scale-[1.02]"
                   : "border border-gray-200 hover:border-blue-300"
               }`}
               onClick={() => {
@@ -411,7 +429,8 @@ export default function NonTechUserPage() {
                     <div className="flex flex-col gap-1">
                       {events.ticketCategories?.map((category, index) => (
                         <Tag key={index} color="blue">
-                          {category.currentTotalTickets}/{category.totalTickets} Available
+                          {category.remainingTickets}/{category.totalTickets}{" "}
+                          Available
                         </Tag>
                       ))}
                     </div>
@@ -424,7 +443,10 @@ export default function NonTechUserPage() {
                       <CalendarOutlined className="mr-2" />
                       {convertUnixToTimeText(events.startTime)}
                     </Typography.Text>
-                    <div className="flex flex-col items-end" style={{display:"flex", flexDirection:"column"}}>
+                    <div
+                      className="flex flex-col items-end"
+                      style={{ display: "flex", flexDirection: "column" }}
+                    >
                       {events.ticketCategories?.map((category, index) => (
                         <Typography.Text key={index}>
                           {category.category}: ₱{category.price}

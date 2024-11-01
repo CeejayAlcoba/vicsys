@@ -1,5 +1,9 @@
 import { onAuthStateChanged } from "firebase/auth";
-import { IUserDetails, IUserPublic } from "../../interfaces/firebase/IUser";
+import {
+  IMyPuchaseEvent,
+  IUserDetails,
+  IUserPublic,
+} from "../../interfaces/firebase/IUser";
 import userRepository from "../repositories/userRepository";
 import { auth } from "../firebaseConfig";
 import accountRepository from "../repositories/accountRepository";
@@ -62,7 +66,18 @@ export default function userService() {
 
     return result;
   };
+  const addMyPurchaseEvents = async (
+    userId: string,
+    myPurchaseEvent: IMyPuchaseEvent
+  ): Promise<void> => {
+    await _userRepository.addMyPurchaseEvents(userId, myPurchaseEvent);
+  };
+  const getPurchasesByEventId = async (eventId: string) => {
+    return await _userRepository.getPurchasesByEventId(eventId);
+  };
   return {
+    getPurchasesByEventId,
+    addMyPurchaseEvents,
     getUserRolePieChart,
     add,
     getByEmail,

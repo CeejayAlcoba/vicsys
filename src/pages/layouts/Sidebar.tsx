@@ -29,23 +29,24 @@ export default function Sidebar() {
       onClick: () => navigate("/"),
     },
     {
-      label: "People",
+      label: "Peoples",
       key: "2",
       icon: <UserOutlined />,
-      onClick: () => navigate("user"),
+      onClick: () => navigate("users"),
     },
     {
       label: "Non-Tech Users",
       key: "3",
       icon: <UserOutlined />,
-      onClick: () => navigate("nontechuser"),
+      onClick: () => navigate("nontechusers"),
     },
     {
       label: "Events",
       key: "4",
       icon: <PieChartOutlined />,
-      onClick: () => navigate("event"),
+      onClick: () => navigate("events"),
     },
+
     {
       label: "Account",
       key: "sub1",
@@ -76,6 +77,12 @@ export default function Sidebar() {
           onClick: () => navigate("test"),
         },
       ],
+    },
+    {
+      label: "Ticket Categories",
+      key: "8",
+      icon: <UserOutlined />,
+      onClick: () => navigate("ticket-categories"),
     },
   ];
 

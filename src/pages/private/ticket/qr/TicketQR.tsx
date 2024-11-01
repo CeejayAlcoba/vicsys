@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import ticketService from "../../../../firebase/services/ticketService";
 import { useParams } from "react-router-dom";
 import documentService from "../../../../firebase/services/documentService";
+import eventService from "../../../../firebase/services/eventService";
 
 export default function TicketQR() {
   const { value = "" } = useParams<{ value: string }>();

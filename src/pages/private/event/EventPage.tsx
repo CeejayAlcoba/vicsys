@@ -15,7 +15,6 @@ export default function EventPage() {
     queryKey: ["events"],
     queryFn: _eventService.getAll,
   });
-  console.log(events);
 
   const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
   const [isSaveModalOpen, setIsSaveModalOpen] = useState<boolean>(false);
@@ -69,7 +68,6 @@ export default function EventPage() {
           </Button>
         </div>
       </div>
-
       <div className="row gap-2">
         {events?.map((event, index) => (
           <div key={index} className="col-lg-4">

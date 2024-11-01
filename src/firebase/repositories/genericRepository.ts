@@ -20,12 +20,19 @@ export default function genericRepository<T>(collectionName: string) {
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as T));
   };
 
-  const getById = async (id: string) => {
-    const singleBook = doc(myCollections, id);
-    const { data } = await getDoc(singleBook);
-    return data();
-  };
+  const getById = async (id: string): Promise<T | null> => {
+    if (!id) {
+      return null;
+    }
+    const docRef = doc(myCollections, id);
+    const docSnap = await getDoc(docRef);
 
+    if (docSnap.exists()) {
+      return { id: docSnap.id, ...docSnap.data() } as T;
+    } else {
+      return null;
+    }
+  };
   const update = async (id: string, data: Partial<T>) => {
     const dataRef = doc(myCollections, id);
     await updateDoc(dataRef, data as { [key: string]: any });

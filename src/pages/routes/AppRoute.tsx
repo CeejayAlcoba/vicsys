@@ -16,6 +16,7 @@ import TicketQR from "../private/ticket/qr/TicketQR";
 import EventPage from "../private/event/EventPage";
 import AccountSettingPage from "../private/account-settings/AccountSettingPage";
 import EmailVerificationPage from "../private/email-verification/EmailVerificationPage";
+import TicketCategoriesPage from "../private/ticket-categories/TicketCategoriesPage";
 
 export default function AppRoute() {
   const { user } = useUserContext();
@@ -37,11 +38,11 @@ export default function AppRoute() {
       element: user ? <Main /> : <Navigate to="/login" />,
       children: [
         {
-          path: "user",
+          path: "users",
           element: <UserPage />,
         },
         {
-          path: "nontechuser",
+          path: "nontechusers",
           element: <NonTechUserPage />,
         },
         {
@@ -57,7 +58,7 @@ export default function AppRoute() {
           element: <TicketQR />,
         },
         {
-          path: "event",
+          path: "events",
           element: <EventPage />,
         },
         {
@@ -67,6 +68,10 @@ export default function AppRoute() {
         {
           path: "email-verification",
           element: <EmailVerificationPage />,
+        },
+        {
+          path: "ticket-categories",
+          element: <TicketCategoriesPage />,
         },
       ],
     },

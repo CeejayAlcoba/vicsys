@@ -1,11 +1,13 @@
 import documentRepository from "../repositories/documentRepository";
 import ticketRepository from "../repositories/ticketRepository";
-import { ITIcket } from "../../interfaces/firebase/ITicket";
 import { v4 as uuidv4 } from "uuid";
+import eventService from "./eventService";
+import userService from "./userService";
 export default function ticketService() {
   const _documentRepository = documentRepository();
   const _ticketRepository = ticketRepository();
-
+  const _eventService = eventService();
+  const _userService = userService();
   const add = async (canvas: HTMLCanvasElement) => {
     try {
       canvas.toBlob(async (blob) => {
@@ -15,16 +17,17 @@ export default function ticketService() {
             file,
             `qrcodes/${uuidv4()}.png`
           );
-          const entity: ITIcket = {
-            eventId: "YYFUN2bLM3XRhFaQxJbi",
-            ticketBooks: [
-              { category: "Attendees", price: 800, totalTickets: 2 },
-              { category: "Test", price: 100, totalTickets: 3 },
-            ],
-            created: new Date(),
+
+          const userId = "UoVb7s3pOnWGLaYVIILDaf5Y2Sx1";
+          const eventId = "YYFUN2bLM3XRhFaQxJbi";
+          await _eventService.addAttendee(eventId, userId);
+          await _userService.addMyPurchaseEvents(userId, {
+            eventId: eventId,
+            ticketCategoryId: "HLl9GMU7xUkEXTjzk50i",
+            price: 800,
+            totalTickets: 2,
             qrcodeUrl: url,
-          };
-          await _ticketRepository.add(entity);
+          });
         }
       }, "image/png");
     } catch (error) {
