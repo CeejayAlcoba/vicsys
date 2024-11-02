@@ -84,6 +84,12 @@ export default function Sidebar() {
       icon: <UserOutlined />,
       onClick: () => navigate("ticket-categories"),
     },
+    {
+      label: "Kids list",
+      key: "9",
+      icon: <UserOutlined />,
+      onClick: () => navigate("kids-list"),
+    },
   ];
 
   const { collapsed, setCollapsed } = useSidebarContext();
