@@ -1,5 +1,6 @@
 export interface IAttendee {
   userId: string;
+  joinedAt: Date;
 }
 
 export interface IEvent {

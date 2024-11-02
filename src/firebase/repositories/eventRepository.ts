@@ -57,7 +57,7 @@ export default function eventRepository() {
     const eventRef = doc(db, "events", eventId);
 
     await updateDoc(eventRef, {
-      attendees: arrayUnion({ userId: userId }),
+      attendees: arrayUnion({ userId: userId, joinedAt: new Date() }),
     });
   };
   const getAttendeesByEventId = async (id: string): Promise<IUserPublic[]> => {
