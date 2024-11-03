@@ -1,6 +1,12 @@
-export interface IPurchaseEvent {
+import { Timestamp } from "firebase/firestore";
+
+export interface IMyPuchaseEvent {
   eventId: string;
+  ticketCategoryId: string;
+  price: number;
+  totalTickets: number;
   qrcodeUrl: string;
+  purchasedAt: Timestamp;
 }
 
 export interface INonTechUser {
@@ -13,7 +19,7 @@ export interface INonTechUser {
   gender: string;
   contact: string;
   ministry: string;
-  myPurchaseEvents?: IPurchaseEvent[] 
+  myPurchaseEvents?: IMyPuchaseEvent[] 
 }
 
 export interface INonTechUserLogin {

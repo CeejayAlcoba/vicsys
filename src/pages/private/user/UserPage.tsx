@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import userService from "../../../firebase/services/userService";
-import { Button, Modal, Form, Input, Select, Space, Badge } from "antd";
+import { Button, Modal, Form, Input, Select } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { IUser } from "../../../interfaces/firebase/IUser";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";

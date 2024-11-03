@@ -12,11 +12,12 @@ import {
   Tag,
   Select,
   Collapse,
+  Alert,
 } from "antd";
 import { ColumnsType } from "antd/es/table";
 import {
   INonTechUser,
-  IPurchaseEvent,
+  IMyPuchaseEvent,
 } from "../../../interfaces/firebase/INonTechUser";
 import {
   BookOutlined,
@@ -33,6 +34,7 @@ import FormGroupItems, {
 import eventService from "../../../firebase/services/eventService";
 import { IAttendee, IEvent } from "../../../interfaces/firebase/IEvent";
 import { convertUnixToTimeText } from "../../../utils/dateTimeFormat";
+import { Timestamp } from "firebase/firestore";
 
 export default function NonTechUserPage() {
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
@@ -210,7 +212,7 @@ export default function NonTechUserPage() {
       title: "My Purchased Events",
       dataIndex: "myPurchaseEvents",
       key: "myPurchaseEvents",
-      render: (events: IPurchaseEvent[]) => {
+      render: (events: IMyPuchaseEvent[]) => {
         if (!events?.length) {
           return <span className="text-sm text-gray-500">No events</span>;
         }
@@ -313,29 +315,59 @@ export default function NonTechUserPage() {
     }
   };
 
-  const handleSaveToPurchase = async (eventId: string) => {
+  const handleSaveToPurchase = async (
+    eventId: string,
+    ticketCategoryId: string,
+    price: number
+  ) => {
+    if (!selectedUser?.id) return;
+
     try {
-      if (!selectedUser?.id) {
-        throw new Error("No user selected");
-      }
-
-      const qrcodeUrl = `https://victorysys.com/verify/${selectedUser.id}/${eventId}}`;
-
-      const purchaseEvent: IPurchaseEvent = {
+      const purchaseEvent: IMyPuchaseEvent = {
         eventId,
-        qrcodeUrl,
+        ticketCategoryId,
+        price,
+        totalTickets: 1,
+        purchasedAt: Timestamp.now(),
+        qrcodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${selectedUser.id}-${eventId}-${ticketCategoryId}`,
       };
-
-      const currentPurchaseEvents = selectedUser.myPurchaseEvents || [];
 
       const updatedUser: INonTechUser = {
         ...selectedUser,
-        myPurchaseEvents: [...currentPurchaseEvents, purchaseEvent],
+        myPurchaseEvents: [
+          ...(selectedUser.myPurchaseEvents || []),
+          purchaseEvent,
+        ],
       };
 
       await _nonTechUserService.update(selectedUser.id, updatedUser);
     } catch (error) {
       console.error("Failed to save purchase:", error);
+      throw error;
+    }
+  };
+
+  const handleSaveToAttendees = async (eventId: string) => {
+    if (!selectedUser?.id) return;
+
+    try {
+      const selectedEvent = event.find((e) => e.id === eventId);
+      if (!selectedEvent) throw new Error("Event not found");
+
+      const attendee: IAttendee = {
+        userId: selectedUser.id,
+        joinedAt: Timestamp.now(),
+      };
+      console.log(Timestamp.now());
+
+      const updatedEvent: IEvent = {
+        ...selectedEvent,
+        attendees: [...(selectedEvent.attendees || []), attendee]
+      };
+
+      await _eventservice.update(eventId, updatedEvent);
+    } catch (error) {
+      console.error("Failed to save attendee:", error);
       throw error;
     }
   };
@@ -356,29 +388,45 @@ export default function NonTechUserPage() {
   );
 
   const AssignToEventModal = () => {
-    const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
     console.log(selectedEvent);
+    const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+    const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+      null
+    );
 
     const handleBooking = async () => {
+      if (!selectedEventId || !selectedCategoryId) {
+        message.error("Please select an event and ticket category");
+        return;
+      }
+  
       try {
-        if (!selectedEventId || !selectedUser?.id) {
-          message.error("Please select an event");
-          return;
-        }
-
-        await handleSaveToPurchase(selectedEventId);
-
-        await refetchnontechuser();
-        await refetchevent();
-
+        const selectedEvent = event.find((e) => e.id === selectedEventId);
+        if (!selectedEvent) throw new Error("Event not found");
+  
+        const selectedCategory = selectedEvent.ticketCategories.find(
+          (tc) => tc.categoryId === selectedCategoryId
+        );
+        if (!selectedCategory) throw new Error("Ticket category not found");
+  
+        await Promise.all([
+          handleSaveToPurchase(
+            selectedEventId,
+            selectedCategoryId,
+            selectedCategory.price
+          ),
+          handleSaveToAttendees(selectedEventId)
+        ]);
+  
+        await Promise.all([refetchnontechuser(), refetchevent()]);
+        message.success("Event booked successfully!");
         setIsOpenAssignEventModal(false);
         setSelectedEvent(null);
         setSelectedEventId(null);
-
-        message.success("Event booked successfully!");
+        setSelectedCategoryId(null);
       } catch (error) {
-        console.error("Booking failed:", error);
-        message.error("Failed to book the event. Please try again.");
+        console.error("Failed to book event:", error);
+        message.error("Failed to book event. Please try again.");
       }
     };
 
@@ -390,6 +438,8 @@ export default function NonTechUserPage() {
         onCancel={() => {
           setIsOpenAssignEventModal(false);
           setSelectedEvent(null);
+          setSelectedEventId(null);
+          setSelectedCategoryId(null);
         }}
         width={600}
       >
@@ -428,9 +478,27 @@ export default function NonTechUserPage() {
                     </div>
                     <div className="flex flex-col gap-1">
                       {events.ticketCategories?.map((category, index) => (
-                        <Tag key={index} color="blue">
-                          {category.remainingTickets}/{category.totalTickets}{" "}
-                          Available
+                        <Tag
+                          key={index}
+                          color={
+                            selectedEventId === events.id &&
+                            selectedCategoryId === category.categoryId
+                              ? "green"
+                              : "blue"
+                          }
+                          className="cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (events.id) {
+                              setSelectedEventId(events.id);
+                              setSelectedCategoryId(
+                                category.categoryId || null
+                              );
+                            }
+                          }}
+                        >
+                          {category.category}: {category.remainingTickets}/
+                          {category.totalTickets} Available
                         </Tag>
                       ))}
                     </div>
@@ -443,12 +511,17 @@ export default function NonTechUserPage() {
                       <CalendarOutlined className="mr-2" />
                       {convertUnixToTimeText(events.startTime)}
                     </Typography.Text>
-                    <div
-                      className="flex flex-col items-end"
-                      style={{ display: "flex", flexDirection: "column" }}
-                    >
+                    <div className="flex flex-col items-end">
                       {events.ticketCategories?.map((category, index) => (
-                        <Typography.Text key={index}>
+                        <Typography.Text
+                          key={index}
+                          className={
+                            selectedEventId === events.id &&
+                            selectedCategoryId === category.categoryId
+                              ? "font-bold text-blue-600"
+                              : ""
+                          }
+                        >
                           {category.category}: ₱{category.price}
                         </Typography.Text>
                       ))}
@@ -459,6 +532,25 @@ export default function NonTechUserPage() {
             </Card>
           ))}
         </div>
+
+        {selectedEventId && !selectedCategoryId && (
+          <Alert
+            message="Please select a ticket category"
+            type="info"
+            showIcon
+            className="mt-4"
+          />
+        )}
+
+        {selectedEventId && selectedCategoryId && (
+          <Alert
+            message="Ready to book!"
+            description="Click OK to confirm your booking."
+            type="success"
+            showIcon
+            className="mt-4"
+          />
+        )}
       </Modal>
     );
   };
