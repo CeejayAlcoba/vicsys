@@ -1,8 +1,8 @@
-import { Timestamp } from "firebase/firestore";
+
 
 export interface IAttendee {
   userId: string;
-  joinedAt?: Timestamp;
+  joinedAt: Date;
 }
 
 export interface IEvent {

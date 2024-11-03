@@ -17,6 +17,7 @@ import EventPage from "../private/event/EventPage";
 import AccountSettingPage from "../private/account-settings/AccountSettingPage";
 import EmailVerificationPage from "../private/email-verification/EmailVerificationPage";
 import TicketCategoriesPage from "../private/ticket-categories/TicketCategoriesPage";
+import KidsListPage from "../private/kids-list/KidsListPage";
 
 export default function AppRoute() {
   const { user } = useUserContext();
@@ -72,6 +73,10 @@ export default function AppRoute() {
         {
           path: "ticket-categories",
           element: <TicketCategoriesPage />,
+        },
+        {
+          path: "kids-list",
+          element: <KidsListPage />,
         },
       ],
     },
