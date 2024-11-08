@@ -92,6 +92,7 @@ export default function EventSaveModal() {
     <Modal
       title={selectedEvent ? "Update Event" : "Create Event"}
       open={isSaveModalOpen}
+      width={700}
       onCancel={() => {
         setIsSaveModalOpen(false);
       }}
@@ -183,10 +184,11 @@ export default function EventSaveModal() {
                     style={{ display: "flex", marginBottom: 8 }}
                     align="baseline"
                   >
-                    <Form.Item
+                    {/* <Form.Item
                       {...restField}
-                      name={[name, "categoryId"]}
-                      rules={[{ required: true, message: "Missing category" }]}
+                      name={[name, "ticketCategoryId"]}
+                      label="Category"
+                      rules={[{ required: true, message: "Required" }]}
                     >
                       <Select
                         placeholder="Select an option"
@@ -198,12 +200,22 @@ export default function EventSaveModal() {
                           </Select.Option>
                         ))}
                       </Select>
+                    </Form.Item> */}
+
+                    <Form.Item
+                      {...restField}
+                      name={[name, "ticketName"]}
+                      label="Ticket Name"
+                      rules={[{ required: true, message: "Required" }]}
+                    >
+                      <Input placeholder="Ticket Name" min={0} />
                     </Form.Item>
 
                     <Form.Item
                       {...restField}
-                      name={[name, "price"]}
-                      rules={[{ required: true, message: "Missing price" }]}
+                      name={[name, "ticketPrice"]}
+                      label="Price"
+                      rules={[{ required: true, message: "Required" }]}
                     >
                       <InputNumber
                         placeholder="Price"
@@ -214,15 +226,24 @@ export default function EventSaveModal() {
 
                     <Form.Item
                       {...restField}
-                      name={[name, "totalTickets"]}
-                      rules={[
-                        { required: true, message: "Missing total tickets" },
-                      ]}
+                      name={[name, "ticketTotal"]}
+                      label="Total Ticket"
+                      rules={[{ required: true, message: "Required" }]}
                     >
                       <InputNumber placeholder="Total Tickets" min={0} />
                     </Form.Item>
-
-                    <MinusCircleOutlined onClick={() => remove(name)} />
+                    <Form.Item
+                      {...restField}
+                      name={[name, "ticketPerUser"]}
+                      label="Ticket Per User"
+                      rules={[{ required: true, message: "Required" }]}
+                    >
+                      <InputNumber placeholder="Ticket per User" min={0} />
+                    </Form.Item>
+                    <MinusCircleOutlined
+                      style={{ color: "red" }}
+                      onClick={() => remove(name)}
+                    />
                   </Space>
                 ))}
                 <Form.Item>

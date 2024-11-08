@@ -70,6 +70,8 @@ export default function EventCard(props: IEvent) {
           {ticket.ticketName} - ₱{ticket.ticketPrice}
           <br />
           Tickets Available: {ticket.ticketRemaining}
+          <br />
+          Tickets Per user: {ticket.ticketPerUser}
         </p>
       ))}
     </Card>
