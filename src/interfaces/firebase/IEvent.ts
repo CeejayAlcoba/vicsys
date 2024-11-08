@@ -26,9 +26,11 @@ export interface IEventSave {
   attendees: IAttendee[];
 }
 export interface ITicketCategory {
-  categoryId?: string;
-  category?: string;
-  price: number;
-  totalTickets: number;
-  remainingTickets?: number;
+  ticketCategoryId?: string;
+  ticketName: string;
+  ticketPerUser: number;
+  ticketPrice: number;
+  ticketRemaining?: number;
+  ticketSold: number;
+  ticketTotal: number;
 }

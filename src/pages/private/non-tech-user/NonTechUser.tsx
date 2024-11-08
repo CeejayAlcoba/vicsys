@@ -235,7 +235,7 @@ export default function NonTechUserPage() {
                         ID: {event.eventId}
                         <br />
                         <a
-                          href={event.qrcodeUrl}
+                          // href={event.qrcodeUrl}
                           className="text-blue-600 hover:underline"
                           target="_blank"
                           rel="noopener noreferrer"
@@ -329,7 +329,6 @@ export default function NonTechUserPage() {
         price,
         totalTickets: 1,
         purchasedAt: Timestamp.now(),
-        qrcodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${selectedUser.id}-${eventId}-${ticketCategoryId}`,
       };
 
       const updatedUser: INonTechUser = {
@@ -353,19 +352,7 @@ export default function NonTechUserPage() {
     try {
       const selectedEvent = event.find((e) => e.id === eventId);
       if (!selectedEvent) throw new Error("Event not found");
-
-      const attendee: IAttendee = {
-        userId: selectedUser.id,
-        joinedAt: Timestamp.now(),
-      };
-      console.log(Timestamp.now());
-
-      const updatedEvent: IEvent = {
-        ...selectedEvent,
-        attendees: [...(selectedEvent.attendees || []), attendee]
-      };
-
-      await _eventservice.update(eventId, updatedEvent);
+      await _eventservice.addAttendee(eventId, selectedUser.id);
     } catch (error) {
       console.error("Failed to save attendee:", error);
       throw error;
@@ -405,7 +392,7 @@ export default function NonTechUserPage() {
         if (!selectedEvent) throw new Error("Event not found");
   
         const selectedCategory = selectedEvent.ticketCategories.find(
-          (tc) => tc.categoryId === selectedCategoryId
+          (tc) => tc.ticketCategoryId === selectedCategoryId
         );
         if (!selectedCategory) throw new Error("Ticket category not found");
   
@@ -413,7 +400,7 @@ export default function NonTechUserPage() {
           handleSaveToPurchase(
             selectedEventId,
             selectedCategoryId,
-            selectedCategory.price
+            selectedCategory.ticketPrice
           ),
           handleSaveToAttendees(selectedEventId)
         ]);
@@ -482,7 +469,7 @@ export default function NonTechUserPage() {
                           key={index}
                           color={
                             selectedEventId === events.id &&
-                            selectedCategoryId === category.categoryId
+                            selectedCategoryId === category.ticketCategoryId
                               ? "green"
                               : "blue"
                           }
@@ -492,13 +479,13 @@ export default function NonTechUserPage() {
                             if (events.id) {
                               setSelectedEventId(events.id);
                               setSelectedCategoryId(
-                                category.categoryId || null
+                                category.ticketCategoryId || null
                               );
                             }
                           }}
                         >
                           {category.category}: {category.remainingTickets}/
-                          {category.totalTickets} Available
+                          {category.ticketTotal} Available
                         </Tag>
                       ))}
                     </div>
@@ -517,12 +504,12 @@ export default function NonTechUserPage() {
                           key={index}
                           className={
                             selectedEventId === events.id &&
-                            selectedCategoryId === category.categoryId
+                            selectedCategoryId === category.ticketCategoryId
                               ? "font-bold text-blue-600"
                               : ""
                           }
                         >
-                          {category.category}: ₱{category.price}
+                          {category.category}: ₱{category.ticketPrice}
                         </Typography.Text>
                       ))}
                     </div>

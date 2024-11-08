@@ -1,13 +1,10 @@
 import { Modal, Progress } from "antd";
 import { ITicketDetails } from "../../../interfaces/firebase/IDashboard";
 import { convertUnixToTimeText } from "../../../utils/dateTimeFormat";
-import { useQuery } from "@tanstack/react-query";
-import userService from "../../../firebase/services/userService";
 import DataTable from "../../../components/DataTable";
 import { ColumnsType } from "antd/es/table";
-import { IUser, IUserPublic } from "../../../interfaces/firebase/IUser";
-import { useState } from "react";
-import eventService from "../../../firebase/services/eventService";
+import { IUserPublic } from "../../../interfaces/firebase/IUser";
+
 
 export default function TicketDetails(props: ITicketDetails) {
   const { image, eventName, endTime, startTime, totalTickets, ticketSolds } =
@@ -48,15 +45,11 @@ export const TicketDetailModal = (props: {
       dataIndex: "name",
     },
     {
-      title: "email",
+      title: "Email",
       dataIndex: "email",
     },
     {
-      title: "gender",
-      dataIndex: "gender",
-    },
-    {
-      title: "gender",
+      title: "Gender",
       dataIndex: "gender",
     },
     {
@@ -64,9 +57,18 @@ export const TicketDetailModal = (props: {
       dataIndex: "contact",
     },
     {
-      title: "ministry",
+      title: "Ministry",
       dataIndex: "ministry",
     },
+    {
+      title: "Ticket Category",
+      dataIndex: "",
+    },
+    {
+      title: "Status",
+      dataIndex: "",
+    },
+
   ];
   return (
     <Modal

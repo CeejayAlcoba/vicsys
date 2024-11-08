@@ -5,7 +5,6 @@ export interface IMyPuchaseEvent {
   ticketCategoryId: string;
   price: number;
   totalTickets: number;
-  qrcodeUrl: string;
   purchasedAt: Timestamp;
 }
 

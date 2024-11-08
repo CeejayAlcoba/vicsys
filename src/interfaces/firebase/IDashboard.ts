@@ -15,6 +15,7 @@ export interface ITicketDetails {
   startTime: Date;
   totalTickets: number;
   ticketSolds: number;
+  status: TicketStatus;
 }
 
 export interface ITotalKidsPieChart {
@@ -25,4 +26,10 @@ export interface ITotalKidsPieChart {
 export interface ITotalUsersPieChart {
   type: string;
   total: number;
+}
+
+export enum TicketStatus {
+  completed = "completed",
+  paid = "paid",
+  pending = "pending"
 }

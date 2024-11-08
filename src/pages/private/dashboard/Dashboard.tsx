@@ -85,11 +85,11 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* <!-- Ticket Sold Section --> */}
+      {/* <!-- Events Section --> */}
       <div className="row">
         <div className="col-md-6">
           <div className="card mb-3">
-            <div className="card-header">Ticket Sold</div>
+            <div className="card-header">Events</div>
             <div className="card-body">
               {data?.ticketDetails.map((td) => (
                 <div
