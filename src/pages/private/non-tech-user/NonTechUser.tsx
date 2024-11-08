@@ -32,7 +32,7 @@ import FormGroupItems, {
   FormGroupItemsProps,
 } from "../../../components/FormControl";
 import eventService from "../../../firebase/services/eventService";
-import { IAttendee, IEvent } from "../../../interfaces/firebase/IEvent";
+import { IEvent } from "../../../interfaces/firebase/IEvent";
 import { convertUnixToTimeText } from "../../../utils/dateTimeFormat";
 import { Timestamp } from "firebase/firestore";
 
