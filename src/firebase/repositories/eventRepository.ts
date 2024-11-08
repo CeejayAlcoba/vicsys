@@ -1,52 +1,17 @@
 import { arrayUnion, doc, getFirestore, updateDoc } from "firebase/firestore";
-import { IEvent } from "../../interfaces/firebase/IEvent";
+import { IEvent, IEventUser } from "../../interfaces/firebase/IEvent";
 import genericRepository from "./genericRepository";
-import ticketCategoryRepository from "./ticketCategoryRepository";
 import userRepository from "./userRepository";
-import { IUser, IUserPublic } from "../../interfaces/firebase/IUser";
+import { IUser } from "../../interfaces/firebase/IUser";
+import nonTechUserRepository from "./nonTechUserRepository";
 
 export default function eventRepository() {
   const _genericRepository = genericRepository<IEvent>("events");
-  const _ticketCategoryRepository = ticketCategoryRepository();
   const _userRepository = userRepository();
+  const _nonTechUserRepository = nonTechUserRepository();
   const getAll = async () => {
     const events = await _genericRepository.getAll();
-
-    const result = await Promise.all(
-      events.map(async (e) => {
-        const userPurchases = await _userRepository.getPurchasesByEventId(
-          e.id ?? ""
-        );
-
-        const newTicketCategories = await Promise.all(
-          e.ticketCategories.map(async (tc) => {
-            const category = await _ticketCategoryRepository.getById(
-              tc.categoryId ?? ""
-            );
-            const totalSoldTicket = userPurchases.reduce(
-              (uCurr, uPrev) =>
-                (uCurr += uPrev.purchases
-                  .filter((p) => p.ticketCategoryId == tc.categoryId)
-                  .reduce((pCurr, pPrev) => (pCurr += pPrev.totalTickets), 0)),
-              0
-            );
-            console.log(totalSoldTicket);
-            return {
-              ...tc,
-              category: category?.description ?? "",
-              remainingTickets: tc.totalTickets - totalSoldTicket,
-            };
-          })
-        );
-
-        return {
-          ...e,
-          ticketCategories: newTicketCategories,
-        };
-      })
-    );
-
-    return result;
+    return events;
   };
 
   const addAttendee = async (
@@ -60,7 +25,8 @@ export default function eventRepository() {
       attendees: arrayUnion({ userId: userId, joinedAt: new Date() }),
     });
   };
-  const getAttendeesByEventId = async (id: string): Promise<IUserPublic[]> => {
+
+  const getAttendeesByEventId = async (id: string): Promise<IEventUser[]> => {
     const event = await _genericRepository.getById(id);
 
     if (!event?.attendees?.length) {
@@ -72,14 +38,28 @@ export default function eventRepository() {
         _userRepository.getById(attendee.userId)
       )
     );
-    return userDetails
-      .filter((user): user is IUser => user !== null)
-      .map(
-        (user): IUserPublic => ({
+    const nonTechUsers = await Promise.all(
+      event.attendees.map((attendee) =>
+        _nonTechUserRepository.getById(attendee.userId)
+      )
+    );
+    const allUsers = [...userDetails, ...nonTechUsers].filter(
+      (user): user is IUser => user !== null && user !== undefined
+    );
+    let result: IEventUser[] = [];
+
+    allUsers.map((user) =>
+      user?.myPurchaseEvents.map((p) => {
+        result.push({
           ...user,
           id: user.id,
-        })
-      );
+          ticketName: p.ticketName,
+          ticketStatus: p.status,
+        });
+      })
+    );
+    console.log(result);
+    return result;
   };
   return { ..._genericRepository, getAttendeesByEventId, getAll, addAttendee };
 }

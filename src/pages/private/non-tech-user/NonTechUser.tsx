@@ -32,9 +32,10 @@ import FormGroupItems, {
   FormGroupItemsProps,
 } from "../../../components/FormControl";
 import eventService from "../../../firebase/services/eventService";
-import { IAttendee, IEvent } from "../../../interfaces/firebase/IEvent";
+import { IEvent } from "../../../interfaces/firebase/IEvent";
 import { convertUnixToTimeText } from "../../../utils/dateTimeFormat";
 import { Timestamp } from "firebase/firestore";
+import MyPurchaseEventCollapse from "../../../components/MyPurchaseEventCollapse";
 
 export default function NonTechUserPage() {
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
@@ -212,45 +213,9 @@ export default function NonTechUserPage() {
       title: "My Purchased Events",
       dataIndex: "myPurchaseEvents",
       key: "myPurchaseEvents",
-      render: (events: IMyPuchaseEvent[]) => {
-        if (!events?.length) {
-          return <span className="text-sm text-gray-500">No events</span>;
-        }
-
-        return (
-          <Collapse
-            bordered={false}
-            size="small"
-            className="bg-transparent"
-            items={[
-              {
-                key: "1",
-                label: `${events.length} Event${events.length > 1 ? "s" : ""}`,
-                children: (
-                  <div className="space-y-2">
-                    {events.map((event, index) => (
-                      <div key={event.eventId} className="text-sm">
-                        <span className="font-medium">Event {index + 1}</span>
-                        <br />
-                        ID: {event.eventId}
-                        <br />
-                        <a
-                          // href={event.qrcodeUrl}
-                          className="text-blue-600 hover:underline"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          View QR Code
-                        </a>
-                      </div>
-                    ))}
-                  </div>
-                ),
-              },
-            ]}
-          />
-        );
-      },
+      render: (events: IMyPuchaseEvent[]) => (
+        <MyPurchaseEventCollapse purchaseEvents={events} />
+      ),
     },
     {
       title: "Actions",
@@ -386,25 +351,25 @@ export default function NonTechUserPage() {
         message.error("Please select an event and ticket category");
         return;
       }
-  
+
       try {
         const selectedEvent = event.find((e) => e.id === selectedEventId);
         if (!selectedEvent) throw new Error("Event not found");
-  
+
         const selectedCategory = selectedEvent.ticketCategories.find(
           (tc) => tc.ticketCategoryId === selectedCategoryId
         );
         if (!selectedCategory) throw new Error("Ticket category not found");
-  
+
         await Promise.all([
           handleSaveToPurchase(
             selectedEventId,
             selectedCategoryId,
             selectedCategory.ticketPrice
           ),
-          handleSaveToAttendees(selectedEventId)
+          handleSaveToAttendees(selectedEventId),
         ]);
-  
+
         await Promise.all([refetchnontechuser(), refetchevent()]);
         message.success("Event booked successfully!");
         setIsOpenAssignEventModal(false);

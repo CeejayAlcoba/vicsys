@@ -1,15 +1,32 @@
 import { Modal, Progress } from "antd";
-import { ITicketDetails } from "../../../interfaces/firebase/IDashboard";
 import { convertUnixToTimeText } from "../../../utils/dateTimeFormat";
 import DataTable from "../../../components/DataTable";
 import { ColumnsType } from "antd/es/table";
-import { IUserPublic } from "../../../interfaces/firebase/IUser";
+import { IEvent, IEventUser } from "../../../interfaces/firebase/IEvent";
+import { useEffect, useState } from "react";
 
+export default function EventDetails(props: IEvent) {
+  const { image, eventName, endTime, startTime, ticketCategories } = props;
 
-export default function TicketDetails(props: ITicketDetails) {
-  const { image, eventName, endTime, startTime, totalTickets, ticketSolds } =
-    props;
-  const ticketPercent = (ticketSolds / totalTickets) * 100;
+  const [totals, setTotals] = useState({ ticketTotal: 0, ticketSold: 0 });
+
+  useEffect(() => {
+    const ticketTotal = ticketCategories.reduce(
+      (curr, prev) => (curr += prev.ticketTotal),
+      0
+    );
+    const ticketSold = ticketCategories.reduce(
+      (curr, prev) => (curr += prev.ticketSold),
+      0
+    );
+    setTotals({
+      ticketTotal,
+      ticketSold,
+    });
+  }, [ticketCategories]);
+  console.log(ticketCategories);
+
+  const ticketPercent = (totals.ticketSold / totals.ticketTotal) * 100;
 
   return (
     <>
@@ -23,7 +40,7 @@ export default function TicketDetails(props: ITicketDetails) {
           </p>
           <Progress percent={ticketPercent} showInfo={false} />
           <p className="ticket-count">
-            {ticketSolds} / {totalTickets}
+            {totals.ticketSold} / {totals.ticketTotal}
           </p>
         </div>
       </div>
@@ -31,15 +48,15 @@ export default function TicketDetails(props: ITicketDetails) {
   );
 }
 
-export const TicketDetailModal = (props: {
-  users: IUserPublic[];
+export const EventDetailModal = (props: {
+  nonTechAndUsers: IEventUser[];
   eventName: string;
   isModalOpen: boolean;
   handleClose: () => void;
 }) => {
-  const { eventName, users, isModalOpen, handleClose } = props;
+  const { eventName, nonTechAndUsers = [], isModalOpen, handleClose } = props;
 
-  const columns: ColumnsType<IUserPublic> = [
+  const columns: ColumnsType<IEventUser> = [
     {
       title: "Name",
       dataIndex: "name",
@@ -62,13 +79,12 @@ export const TicketDetailModal = (props: {
     },
     {
       title: "Ticket Category",
-      dataIndex: "",
+      dataIndex: "ticketName",
     },
     {
       title: "Status",
-      dataIndex: "",
+      dataIndex: "ticketStatus",
     },
-
   ];
   return (
     <Modal
@@ -78,8 +94,8 @@ export const TicketDetailModal = (props: {
       onCancel={handleClose}
       width={1200}
     >
-      <DataTable dataSource={users} columns={columns} />
-      <h6>Total: {users.length}</h6>
+      <DataTable dataSource={nonTechAndUsers} columns={columns} />
+      <h6>Total: {nonTechAndUsers.length}</h6>
     </Modal>
   );
 };

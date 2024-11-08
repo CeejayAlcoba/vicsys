@@ -13,7 +13,6 @@ export default function dashboardService() {
   const getDashboardDetails = async (): Promise<IDahsboard> => {
     const totalUsers = await _userService.getTotalUsers();
     const totalTicketSold = await _ticketService.getTotalTicketSold();
-    const totalTicketPerEvent = await _eventService.getTotalTicketPerEvent();
     const totalEvents = await _eventService.getTotalEvents();
     const totalChildren = await _childrenService.getTotalChildren();
     const result: IDahsboard = {
@@ -21,7 +20,6 @@ export default function dashboardService() {
       totalKids: totalChildren,
       totalEvents: totalEvents,
       totalTicketSold: totalTicketSold,
-      ticketDetails: totalTicketPerEvent,
       totalKidsPieDetails: [],
       totalUserPieChart: [],
     };

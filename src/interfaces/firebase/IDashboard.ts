@@ -1,9 +1,11 @@
+import { IEvent } from "./IEvent";
+import { TicketStatus } from "./ITicket";
+
 export default interface IDahsboard {
   totalRegistration: number;
   totalKids: number;
   totalEvents: number;
   totalTicketSold: number;
-  ticketDetails: ITicketDetails[];
   totalKidsPieDetails: ITotalKidsPieChart[];
   totalUserPieChart: ITotalUsersPieChart[];
 }
@@ -26,10 +28,4 @@ export interface ITotalKidsPieChart {
 export interface ITotalUsersPieChart {
   type: string;
   total: number;
-}
-
-export enum TicketStatus {
-  completed = "completed",
-  paid = "paid",
-  pending = "pending"
 }

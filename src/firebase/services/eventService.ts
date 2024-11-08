@@ -60,39 +60,6 @@ export default function eventService() {
   const getAll = async () => {
     return await _eventRepository.getAll();
   };
-  const getTotalTicketPerEvent = async (): Promise<ITicketDetails[]> => {
-    const events = await _eventRepository.getAll();
-
-    const result = await Promise.all(
-      events.map(async (e) => {
-        const users = await _userRepository.getPurchasesByEventId(e.id || "");
-        const ticketSolds = users.reduce(
-          (uCurr, uPrev) =>
-            (uCurr += uPrev.purchases.reduce(
-              (pCurr, pPrev) => (pCurr += pPrev.totalTickets),
-              0
-            )),
-          0
-        );
-        const events = await _eventRepository.getById(e.id ?? "");
-        const totalTickets = events?.ticketCategories.reduce(
-          (currT, prevT) => (currT += prevT.totalTickets),
-          0
-        );
-        return {
-          id: e.id,
-          image: e.image,
-          eventName: e.eventName,
-          endTime: e.endTime,
-          startTime: e.startTime,
-          totalTickets: totalTickets ?? 0,
-          ticketSolds: ticketSolds ?? 0,
-        };
-      })
-    );
-
-    return result;
-  };
 
   const getTotalEvents = async () => {
     const events = await _eventRepository.getAll();
@@ -112,7 +79,6 @@ export default function eventService() {
     deleteById,
     getAll,
     getById,
-    getTotalTicketPerEvent,
     getTotalEvents,
     addAttendee,
   };
