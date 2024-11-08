@@ -1,11 +1,13 @@
-import { Timestamp } from "firebase/firestore";
+import { TicketStatus } from "./ITicket";
 
 export interface IMyPuchaseEvent {
   eventId: string;
-  ticketCategoryId: string;
-  price: number;
-  totalTickets: number;
-  purchasedAt: Timestamp;
+  imageUrl: string;
+  isPaid: boolean;
+  location: string;
+  status: TicketStatus;
+  ticketId: string;
+  ticketName: string;
 }
 
 export interface INonTechUser {
@@ -18,7 +20,7 @@ export interface INonTechUser {
   gender: string;
   contact: string;
   ministry: string;
-  myPurchaseEvents?: IMyPuchaseEvent[] 
+  myPurchaseEvents?: IMyPuchaseEvent[];
 }
 
 export interface INonTechUserLogin {

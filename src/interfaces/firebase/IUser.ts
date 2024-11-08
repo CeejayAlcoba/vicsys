@@ -1,5 +1,6 @@
 import { User } from "firebase/auth";
 import { Role } from "./Role";
+import { IMyPuchaseEvent } from "./INonTechUser";
 
 export interface IUserDetails extends User {
   provider: IUserProvider;
@@ -46,10 +47,12 @@ export interface IUserChangePassword {
   newPassword: string;
 }
 
-export interface IMyPuchaseEvent {
-  eventId: string;
-  ticketCategoryId: string;
-  price: number;
-  totalTickets: number;
-  qrcodeUrl: string;
-}
+// export interface IMyPuchaseEvent {
+//   eventId: string;
+//   imageUrl: string;
+//   isPaid: boolean;
+//   location: string;
+//   status: TicketStatus;
+//   ticketId: string;
+//   ticketName: string;
+// }

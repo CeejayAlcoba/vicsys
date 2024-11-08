@@ -6,3 +6,9 @@ export interface ITIcket {
   ticketBooks: ITicketCategory[];
   qrcodeUrl: string;
 }
+
+export enum TicketStatus {
+  Completed = "Completed",
+  Paid = "Paid",
+  Pending = "Pending",
+}

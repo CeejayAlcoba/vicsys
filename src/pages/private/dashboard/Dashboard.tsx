@@ -5,22 +5,28 @@ import CalendarLayout from "./CalendarLayout";
 import { useQuery } from "@tanstack/react-query";
 import dashboardService from "../../../firebase/services/dasboardService";
 import moneyFormat from "../../../utils/moneyFormat";
-import TicketDetails, { TicketDetailModal } from "./TicketDetails";
+import { EventDetailModal } from "./EventDetails";
 import eventService from "../../../firebase/services/eventService";
 import { useState } from "react";
 import { ITicketDetails } from "../../../interfaces/firebase/IDashboard";
+import EventDetails from "./EventDetails";
+import { IEvent } from "../../../interfaces/firebase/IEvent";
 
 export default function Dashboard() {
+  const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
   const _dahsboardService = dashboardService();
+  const _eventService = eventService();
   const { data } = useQuery({
     queryKey: ["dashboardDetails"],
     queryFn: _dahsboardService.getDashboardDetails,
   });
-  const [selectedEvent, setSelectedEvent] = useState<ITicketDetails | null>(
-    null
-  );
-  const _eventService = eventService();
-  const { data: users, refetch } = useQuery({
+  const { data: events } = useQuery({
+    queryKey: ["events"],
+    queryFn: _eventService.getAll,
+    initialData: [],
+  });
+
+  const { data: nonTechAndUsers, refetch } = useQuery({
     queryKey: ["s", selectedEvent?.id],
     queryFn: async () =>
       await _eventService.getAttendeesByEventId(selectedEvent?.id ?? ""),
@@ -33,9 +39,9 @@ export default function Dashboard() {
 
   return (
     <div className="row">
-      <TicketDetailModal
+      <EventDetailModal
         eventName={selectedEvent?.eventName || ""}
-        users={users}
+        nonTechAndUsers={nonTechAndUsers}
         isModalOpen={isModalOpen}
         handleClose={handleClose}
       />
@@ -91,15 +97,15 @@ export default function Dashboard() {
           <div className="card mb-3">
             <div className="card-header">Events</div>
             <div className="card-body">
-              {data?.ticketDetails.map((td) => (
+              {events.map((e) => (
                 <div
                   onClick={() => {
                     setIsModalOpen(true);
-                    setSelectedEvent(td);
+                    setSelectedEvent(e);
                     refetch();
                   }}
                 >
-                  <TicketDetails {...td} />
+                  <EventDetails {...e} />
                 </div>
               ))}
             </div>

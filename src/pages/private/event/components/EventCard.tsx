@@ -67,9 +67,9 @@ export default function EventCard(props: IEvent) {
       </p>
       {ticketCategories?.map((ticket, index) => (
         <p key={index}>
-          {ticket.category} - ₱{ticket.price}
+          {ticket.ticketName} - ₱{ticket.ticketPrice}
           <br />
-          Tickets Available: {ticket.remainingTickets}
+          Tickets Available: {ticket.ticketRemaining}
         </p>
       ))}
     </Card>
