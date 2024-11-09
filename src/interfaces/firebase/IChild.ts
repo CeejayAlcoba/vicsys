@@ -1,4 +1,5 @@
 export default interface IChild {
+  id?: string;
   userId?: string;
   firstName: string;
   lastName: string;

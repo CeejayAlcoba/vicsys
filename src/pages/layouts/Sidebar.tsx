@@ -97,6 +97,12 @@ export default function Sidebar() {
       icon: <ShoppingCartOutlined />,
       onClick: () => navigate("my-purchase"),
     },
+    {
+      label: "My Kids",
+      key: "11",
+      icon: <ShoppingCartOutlined />,
+      onClick: () => navigate("my-kids"),
+    },
   ];
 
   const { collapsed, setCollapsed } = useSidebarContext();

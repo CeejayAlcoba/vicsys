@@ -23,12 +23,17 @@ export default function childrenService() {
   const update = async (id: string, data: IChild) => {
     return await _childrenRepository.update(id, data);
   };
+
   const updateManyByUserId = async (userId: string, data: IChild[]) => {
     await _childrenRepository.deleteManyByUserId(userId);
     return await _childrenRepository.addMany(userId, data);
   };
   const deleteById = async (id: string) => {
     await _childrenRepository.deleteById(id);
+  };
+  const add = async (data: IChild, userId?: string) => {
+    if (userId) return await _childrenRepository.add({ ...data, userId });
+    return await _childrenRepository.add(data);
   };
   const getTotalChildren = async () => {
     const children = await _childrenRepository.getAll();
@@ -62,5 +67,6 @@ export default function childrenService() {
     addMany,
     update,
     deleteById,
+    add,
   };
 }
