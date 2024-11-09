@@ -10,6 +10,7 @@ import { TicketStatus } from "../interfaces/firebase/ITicket";
 import userService from "../firebase/services/userService";
 import Swal from "sweetalert2";
 import { TicketStatusText } from "./TicketStatusText";
+import TicketQrCodeModal from "./TicketQrCodeModal";
 
 export default function MyPurchaseEventCollapse(props: {
   purchaseEvents: IMyPuchaseEvent[];
@@ -21,6 +22,7 @@ export default function MyPurchaseEventCollapse(props: {
   const _userService = userService();
   const [isUpdateStatusModalVisible, setIsUpdateStatusModalVisible] =
     useState<boolean>(false);
+  const [isQrModalVisible, setIsQrModalVisible] = useState<boolean>(false);
   const [selectedPurchase, setSelectedPurchase] =
     useState<IMyPuchaseEvent | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
@@ -59,6 +61,12 @@ export default function MyPurchaseEventCollapse(props: {
   };
   return (
     <>
+      <TicketQrCodeModal
+        setIsOpen={setIsQrModalVisible}
+        isOpen={isQrModalVisible}
+        purchaseEvent={selectedPurchase}
+      />
+
       <EditTicketStatusModal
         handleUpdateStatus={handleUpdateStatus}
         handleClose={handleCloseUpdateStratusModal}
@@ -106,6 +114,10 @@ export default function MyPurchaseEventCollapse(props: {
                       className="text-blue-600 hover:underline"
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={() => {
+                        setSelectedPurchase(event);
+                        setIsQrModalVisible(true);
+                      }}
                     >
                       View QR Code
                     </a>
