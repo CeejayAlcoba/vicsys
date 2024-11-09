@@ -17,6 +17,7 @@ import AccountSettingPage from "../private/account-settings/AccountSettingPage";
 import EmailVerificationPage from "../private/email-verification/EmailVerificationPage";
 import TicketCategoriesPage from "../private/ticket-categories/TicketCategoriesPage";
 import KidsListPage from "../private/kids-list/KidsListPage";
+import MyPurchasePage from "../private/my-purchases/MyPurchasePage";
 
 export default function AppRoute() {
   const { user } = useUserContext();
@@ -72,6 +73,10 @@ export default function AppRoute() {
         {
           path: "kids-list",
           element: <KidsListPage />,
+        },
+        {
+          path: "my-purchase",
+          element: <MyPurchasePage />,
         },
       ],
     },

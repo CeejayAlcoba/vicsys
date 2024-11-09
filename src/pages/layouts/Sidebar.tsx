@@ -7,6 +7,7 @@ import {
   LogoutOutlined,
   QrcodeOutlined,
   HomeOutlined,
+  ShoppingCartOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import useSidebarContext from "./contexts/useSidebarContext";
@@ -89,6 +90,12 @@ export default function Sidebar() {
       key: "9",
       icon: <UserOutlined />,
       onClick: () => navigate("kids-list"),
+    },
+    {
+      label: "My Purchase",
+      key: "10",
+      icon: <ShoppingCartOutlined />,
+      onClick: () => navigate("my-purchase"),
     },
   ];
 
