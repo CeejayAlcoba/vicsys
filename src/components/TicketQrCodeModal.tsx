@@ -34,7 +34,6 @@ export default function TicketQrCodeModal(props: {
 
   return (
     <Modal
-      title="Qr Code"
       open={isOpen}
       onCancel={() => setIsOpen(false)}
       width={400}
@@ -65,11 +64,20 @@ export default function TicketQrCodeModal(props: {
         )}
         <center id="print">
           <h3 className="mb-3">{event?.eventName}</h3>
-          <p className="mb-1">Venue: {event?.venue}</p>
           <p className="mb-1">
-            From: {convertUnixToDateText(event?.startTime)}
+            <span className="fw-bold"> Venue:</span> {event?.venue}
           </p>
-          <p className="mb-3">To: {convertUnixToDateText(event?.endTime)}</p>
+          <p className="mb-1">
+            <span className="fw-bold"> Type:</span> {purchaseEvent?.ticketName}
+          </p>
+          <p className="mb-1">
+            <span className="fw-bold"> Start:</span>{" "}
+            {convertUnixToDateText(event?.startTime)}
+          </p>
+          <p className="mb-3">
+            <span className="fw-bold"> End:</span>{" "}
+            {convertUnixToDateText(event?.endTime)}
+          </p>
 
           <div className="qr-code-wrapper mb-4">
             <QRCode
