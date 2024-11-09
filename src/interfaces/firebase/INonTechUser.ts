@@ -6,7 +6,7 @@ export interface IMyPuchaseEvent {
   isPaid: boolean;
   location: string;
   status: TicketStatus;
-  ticketId: string;
+  ticketId?: string;
   ticketName: string;
 }
 

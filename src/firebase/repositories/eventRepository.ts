@@ -22,7 +22,7 @@ export default function eventRepository() {
     const eventRef = doc(db, "events", eventId);
 
     await updateDoc(eventRef, {
-      attendees: arrayUnion({ userId: userId, joinedAt: new Date() }),
+      attendees: arrayUnion({ userId: userId }),
     });
   };
 

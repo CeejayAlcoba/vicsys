@@ -2,6 +2,7 @@ import {
   arrayUnion,
   collection,
   doc,
+  getDoc,
   getDocs,
   getFirestore,
   query,
@@ -9,13 +10,10 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import {
-  IMyPuchaseEvent,
-  IUser,
-  IUserPublic,
-} from "../../interfaces/firebase/IUser";
+import { IUser, IUserPublic } from "../../interfaces/firebase/IUser";
 import genericRepository from "./genericRepository";
 import { db } from "../firebaseConfig";
+import { IMyPuchaseEvent } from "../../interfaces/firebase/INonTechUser";
 
 export default function userRepository() {
   const _genericRepository = genericRepository<IUser>("users");
@@ -103,9 +101,59 @@ export default function userRepository() {
 
     return usersWithPurchases;
   };
+  const updateUserPurchaseEvent = async (
+    userId: string,
+    purchaseEventId: string,
+    updatedData: IMyPuchaseEvent
+  ) => {
+    // Function to get the user document from the "users" collection
+    const userDocRef = doc(db, "users", userId);
+    let userDoc = await getDoc(userDocRef);
+
+    // If the user document does not exist in "users", search in "nonTechUsers"
+    if (!userDoc.exists()) {
+      const nonTechUsersCollection = collection(db, "nonTechUsers");
+      const q = query(nonTechUsersCollection, where("id", "==", userId));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        // Assuming there's only one document matching the query
+        userDoc = querySnapshot.docs[0];
+      } else {
+        throw new Error("User document not found in either collection");
+      }
+    }
+
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      const myPurchaseEvents = userData?.myPurchaseEvents || [];
+
+      // Find the event index to update
+      const eventIndex = myPurchaseEvents.findIndex(
+        (event: any) => event.purchaseEventId === purchaseEventId
+      );
+
+      if (eventIndex !== -1) {
+        // Update the event data
+        myPurchaseEvents[eventIndex] = {
+          ...myPurchaseEvents[eventIndex],
+          ...updatedData,
+        };
+
+        // Update the document in Firestore
+        const userDocRef = userDoc.ref; // Reference to the found document
+        await updateDoc(userDocRef, { myPurchaseEvents });
+      } else {
+        throw new Error("Purchase event not found");
+      }
+    } else {
+      throw new Error("User document not found in either collection");
+    }
+  };
 
   return {
     ..._genericRepository,
+    updateUserPurchaseEvent,
     getPurchasesByEventId,
     getUserByEmail,
     isEmailExisted,

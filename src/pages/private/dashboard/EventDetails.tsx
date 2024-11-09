@@ -3,47 +3,81 @@ import { convertUnixToTimeText } from "../../../utils/dateTimeFormat";
 import DataTable from "../../../components/DataTable";
 import { ColumnsType } from "antd/es/table";
 import { IEvent, IEventUser } from "../../../interfaces/firebase/IEvent";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import MyPurchaseEventCollapse from "../../../components/MyPurchaseEventCollapse";
+import { useQuery } from "@tanstack/react-query";
+import eventService from "../../../firebase/services/eventService";
 
-export default function EventDetails(props: IEvent) {
-  const { image, eventName, endTime, startTime, ticketCategories } = props;
-
-  const [totals, setTotals] = useState({ ticketTotal: 0, ticketSold: 0 });
-
-  useEffect(() => {
-    const ticketTotal = ticketCategories.reduce(
-      (curr, prev) => (curr += prev.ticketTotal),
-      0
-    );
-    const ticketSold = ticketCategories.reduce(
-      (curr, prev) => (curr += prev.ticketSold),
-      0
-    );
-    setTotals({
-      ticketTotal,
-      ticketSold,
-    });
-  }, [ticketCategories]);
-  console.log(ticketCategories);
-
-  const ticketPercent = (totals.ticketSold / totals.ticketTotal) * 100;
+export default function EventDetails() {
+  const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
+  const _eventService = eventService();
+  const { data: events } = useQuery({
+    queryKey: ["events"],
+    queryFn: _eventService.getAll,
+    initialData: [],
+  });
+  const { data: nonTechAndUsers, refetch } = useQuery({
+    queryKey: ["s", selectedEvent?.id],
+    queryFn: async () =>
+      await _eventService.getAttendeesByEventId(selectedEvent?.id ?? ""),
+    initialData: [],
+  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleClose = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <>
-      <div className="event-item" data-sold="50" data-total="100">
-        <img src={image} alt="Event 2" />
-        <div className="event-details">
-          <p className="event-title">{eventName}</p>
-          <p className="event-time">
-            {convertUnixToTimeText(startTime)} -{" "}
-            {convertUnixToTimeText(endTime)}
-          </p>
-          <Progress percent={ticketPercent} showInfo={false} />
-          <p className="ticket-count">
-            {totals.ticketSold} / {totals.ticketTotal}
-          </p>
-        </div>
-      </div>
+      <EventDetailModal
+        refetch={refetch}
+        eventName={selectedEvent?.eventName || ""}
+        nonTechAndUsers={nonTechAndUsers}
+        isModalOpen={isModalOpen}
+        handleClose={handleClose}
+      />
+      {events.map((event, index) => {
+        const { image, eventName, endTime, startTime } = event;
+        const ticketTotal = event.ticketCategories.reduce(
+          (curr, prev) => (curr += prev.ticketTotal),
+          0
+        );
+        const ticketSold = event.ticketCategories.reduce(
+          (curr, prev) => (curr += prev.ticketSold),
+          0
+        );
+        const ticketPercent = (ticketSold / ticketTotal) * 100;
+        return (
+          <div
+            key={index}
+            onClick={() => {
+              setIsModalOpen(true);
+              setSelectedEvent(event);
+              refetch();
+            }}
+            className="cursor-pointer"
+          >
+            <div className="event-item">
+              <img
+                src={image}
+                alt={`${eventName} event`}
+                className="w-full object-cover rounded-t-lg"
+              />
+              <div className="event-details">
+                <p className="event-title font-semibold text-lg">{eventName}</p>
+                <p className="event-time text-gray-600">
+                  {convertUnixToTimeText(startTime)} -{" "}
+                  {convertUnixToTimeText(endTime)}
+                </p>
+                <Progress percent={ticketPercent} showInfo={false} />
+                <p className="ticket-count text-sm text-gray-700">
+                  {ticketSold} / {ticketTotal}
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </>
   );
 }
@@ -53,8 +87,15 @@ export const EventDetailModal = (props: {
   eventName: string;
   isModalOpen: boolean;
   handleClose: () => void;
+  refetch: () => void;
 }) => {
-  const { eventName, nonTechAndUsers = [], isModalOpen, handleClose } = props;
+  const {
+    eventName,
+    nonTechAndUsers = [],
+    isModalOpen,
+    handleClose,
+    refetch,
+  } = props;
 
   const columns: ColumnsType<IEventUser> = [
     {
@@ -78,12 +119,14 @@ export const EventDetailModal = (props: {
       dataIndex: "ministry",
     },
     {
-      title: "Ticket Category",
-      dataIndex: "ticketName",
-    },
-    {
-      title: "Status",
-      dataIndex: "ticketStatus",
+      title: "My Purchases",
+      render: (data: IEventUser) => (
+        <MyPurchaseEventCollapse
+          refetch={refetch}
+          userId={data.id ?? ""}
+          purchaseEvents={data.myPurchaseEvents ?? []}
+        />
+      ),
     },
   ];
   return (

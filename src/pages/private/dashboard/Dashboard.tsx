@@ -13,7 +13,6 @@ import EventDetails from "./EventDetails";
 import { IEvent } from "../../../interfaces/firebase/IEvent";
 
 export default function Dashboard() {
-  const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
   const _dahsboardService = dashboardService();
   const _eventService = eventService();
   const { data } = useQuery({
@@ -26,25 +25,8 @@ export default function Dashboard() {
     initialData: [],
   });
 
-  const { data: nonTechAndUsers, refetch } = useQuery({
-    queryKey: ["s", selectedEvent?.id],
-    queryFn: async () =>
-      await _eventService.getAttendeesByEventId(selectedEvent?.id ?? ""),
-    initialData: [],
-  });
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const handleClose = () => {
-    setIsModalOpen(false);
-  };
-
   return (
     <div className="row">
-      <EventDetailModal
-        eventName={selectedEvent?.eventName || ""}
-        nonTechAndUsers={nonTechAndUsers}
-        isModalOpen={isModalOpen}
-        handleClose={handleClose}
-      />
       {/* <!-- Main content --> */}
       <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
         <h1 className="h2">Dashboard</h1>
@@ -97,17 +79,7 @@ export default function Dashboard() {
           <div className="card mb-3">
             <div className="card-header">Events</div>
             <div className="card-body">
-              {events.map((e) => (
-                <div
-                  onClick={() => {
-                    setIsModalOpen(true);
-                    setSelectedEvent(e);
-                    refetch();
-                  }}
-                >
-                  <EventDetails {...e} />
-                </div>
-              ))}
+              <EventDetails />
             </div>
           </div>
         </div>

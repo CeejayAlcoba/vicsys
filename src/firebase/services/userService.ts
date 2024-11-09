@@ -1,18 +1,18 @@
 import { onAuthStateChanged } from "firebase/auth";
-import {
-  IMyPuchaseEvent,
-  IUserDetails,
-  IUserPublic,
-} from "../../interfaces/firebase/IUser";
+import { IUserDetails, IUserPublic } from "../../interfaces/firebase/IUser";
 import userRepository from "../repositories/userRepository";
 import { auth } from "../firebaseConfig";
 import accountRepository from "../repositories/accountRepository";
 import { Role } from "../../interfaces/firebase/Role";
 import IPieValue from "../../interfaces/components/IPieValue";
+import { IMyPuchaseEvent } from "../../interfaces/firebase/INonTechUser";
+import nonTechUserRepository from "../repositories/nonTechUserRepository";
 
 export default function userService() {
   const _accountRepository = accountRepository();
   const _userRepository = userRepository();
+  const _nonTechUserRepository = nonTechUserRepository();
+
   const getAll = async () => {
     return await _userRepository.getAll();
   };
@@ -76,7 +76,38 @@ export default function userService() {
     return await _userRepository.getPurchasesByEventId(eventId);
   };
 
+  const updateUserPurchaseEvent = async (
+    userId: string,
+    purchaseEventId: string,
+    updatedData: IMyPuchaseEvent
+  ) => {
+    let user = null;
+    let isNontechUser = false;
+    user = await _userRepository.getById(userId);
+    if (!user) {
+      isNontechUser = true;
+      user = await _nonTechUserRepository.getById(userId);
+    }
+
+    const updatedPurchaseEvents = user?.myPurchaseEvents?.map((m) => {
+      if (m.ticketId == purchaseEventId) return updatedData;
+      return m;
+    });
+
+    if (isNontechUser)
+      return await _nonTechUserRepository.update(userId, {
+        ...user,
+        myPurchaseEvents: updatedPurchaseEvents,
+      });
+
+    return await _userRepository.update(userId, {
+      ...user,
+      myPurchaseEvents: updatedPurchaseEvents,
+    });
+  };
+
   return {
+    updateUserPurchaseEvent,
     getPurchasesByEventId,
     addMyPurchaseEvents,
     getUserRolePieChart,

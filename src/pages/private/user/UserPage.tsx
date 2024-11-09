@@ -212,10 +212,13 @@ export default function UserPage() {
       ),
     },
     {
-      title: "My Purchase Events",
-      dataIndex: "myPurchaseEvents",
-      render: (events: IMyPuchaseEvent[]) => (
-        <MyPurchaseEventCollapse purchaseEvents={events} />
+      title: "My Purchases",
+      render: (data: IUser) => (
+        <MyPurchaseEventCollapse
+          refetch={refetch}
+          userId={data.id ?? ""}
+          purchaseEvents={data.myPurchaseEvents ?? []}
+        />
       ),
     },
     {

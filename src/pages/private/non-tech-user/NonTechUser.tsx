@@ -32,10 +32,12 @@ import FormGroupItems, {
   FormGroupItemsProps,
 } from "../../../components/FormControl";
 import eventService from "../../../firebase/services/eventService";
-import { IEvent } from "../../../interfaces/firebase/IEvent";
+import { IEvent, ITicketCategory } from "../../../interfaces/firebase/IEvent";
 import { convertUnixToTimeText } from "../../../utils/dateTimeFormat";
 import { Timestamp } from "firebase/firestore";
 import MyPurchaseEventCollapse from "../../../components/MyPurchaseEventCollapse";
+import { TicketStatus } from "../../../interfaces/firebase/ITicket";
+import { v4 as uuidv4 } from "uuid";
 
 export default function NonTechUserPage() {
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
@@ -210,11 +212,13 @@ export default function NonTechUserPage() {
       ),
     },
     {
-      title: "My Purchased Events",
-      dataIndex: "myPurchaseEvents",
-      key: "myPurchaseEvents",
-      render: (events: IMyPuchaseEvent[]) => (
-        <MyPurchaseEventCollapse purchaseEvents={events} />
+      title: "My Purchases",
+      render: (data: INonTechUser) => (
+        <MyPurchaseEventCollapse
+          refetch={refetchnontechuser}
+          userId={data.id ?? ""}
+          purchaseEvents={data.myPurchaseEvents ?? []}
+        />
       ),
     },
     {
@@ -281,19 +285,20 @@ export default function NonTechUserPage() {
   };
 
   const handleSaveToPurchase = async (
-    eventId: string,
-    ticketCategoryId: string,
-    price: number
+    event: IEvent,
+    selectedTicketCategory: ITicketCategory
   ) => {
     if (!selectedUser?.id) return;
 
     try {
       const purchaseEvent: IMyPuchaseEvent = {
-        eventId,
-        ticketCategoryId,
-        price,
-        totalTickets: 1,
-        purchasedAt: Timestamp.now(),
+        eventId: event.id ?? "",
+        imageUrl: event?.image ?? "",
+        isPaid: false,
+        ticketId: uuidv4(),
+        location: event?.venue ?? "",
+        status: TicketStatus.Pending,
+        ticketName: selectedTicketCategory.ticketName,
       };
 
       const updatedUser: INonTechUser = {
@@ -362,11 +367,7 @@ export default function NonTechUserPage() {
         if (!selectedCategory) throw new Error("Ticket category not found");
 
         await Promise.all([
-          handleSaveToPurchase(
-            selectedEventId,
-            selectedCategoryId,
-            selectedCategory.ticketPrice
-          ),
+          handleSaveToPurchase(selectedEvent, selectedCategory),
           handleSaveToAttendees(selectedEventId),
         ]);
 
@@ -449,7 +450,7 @@ export default function NonTechUserPage() {
                             }
                           }}
                         >
-                          {category.category}: {category.remainingTickets}/
+                          {category.ticketName}: {category.ticketRemaining}/
                           {category.ticketTotal} Available
                         </Tag>
                       ))}
@@ -474,7 +475,7 @@ export default function NonTechUserPage() {
                               : ""
                           }
                         >
-                          {category.category}: ₱{category.ticketPrice}
+                          {category.ticketName}: ₱{category.ticketPrice}
                         </Typography.Text>
                       ))}
                     </div>
