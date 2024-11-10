@@ -2,11 +2,12 @@ import { Modal, Progress } from "antd";
 import { convertUnixToTimeText } from "../../../utils/dateTimeFormat";
 import DataTable from "../../../components/DataTable";
 import { ColumnsType } from "antd/es/table";
-import { IEvent, IEventUser } from "../../../interfaces/firebase/IEvent";
+import { IEvent } from "../../../interfaces/firebase/IEvent";
 import { useState } from "react";
 import MyPurchaseEventCollapse from "../../../components/MyPurchaseEventCollapse";
 import { useQuery } from "@tanstack/react-query";
 import eventService from "../../../firebase/services/eventService";
+import { IUser } from "../../../interfaces/firebase/IUser";
 
 export default function EventDetails() {
   const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
@@ -17,7 +18,7 @@ export default function EventDetails() {
     initialData: [],
   });
   const { data: nonTechAndUsers, refetch } = useQuery({
-    queryKey: ["s", selectedEvent?.id],
+    queryKey: ["nonTechAndUsers"],
     queryFn: async () =>
       await _eventService.getAttendeesByEventId(selectedEvent?.id ?? ""),
     initialData: [],
@@ -25,6 +26,11 @@ export default function EventDetails() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleClose = () => {
     setIsModalOpen(false);
+  };
+  const handleClickEvent = async (event: IEvent) => {
+    await setSelectedEvent(event);
+    await setIsModalOpen(true);
+    await refetch();
   };
 
   return (
@@ -42,18 +48,18 @@ export default function EventDetails() {
           (curr, prev) => (curr += prev.ticketTotal),
           0
         );
-        const ticketSold = event.ticketCategories.reduce(
-          (curr, prev) => (curr += prev.ticketSold),
+        const totalTicketRemaining = event.ticketCategories.reduce(
+          (curr, prev) => (curr += prev.ticketRemaining ?? 0),
           0
         );
-        const ticketPercent = (ticketSold / ticketTotal) * 100;
+        const ticketBookCount = ticketTotal - totalTicketRemaining;
+        const ticketPercent = (ticketBookCount / ticketTotal) * 100;
+
         return (
           <div
             key={index}
             onClick={() => {
-              setIsModalOpen(true);
-              setSelectedEvent(event);
-              refetch();
+              handleClickEvent(event);
             }}
             className="cursor-pointer"
           >
@@ -71,7 +77,7 @@ export default function EventDetails() {
                 </p>
                 <Progress percent={ticketPercent} showInfo={false} />
                 <p className="ticket-count text-sm text-gray-700">
-                  {ticketSold} / {ticketTotal}
+                  {ticketBookCount} / {ticketTotal}
                 </p>
               </div>
             </div>
@@ -83,7 +89,7 @@ export default function EventDetails() {
 }
 
 export const EventDetailModal = (props: {
-  nonTechAndUsers: IEventUser[];
+  nonTechAndUsers: IUser[];
   eventName: string;
   isModalOpen: boolean;
   handleClose: () => void;
@@ -97,7 +103,7 @@ export const EventDetailModal = (props: {
     refetch,
   } = props;
 
-  const columns: ColumnsType<IEventUser> = [
+  const columns: ColumnsType<IUser> = [
     {
       title: "Name",
       dataIndex: "name",
@@ -120,15 +126,18 @@ export const EventDetailModal = (props: {
     },
     {
       title: "My Purchases",
-      render: (data: IEventUser) => (
-        <MyPurchaseEventCollapse
-          refetch={refetch}
-          userId={data.id ?? ""}
-          purchaseEvents={data.myPurchaseEvents ?? []}
-        />
-      ),
+      render: (data: IUser) => {
+        return (
+          <MyPurchaseEventCollapse
+            refetch={refetch}
+            userId={data.id ?? ""}
+            purchaseEvents={data?.myPurchaseEvents ?? []}
+          />
+        );
+      },
     },
   ];
+
   return (
     <Modal
       title={`${eventName} Attendees`}

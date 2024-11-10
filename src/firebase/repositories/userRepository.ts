@@ -79,7 +79,6 @@ export default function userRepository() {
     const snapshot = await getDocs(usersRef);
 
     if (snapshot.empty) {
-      console.log("No users found.");
       return [];
     }
 

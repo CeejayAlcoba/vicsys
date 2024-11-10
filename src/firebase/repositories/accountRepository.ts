@@ -29,7 +29,6 @@ export default function accountRepository() {
       })
       .catch((_e: any) => {
         let e: Error = _e;
-        console.log(e.message);
         throw new Error("Invalid email or password.");
       });
   };

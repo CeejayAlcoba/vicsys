@@ -16,7 +16,6 @@ export default function ticketCategoryService() {
       return await _ticketCategoryRepository.getById(id);
     } catch (_e: any) {
       let e: Error = _e;
-      console.log(e.message);
     }
   };
 

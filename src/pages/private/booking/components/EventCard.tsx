@@ -1,9 +1,14 @@
 import { Button, Card } from "antd";
-import { IEvent, IEventSave } from "../../../../interfaces/firebase/IEvent";
+import { IEvent } from "../../../../interfaces/firebase/IEvent";
 import { convertUnixToDateText } from "../../../../utils/dateTimeFormat";
-import useEventContext from "../useEventContext";
+import { BookOutlined } from "@ant-design/icons";
 
-export default function EventCard(props: IEvent) {
+export default function BookingEventCard(props: {
+  event: IEvent;
+  setSelectedEvent: (value: IEvent) => void;
+  setIsBookingModalVisible: (value: boolean) => void;
+}) {
+  const { event, setSelectedEvent, setIsBookingModalVisible } = props;
   const {
     eventName,
     image,
@@ -12,13 +17,13 @@ export default function EventCard(props: IEvent) {
     venue,
     startTime,
     endTime,
-  } = props;
-  const {
-    handleDeleteConfirmation,
-    setSelectedEvent,
-    setIsSaveModalOpen,
-    setImageUpload,
-  } = useEventContext();
+  } = event;
+  // const {
+  //   handleDeleteConfirmation,
+  //   setSelectedEvent,
+  //   setIsSaveModalOpen,
+  //   setImageUpload,
+  // } = useEventContext();
   return (
     <Card
       style={{ width: 350, marginBottom: 20 }}
@@ -32,22 +37,13 @@ export default function EventCard(props: IEvent) {
       actions={[
         <Button
           type="primary"
+          icon={<BookOutlined />}
           onClick={() => {
-            setImageUpload(null);
-            setSelectedEvent(props);
-            setIsSaveModalOpen(true);
+            setSelectedEvent(event);
+            setIsBookingModalVisible(true);
           }}
         >
-          View and Edit
-        </Button>,
-        <Button
-          danger
-          onClick={() => {
-            setSelectedEvent(props);
-            handleDeleteConfirmation();
-          }}
-        >
-          Delete
+          Book now
         </Button>,
       ]}
     >

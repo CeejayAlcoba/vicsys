@@ -3,7 +3,7 @@ import { IMyPuchaseEvent } from "../interfaces/firebase/INonTechUser";
 import eventService from "../firebase/services/eventService";
 import { useQuery } from "@tanstack/react-query";
 import { EditOutlined } from "@ant-design/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IEvent } from "../interfaces/firebase/IEvent";
 import { BaseButtonProps } from "antd/es/button/button";
 import { TicketStatus } from "../interfaces/firebase/ITicket";
@@ -17,7 +17,12 @@ export default function MyPurchaseEventCollapse(props: {
   userId: string;
   refetch: () => void;
 }) {
-  const { purchaseEvents, userId, refetch } = props;
+  const { userId, refetch } = props;
+  const [purchaseEvents, setMyPurchaseEvents] = useState<IMyPuchaseEvent[]>([]);
+  useEffect(() => {
+    setMyPurchaseEvents(props.purchaseEvents);
+  }, [props.purchaseEvents]);
+
   const _eventService = eventService();
   const _userService = userService();
   const [isUpdateStatusModalVisible, setIsUpdateStatusModalVisible] =
@@ -59,6 +64,45 @@ export default function MyPurchaseEventCollapse(props: {
       timer: 1500,
     });
   };
+  const CollapsibleChildren = () => (
+    <div className="space-y-2">
+      {purchaseEvents?.map((event) => (
+        <div key={event.eventId} className="text-sm row">
+          <span className="font-medium">
+            Event: {handleGetEventById(event.eventId)?.eventName}
+          </span>
+
+          <span>Ticket Name: {event.ticketName}</span>
+          <span>
+            Status: <TicketStatusText status={event?.status} />{" "}
+            <Button
+              type="primary"
+              shape="round"
+              size="small"
+              onClick={() => {
+                setSelectedPurchase(event);
+                setIsUpdateStatusModalVisible(true);
+                setSelectedEvent(handleGetEventById(event.eventId) ?? null);
+              }}
+              icon={<EditOutlined />}
+            />
+          </span>
+          <a
+            // href={event.qrcodeUrl}
+            className="text-blue-600 hover:underline"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => {
+              setSelectedPurchase(event);
+              setIsQrModalVisible(true);
+            }}
+          >
+            View QR Code
+          </a>
+        </div>
+      ))}
+    </div>
+  );
   return (
     <>
       <TicketQrCodeModal
@@ -84,47 +128,7 @@ export default function MyPurchaseEventCollapse(props: {
             label: `${purchaseEvents.length} Event${
               purchaseEvents.length > 1 ? "s" : ""
             }`,
-            children: (
-              <div className="space-y-2">
-                {purchaseEvents.map((event) => (
-                  <div key={event.eventId} className="text-sm row">
-                    <span className="font-medium">
-                      Event: {handleGetEventById(event.eventId)?.eventName}
-                    </span>
-
-                    <span>Ticket Name: {event.ticketName}</span>
-                    <span>
-                      Status: <TicketStatusText status={event?.status} />{" "}
-                      <Button
-                        type="primary"
-                        shape="round"
-                        size="small"
-                        onClick={() => {
-                          setSelectedPurchase(event);
-                          setIsUpdateStatusModalVisible(true);
-                          setSelectedEvent(
-                            handleGetEventById(event.eventId) ?? null
-                          );
-                        }}
-                        icon={<EditOutlined />}
-                      />
-                    </span>
-                    <a
-                      // href={event.qrcodeUrl}
-                      className="text-blue-600 hover:underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => {
-                        setSelectedPurchase(event);
-                        setIsQrModalVisible(true);
-                      }}
-                    >
-                      View QR Code
-                    </a>
-                  </div>
-                ))}
-              </div>
-            ),
+            children: <CollapsibleChildren />,
           },
         ]}
       />

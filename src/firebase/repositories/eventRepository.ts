@@ -1,5 +1,5 @@
 import { arrayUnion, doc, getFirestore, updateDoc } from "firebase/firestore";
-import { IEvent, IEventUser } from "../../interfaces/firebase/IEvent";
+import { IEvent } from "../../interfaces/firebase/IEvent";
 import genericRepository from "./genericRepository";
 import userRepository from "./userRepository";
 import { IUser } from "../../interfaces/firebase/IUser";
@@ -26,40 +26,26 @@ export default function eventRepository() {
     });
   };
 
-  const getAttendeesByEventId = async (id: string): Promise<IEventUser[]> => {
-    const event = await _genericRepository.getById(id);
+  const getAttendeesByEventId = async (id: string): Promise<IUser[]> => {
+    const users = await _userRepository.getAll();
+    const nonTechUsers = await _nonTechUserRepository.getAll();
 
-    if (!event?.attendees?.length) {
-      return [];
-    }
+    const allUsers = [...users, ...nonTechUsers].filter(
+      (user): user is IUser =>
+        user !== null &&
+        user !== undefined &&
+        user.hasOwnProperty("myPurchaseEvents")
+    );
 
-    const userDetails = await Promise.all(
-      event.attendees.map((attendee) =>
-        _userRepository.getById(attendee.userId)
-      )
-    );
-    const nonTechUsers = await Promise.all(
-      event.attendees.map((attendee) =>
-        _nonTechUserRepository.getById(attendee.userId)
-      )
-    );
-    const allUsers = [...userDetails, ...nonTechUsers].filter(
-      (user): user is IUser => user !== null && user !== undefined
-    );
-    let result: IEventUser[] = [];
-
-    allUsers.map((user) =>
-      user?.myPurchaseEvents.map((p) => {
-        result.push({
-          ...user,
-          id: user.id,
-          ticketName: p.ticketName,
-          ticketStatus: p.status,
-        });
-      })
-    );
-    console.log(result);
-    return result;
+    const filtered = await allUsers
+      .filter((u) => u.myPurchaseEvents.some((m) => m.eventId == id))
+      .map((user) => ({
+        ...user,
+        myPurchaseEvents: user?.myPurchaseEvents
+          ? user.myPurchaseEvents.filter((p) => p.eventId == id)
+          : [],
+      }));
+    return filtered;
   };
   return { ..._genericRepository, getAttendeesByEventId, getAll, addAttendee };
 }

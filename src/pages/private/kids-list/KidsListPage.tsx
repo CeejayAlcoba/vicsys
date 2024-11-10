@@ -29,7 +29,6 @@ export default function KidsListPage() {
     queryFn: _childrenService.getAll,
     initialData: [],
   });
-  console.log(childrens);
   //   const saveFromGroups: FormGroupItemsProps[] = [
   //     {
   //       name: "description",
