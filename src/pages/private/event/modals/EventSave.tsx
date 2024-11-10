@@ -62,7 +62,6 @@ export default function EventSaveModal() {
       });
     } catch (_e: any) {
       let e: Error = _e;
-      console.log(e.message);
     }
   };
 

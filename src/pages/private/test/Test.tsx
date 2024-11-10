@@ -1,5 +1,6 @@
 import { IMyPuchaseEvent } from "../../../interfaces/firebase/INonTechUser";
 import { TicketStatus } from "../../../interfaces/firebase/ITicket";
+import BookingPage from "../booking/BookingPage";
 
 export default function Test() {
   const purchaseEvent: IMyPuchaseEvent = {
@@ -13,5 +14,5 @@ export default function Test() {
     ticketName: "VIP",
   };
 
-  return <></>;
+  return <BookingPage />;
 }

@@ -19,6 +19,7 @@ import TicketCategoriesPage from "../private/ticket-categories/TicketCategoriesP
 import KidsListPage from "../private/kids-list/KidsListPage";
 import MyPurchasePage from "../private/my-purchases/MyPurchasePage";
 import MyKidsPage from "../private/my-kids/MyKidsPage";
+import BookingPage from "../private/booking/BookingPage";
 
 export default function AppRoute() {
   const { user } = useUserContext();
@@ -82,6 +83,10 @@ export default function AppRoute() {
         {
           path: "my-kids",
           element: <MyKidsPage />,
+        },
+        {
+          path: "event-booking",
+          element: <BookingPage />,
         },
       ],
     },

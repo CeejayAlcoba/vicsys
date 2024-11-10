@@ -181,7 +181,6 @@ export default function NonTechUserPage() {
       dataIndex: "ministry",
       render: (data: string) => (
         <>
-          {console.log(data)}
           <Select defaultValue={data} style={{ width: 180 }}>
             <Select.Option value="Victory Group Leaders">
               Victory Group Leaders
@@ -243,7 +242,6 @@ export default function NonTechUserPage() {
             icon={<EditOutlined />}
             style={{ marginLeft: 8 }}
             onClick={() => {
-              console.log(data);
               setSelectedUser(data);
               setIsOpenSaveModal(true);
             }}

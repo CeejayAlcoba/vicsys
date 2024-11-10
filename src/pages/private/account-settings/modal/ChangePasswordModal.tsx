@@ -15,7 +15,6 @@ export default function ChangePasswordModal() {
       form
         .validateFields()
         .then(async (values: IUserChangePassword) => {
-          console.log("Password change success:", values);
           await _accountService.changePassword(values);
           // setIsChangePasswordModalOpen(false);
           // form.resetFields();

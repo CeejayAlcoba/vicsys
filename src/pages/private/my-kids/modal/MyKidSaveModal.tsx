@@ -108,7 +108,6 @@ export default function MyKidSaveModal(props: MyKidSaveModalProps) {
         <Radio.Group
           onChange={(e) => {
             setHasFoodAllergies(e.target.value);
-            console.log(e.target.value);
           }}
         >
           <Radio value={true}>Yes</Radio>

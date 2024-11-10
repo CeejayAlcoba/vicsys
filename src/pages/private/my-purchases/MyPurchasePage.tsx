@@ -13,7 +13,6 @@ import { TicketStatusText } from "../../../components/TicketStatusText";
 import TicketQrCodeModal from "../../../components/TicketQrCodeModal";
 export default function MyPurchasePage() {
   const { user } = useUserContext();
-  console.log(user);
   const _userService = userService();
   const _eventService = eventService();
   const { data: me } = useQuery({

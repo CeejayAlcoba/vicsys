@@ -5,22 +5,14 @@ import CalendarLayout from "./CalendarLayout";
 import { useQuery } from "@tanstack/react-query";
 import dashboardService from "../../../firebase/services/dasboardService";
 import moneyFormat from "../../../utils/moneyFormat";
-import eventService from "../../../firebase/services/eventService";
 import EventDetails from "./EventDetails";
 
 export default function Dashboard() {
   const _dahsboardService = dashboardService();
-  const _eventService = eventService();
   const { data } = useQuery({
     queryKey: ["dashboardDetails"],
     queryFn: _dahsboardService.getDashboardDetails,
   });
-  const { data: events } = useQuery({
-    queryKey: ["events"],
-    queryFn: _eventService.getAll,
-    initialData: [],
-  });
-
   return (
     <div className="row">
       {/* <!-- Main content --> */}

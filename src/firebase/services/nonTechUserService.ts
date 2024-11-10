@@ -7,7 +7,6 @@ export default function nonTechUserService() {
   const _nonTechUserRepository = nonTechUserRepository();
 
   const getAll = async () => {
-    console.log(_nonTechUserRepository.getAll());
     return await _nonTechUserRepository.getAll();
   };
 
