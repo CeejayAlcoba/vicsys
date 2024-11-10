@@ -1,4 +1,3 @@
-import { IEvent } from "./IEvent";
 import { TicketStatus } from "./ITicket";
 
 export default interface IDahsboard {
