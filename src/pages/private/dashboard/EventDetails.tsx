@@ -52,6 +52,7 @@ export default function EventDetails() {
           (curr, prev) => (curr += prev.ticketRemaining ?? 0),
           0
         );
+        console.log(event.eventName, event.ticketCategories);
         const ticketBookCount = ticketTotal - totalTicketRemaining;
         const ticketPercent = (ticketBookCount / ticketTotal) * 100;
 

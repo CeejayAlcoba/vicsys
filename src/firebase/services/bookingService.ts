@@ -22,15 +22,20 @@ export default function bookingService() {
         myPurchases.filter((m) => m.ticketName == t.ticketName).length,
     }));
 
-    if (!event?.attendees?.some((a) => a.userId == user?.id)) {
-      await _eventRepository.update(event?.id || "", {
-        ...event,
-        ticketCategories: updatedTicketCategories,
-        attendees: event.attendees
-          ? [...event.attendees, { userId: userId }]
-          : [{ userId: userId }],
-      });
-    }
+    const udpatedAttendees = () => {
+      if (event.attendees.some((u) => u.userId == userId) && event.attendees)
+        return event.attendees;
+      if (event.attendees) return [...event.attendees, { userId: userId }];
+
+      return [{ userId: userId }];
+    };
+
+    await _eventRepository.update(event?.id || "", {
+      ...event,
+      ticketCategories: updatedTicketCategories,
+      attendees: udpatedAttendees(),
+    });
+
     return await _userRepository.update(userId, {
       ...user,
       myPurchaseEvents: user.myPurchaseEvents
@@ -38,6 +43,7 @@ export default function bookingService() {
         : [...myPurchases],
     });
   };
+
   const bookEventPurchase = async (
     eventId: string,
     userId: string,
@@ -52,13 +58,19 @@ export default function bookingService() {
       ticketRemaining: (t.ticketRemaining ?? 0) - 1,
     }));
 
-    if (!event?.attendees.some((a) => a.userId == user?.id)) {
-      await _eventRepository.update(event?.id || "", {
-        ...event,
-        ticketCategories: updatedTicketCategories,
-        attendees: [...event.attendees, { userId: userId }],
-      });
-    }
+    const udpatedAttendees = () => {
+      if (event.attendees.some((u) => u.userId == userId) && event.attendees)
+        return event.attendees;
+      if (event.attendees) return [...event.attendees, { userId: userId }];
+
+      return [{ userId: userId }];
+    };
+
+    await _eventRepository.update(event?.id || "", {
+      ...event,
+      ticketCategories: updatedTicketCategories,
+      attendees: udpatedAttendees(),
+    });
 
     return await _userRepository.update(userId, {
       ...user,
