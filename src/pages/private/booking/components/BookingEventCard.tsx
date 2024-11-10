@@ -18,12 +18,6 @@ export default function BookingEventCard(props: {
     startTime,
     endTime,
   } = event;
-  // const {
-  //   handleDeleteConfirmation,
-  //   setSelectedEvent,
-  //   setIsSaveModalOpen,
-  //   setImageUpload,
-  // } = useEventContext();
   return (
     <Card
       style={{ width: 350, marginBottom: 20 }}

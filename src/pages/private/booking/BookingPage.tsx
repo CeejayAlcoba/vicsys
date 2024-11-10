@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import eventService from "../../../firebase/services/eventService";
-import BookingEventCard from "./components/EventCard";
+import BookingEventCard from "./components/BookingEventCard";
 import { Button, Switch, Typography } from "antd";
 import BookingModal from "./components/BookingModal";
 import { useState } from "react";

@@ -83,7 +83,7 @@ export default function BookingModal(props: {
     setTicketNameStatus(initialTicketnameStatus);
   };
   const handleBook = async () => {
-    if (!selectedEvent.id || !user.uid) return;
+    if (!selectedEvent.id || !user.uid || myPurchase.length == 0) return;
     await _bookingService.bookEventPurchases(
       selectedEvent.id,
       user.uid,
@@ -114,6 +114,7 @@ export default function BookingModal(props: {
   };
   useEffect(() => {
     handleSetInitialTicketStatus();
+    setMyPurchase([]);
   }, [selectedEvent]);
   return (
     <Modal
