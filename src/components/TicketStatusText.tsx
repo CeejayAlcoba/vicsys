@@ -1,4 +1,3 @@
-import { Badge } from "antd";
 import { TicketStatus } from "../interfaces/firebase/ITicket";
 
 export interface TicketStatusRepresentation {

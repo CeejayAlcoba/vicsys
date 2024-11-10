@@ -1,4 +1,4 @@
-import { Row, Col, Button } from "antd";
+import { Button } from "antd";
 import EventCard from "./components/EventCard";
 import { useQuery } from "@tanstack/react-query";
 import eventService from "../../../firebase/services/eventService";

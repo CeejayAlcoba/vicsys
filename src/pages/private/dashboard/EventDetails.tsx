@@ -97,6 +97,20 @@ export const EventDetailModal = (props: {
     refetch,
   } = props;
 
+  // Remove duplicates based on user ID while preserving all purchase events
+  const uniqueUsers = nonTechAndUsers.reduce((acc: IEventUser[], current) => {
+    const existingUser = acc.find(user => user.id === current.id);
+    if (existingUser) {
+      // Merge purchase events for existing user
+      existingUser.myPurchaseEvents = [
+        ...(existingUser.myPurchaseEvents || []),
+        ...(current.myPurchaseEvents || [])
+      ];
+      return acc;
+    }
+    return [...acc, current];
+  }, []);
+
   const columns: ColumnsType<IEventUser> = [
     {
       title: "Name",
@@ -129,6 +143,7 @@ export const EventDetailModal = (props: {
       ),
     },
   ];
+
   return (
     <Modal
       title={`${eventName} Attendees`}
@@ -137,8 +152,8 @@ export const EventDetailModal = (props: {
       onCancel={handleClose}
       width={1200}
     >
-      <DataTable dataSource={nonTechAndUsers} columns={columns} />
-      <h6>Total: {nonTechAndUsers.length}</h6>
+      <DataTable dataSource={uniqueUsers} columns={columns} />
+      <h6>Total: {uniqueUsers.length}</h6>
     </Modal>
   );
 };

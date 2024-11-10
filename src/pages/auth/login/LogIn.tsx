@@ -2,8 +2,7 @@ import { Button, Divider, Form, Input } from "antd";
 import {
   UserOutlined,
   LockOutlined,
-  GoogleOutlined,
-  FacebookOutlined,
+  GoogleOutlined
 } from "@ant-design/icons";
 import FormGroupItems, {
   FormGroupItemsProps,
@@ -62,14 +61,6 @@ export default function LogIn() {
     }
   };
 
-  const handleFacebookLogin = async () => {
-    try {
-      await _accountService.loginWithFacebook();
-      navigate("/");
-    } catch (error: any) {
-      setError(error.message);
-    }
-  };
   return (
     <>
       <main className="form-signin">
@@ -106,16 +97,7 @@ export default function LogIn() {
               onClick={handleGoogleLogin}
             >
               Login with Google
-            </Button>
-            <Button
-              type="primary"
-              style={{ backgroundColor: "#50618C" }}
-              icon={<FacebookOutlined />}
-              className="mb-2 w-100"
-              onClick={handleFacebookLogin}
-            >
-              Login with Facebook
-            </Button>
+            </Button>        
           </div>
           <p>
             New here? <a href="signup"> Create an account.</a>
