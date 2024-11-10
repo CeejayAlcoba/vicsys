@@ -347,39 +347,41 @@ export default function NonTechUserPage() {
 
   const AssignToEventModal = () => {
     const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
-    const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+    const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+      null
+    );
     const [ticketQuantity, setTicketQuantity] = useState<number>(0);
-  
+
     const MAX_TICKETS_PER_CATEGORY = 2;
 
     const getExistingTicketsCount = (eventId: string): number => {
       if (!selectedUser?.myPurchaseEvents) return 0;
-      
+
       return selectedUser.myPurchaseEvents.filter(
         (purchase) => purchase.eventId === eventId
       ).length;
     };
-  
+
     const handleQuantityChange = (increment: boolean) => {
       setTicketQuantity((prev) => {
-        const existingTickets = getExistingTicketsCount(selectedEventId || '');
+        const existingTickets = getExistingTicketsCount(selectedEventId || "");
         const maxAllowed = Math.min(
           MAX_TICKETS_PER_CATEGORY - existingTickets,
           MAX_TICKETS_PER_CATEGORY
         );
-        
+
         const newQuantity = increment
           ? Math.min(prev + 1, maxAllowed)
           : Math.max(prev - 1, 0);
         return newQuantity;
       });
     };
-  
+
     const resetSelection = () => {
       setTicketQuantity(0);
       setSelectedCategoryId(null);
     };
-  
+
     const updateTicketCounts = async (
       eventId: string,
       ticketCategoryId: string,
@@ -388,11 +390,11 @@ export default function NonTechUserPage() {
       try {
         const eventRef = doc(db, "events", eventId);
         const eventDoc = await getDoc(eventRef);
-  
+
         if (!eventDoc.exists()) {
           throw new Error("Event not found");
         }
-  
+
         const eventData = eventDoc.data();
         const updatedTicketCategories = eventData.ticketCategories.map(
           (category: ITicketCategory) => {
@@ -410,7 +412,7 @@ export default function NonTechUserPage() {
             return category;
           }
         );
-  
+
         await updateDoc(eventRef, {
           ticketCategories: updatedTicketCategories,
         });
@@ -419,44 +421,46 @@ export default function NonTechUserPage() {
         throw error;
       }
     };
-  
+
     const handleBooking = async () => {
       if (!selectedEventId || !selectedCategoryId) {
         message.error("Please select an event and ticket category");
         return;
       }
-  
+
       if (ticketQuantity === 0) {
         message.error("Please select at least 1 ticket");
         return;
       }
-  
+
       const existingTickets = getExistingTicketsCount(selectedEventId);
       if (existingTickets + ticketQuantity > MAX_TICKETS_PER_CATEGORY) {
-        message.error(`You can only have a maximum of ${MAX_TICKETS_PER_CATEGORY} tickets per event`);
+        message.error(
+          `You can only have a maximum of ${MAX_TICKETS_PER_CATEGORY} tickets per event`
+        );
         return;
       }
-  
+
       try {
         const selectedEvent = event.find((e) => e.id === selectedEventId);
         if (!selectedEvent) throw new Error("Event not found");
-  
+
         const selectedCategory = selectedEvent.ticketCategories.find(
           (tc) => tc.ticketCategoryId === selectedCategoryId
         );
         if (!selectedCategory) throw new Error("Ticket category not found");
-  
+
         if ((selectedCategory.ticketRemaining || 0) < ticketQuantity) {
           message.error("Not enough tickets remaining!");
           return;
         }
-  
+
         await updateTicketCounts(
           selectedEventId,
           selectedCategoryId,
           ticketQuantity
         );
-  
+
         const bookingPromises = Array(ticketQuantity)
           .fill(null)
           .map(() =>
@@ -465,10 +469,10 @@ export default function NonTechUserPage() {
               handleSaveToAttendees(selectedEventId),
             ])
           );
-  
+
         await Promise.all(bookingPromises.flat());
         await Promise.all([refetchnontechuser(), refetchevent()]);
-  
+
         message.success(`Successfully booked ${ticketQuantity} ticket(s)!`);
         setIsOpenAssignEventModal(false);
         setSelectedEvent(null);
@@ -479,7 +483,7 @@ export default function NonTechUserPage() {
         message.error("Failed to book event. Please try again.");
       }
     };
-  
+
     return (
       <Modal
         title="Book an Event"
@@ -495,16 +499,16 @@ export default function NonTechUserPage() {
       >
         <div className="space-y-4">
           {event?.map((events) => {
-            const existingTickets = getExistingTicketsCount(events.id || '');
+            const existingTickets = getExistingTicketsCount(events.id || "");
             const remainingAllowed = MAX_TICKETS_PER_CATEGORY - existingTickets;
-  
+
             return (
               <Card
                 key={events.id}
                 className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
                   selectedEventId === events.id
                     ? "border-2 border-blue-500 bg-blue-50 shadow-lg transform scale-[1.02]"
-                    : "border border-gray-200 hover:border-blue-300"
+                    : "border border-blue-300 hover:border-blue-300"
                 }`}
                 onClick={() => {
                   if (events.id) {
@@ -514,6 +518,10 @@ export default function NonTechUserPage() {
                     setSelectedEventId(events.id);
                   }
                 }}
+                style={{
+                  backgroundColor:
+                    selectedEventId === events.id ? "#ebf8ff" : "white",
+                }}
               >
                 <div className="flex items-start gap-4">
                   <Image
@@ -521,7 +529,7 @@ export default function NonTechUserPage() {
                     alt={events.eventName}
                     style={{ width: 120, height: 80, objectFit: "cover" }}
                   />
-  
+
                   <div className="flex-1">
                     <div className="flex justify-between items-start">
                       <div>
@@ -543,30 +551,45 @@ export default function NonTechUserPage() {
                           const isSelected =
                             selectedEventId === events.id &&
                             selectedCategoryId === category.ticketCategoryId;
-  
+
                           return (
-                            <div key={index} className="flex items-center gap-2">
+                            <div
+                              key={index}
+                              className="flex items-center gap-2"
+                            >
                               <Tag
                                 color={isSelected ? "green" : "blue"}
                                 className={`cursor-pointer ${
-                                  existingTickets >= MAX_TICKETS_PER_CATEGORY ? 'opacity-50' : ''
+                                  existingTickets >= MAX_TICKETS_PER_CATEGORY
+                                    ? "opacity-50"
+                                    : ""
                                 }`}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  if (existingTickets >= MAX_TICKETS_PER_CATEGORY) {
-                                    message.warning(`Maximum ${MAX_TICKETS_PER_CATEGORY} tickets per event allowed`);
+                                  if (
+                                    existingTickets >= MAX_TICKETS_PER_CATEGORY
+                                  ) {
+                                    message.warning(
+                                      `Maximum ${MAX_TICKETS_PER_CATEGORY} tickets per event allowed`
+                                    );
                                     return;
                                   }
                                   if (events.id) {
-                                    if (selectedCategoryId !== category.ticketCategoryId) {
+                                    if (
+                                      selectedCategoryId !==
+                                      category.ticketCategoryId
+                                    ) {
                                       setTicketQuantity(0);
                                     }
                                     setSelectedEventId(events.id);
-                                    setSelectedCategoryId(category.ticketCategoryId || null);
+                                    setSelectedCategoryId(
+                                      category.ticketCategoryId || null
+                                    );
                                   }
                                 }}
                               >
-                                {category.ticketName}: {category.ticketRemaining}/
+                                {category.ticketName}:{" "}
+                                {category.ticketRemaining}/
                                 {category.ticketTotal} Available
                               </Tag>
                               {isSelected && remainingAllowed > 0 && (
@@ -591,7 +614,8 @@ export default function NonTechUserPage() {
                                     onClick={() => handleQuantityChange(true)}
                                     disabled={
                                       ticketQuantity >= remainingAllowed ||
-                                      ticketQuantity >= (category.ticketRemaining || 0)
+                                      ticketQuantity >=
+                                        (category.ticketRemaining || 0)
                                     }
                                   />
                                 </div>
@@ -601,7 +625,10 @@ export default function NonTechUserPage() {
                         })}
                       </div>
                     </div>
-                    <Typography.Paragraph className="mt-2" ellipsis={{ rows: 2 }}>
+                    <Typography.Paragraph
+                      className="mt-2"
+                      ellipsis={{ rows: 2 }}
+                    >
                       {events.description}
                     </Typography.Paragraph>
                     <div className="flex justify-between items-start mt-2">
@@ -643,7 +670,7 @@ export default function NonTechUserPage() {
             );
           })}
         </div>
-  
+
         {selectedEventId && selectedCategoryId && (
           <Alert
             message="Ready to book!"
@@ -688,8 +715,12 @@ export default function NonTechUserPage() {
           form={form}
           initialValues={{
             name: selectedUser?.name || "",
+            contact: selectedUser?.contact || "",
+            age: selectedUser?.age || "",
             email: selectedUser?.email || "",
             birthday: selectedUser?.birthday || "",
+            gender: selectedUser?.gender || "",
+            ministry: selectedUser?.ministry || "",
           }}
           layout="vertical"
         >

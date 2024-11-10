@@ -81,7 +81,7 @@ export default function MyPurchaseEventCollapse(props: {
         items={[
           {
             key: "1",
-            label: `${purchaseEvents.length} Event${
+            label: `${purchaseEvents.length} Ticket${
               purchaseEvents.length > 1 ? "s" : ""
             }`,
             children: (

@@ -97,15 +97,9 @@ export const EventDetailModal = (props: {
     refetch,
   } = props;
 
-  // Remove duplicates based on user ID while preserving all purchase events
   const uniqueUsers = nonTechAndUsers.reduce((acc: IEventUser[], current) => {
     const existingUser = acc.find(user => user.id === current.id);
     if (existingUser) {
-      // Merge purchase events for existing user
-      existingUser.myPurchaseEvents = [
-        ...(existingUser.myPurchaseEvents || []),
-        ...(current.myPurchaseEvents || [])
-      ];
       return acc;
     }
     return [...acc, current];
