@@ -121,7 +121,7 @@ export default function MyKidSaveModal(props: MyKidSaveModalProps) {
       name: "foodAllergies",
       rules: [
         {
-          required: hasFoodAllergies,
+          required: selectedChild?.hasFoodAllergies ?? hasFoodAllergies,
           message: "Please list the food allergies!",
         },
       ],

@@ -14,6 +14,7 @@ import {
 import MyKidSaveModal from "./modal/MyKidSaveModal";
 import { useState } from "react";
 import { Button, Form } from "antd";
+import Swal from "sweetalert2";
 
 export default function MyKidsPage() {
   const { user } = useUserContext();
@@ -78,7 +79,7 @@ export default function MyKidsPage() {
             icon={<DeleteOutlined />}
             onClick={() => {
               setSelectedChild(data);
-              // handleDeleteConfirmation();
+              handleDeleteConfirmation();
             }}
           />
           <Button
@@ -96,7 +97,26 @@ export default function MyKidsPage() {
       ),
     },
   ];
-
+  const handleDeleteConfirmation = () => {
+    Swal.fire({
+      icon: "warning",
+      title: "Are you sure you want to delete?",
+      showCancelButton: true,
+      confirmButtonText: "Delete",
+      confirmButtonColor: "red",
+    }).then(async (result) => {
+      if (result.isConfirmed && selectedChild?.id) {
+        await _childrenService.deleteById(selectedChild.id);
+        refetch();
+        Swal.fire({
+          icon: "success",
+          title: "Successfully deleted",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    });
+  };
   return (
     <>
       <MyKidSaveModal
