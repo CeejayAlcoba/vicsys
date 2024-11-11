@@ -5,11 +5,11 @@ import { useState } from "react";
 import { AccountSettingContext } from "./useAccountSettingContext";
 import ChangePasswordModal from "./modal/ChangePasswordModal";
 import { IUserProvider, IUserPublic } from "../../../interfaces/firebase/IUser";
-import { convertUnixToDate } from "../../../utils/dateTimeFormat";
 import PasswordConfirmationModal from "./modal/PasswordConfirmationModal";
 import { auth } from "../../../firebase/firebaseConfig";
 import Swal from "sweetalert2";
 import useUserContext from "../../../contexts/useUserContext";
+import moment from "moment";
 
 export default function AccountSettingPage() {
   const _userService = userService();
@@ -30,12 +30,11 @@ export default function AccountSettingPage() {
       const user = await _userService.getUserLoggedIn();
       if (user) {
         const newUser = await _userService.getByEmail(user.email ?? "");
+        console.log(newUser?.birthday);
         form.setFieldsValue({
           name: newUser?.name ?? user.displayName,
           email: user.email,
-          birthday: newUser?.birthday
-            ? convertUnixToDate(newUser?.birthday)
-            : "",
+          birthday: newUser?.birthday ? moment(newUser?.birthday) : "",
         });
       }
 

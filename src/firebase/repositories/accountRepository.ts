@@ -45,7 +45,18 @@ export default function accountRepository() {
     }
   };
   const signup = async (data: IUser) => {
-    const { email, password, birthday, name, role } = data;
+    const {
+      email,
+      password,
+      birthday,
+      name,
+      role,
+      age,
+      gender,
+      contact,
+      ministry,
+      profile_picture_url,
+    } = data;
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
@@ -56,8 +67,15 @@ export default function accountRepository() {
       name: name,
       email: email,
       birthday: birthday,
+
+      age: age ?? null,
       userId: user.uid,
       role: role,
+      gender: gender ?? "",
+      contact: contact ?? "",
+      ministry: ministry ?? "",
+      myPurchaseEvents: [],
+      profile_picture_url: profile_picture_url ?? "",
     });
     return user;
   };

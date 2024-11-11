@@ -23,6 +23,7 @@ export interface IUser {
   ministry: string;
   role: Role;
   myPurchaseEvents: IMyPuchaseEvent[];
+  profile_picture_url?: string;
 }
 
 export interface IUserLogin {
@@ -40,6 +41,7 @@ export interface IUserPublic {
   ministry: string;
   role: Role;
   myPurchaseEvents: IMyPuchaseEvent[];
+  profile_picture_url?: string;
 }
 
 export interface IUserChangePassword {

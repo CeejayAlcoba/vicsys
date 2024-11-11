@@ -36,16 +36,19 @@ export default function SignUp() {
   const formGroupItems: FormGroupItemsProps[] = [
     {
       name: "name",
+      label: "Name",
       rules: [{ required: true, message: "Please input the name!" }],
       component: <Input placeholder="Name" />,
     },
     {
       name: "email",
+      label: "Email",
       rules: [{ required: true, message: "Please input the email!" }],
       component: <Input type="email" placeholder="Email" disabled={!!user} />,
     },
     {
       name: "password",
+      label: "Password",
       rules: [
         { required: true, message: "Please input the password!" },
         { min: 6, message: "Password should be at least 6 characters" },
@@ -54,6 +57,7 @@ export default function SignUp() {
     },
     {
       name: "birthday",
+      label: "Birthday",
       rules: [{ required: true, message: "Please input the birthday!" }],
       component: <Input type="date" placeholder="Birthday" />,
     },
