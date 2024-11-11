@@ -57,7 +57,6 @@ const SaveUserModal = (props: SaveUserModalProps) => {
       }}
     >
       <Form form={form} layout="vertical">
-        <p className="text-danger">{error}</p>
         <FormGroupItems
           items={selectedUser ? updateFromGroups : addFormGroups}
         />
@@ -74,6 +73,7 @@ const SaveUserModal = (props: SaveUserModalProps) => {
           </Badge>
         </Form.Item>
       </Form>
+      <p className="text-danger">{error}</p>
     </Modal>
   );
 };

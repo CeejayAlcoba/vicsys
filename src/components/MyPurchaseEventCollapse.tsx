@@ -106,6 +106,7 @@ export default function MyPurchaseEventCollapse(props: {
   return (
     <>
       <TicketQrCodeModal
+        userId={userId}
         setIsOpen={setIsQrModalVisible}
         isOpen={isQrModalVisible}
         purchaseEvent={selectedPurchase}

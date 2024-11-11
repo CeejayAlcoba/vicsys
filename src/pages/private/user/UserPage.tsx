@@ -146,7 +146,7 @@ export default function UserPage() {
       ),
     },
   ];
-  
+
   const updateFromGroups: FormGroupItemsProps[] = addFormGroups.filter(
     (c) => c.name !== "password"
   );
@@ -284,13 +284,12 @@ export default function UserPage() {
         showConfirmButton: false,
         timer: 1500,
       });
+      refetch();
     } catch (_e: any) {
       let e: Error = _e;
+      console.log(e);
       setError(e.message);
-    }
-    if (!error) {
-      refetch();
-      setIsOpenSaveModal(false);
+      throw new Error(e.message);
     }
   };
 

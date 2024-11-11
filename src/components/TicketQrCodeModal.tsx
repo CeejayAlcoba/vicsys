@@ -10,10 +10,11 @@ import { useReactToPrint } from "react-to-print";
 
 export default function TicketQrCodeModal(props: {
   purchaseEvent: IMyPuchaseEvent | null;
+  userId: string;
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
 }) {
-  const { purchaseEvent, isOpen = false, setIsOpen } = props;
+  const { userId, purchaseEvent, isOpen, setIsOpen } = props;
   const _documentService = documentService();
   const _eventService = eventService();
   const {
@@ -81,7 +82,7 @@ export default function TicketQrCodeModal(props: {
 
           <div className="qr-code-wrapper mb-4">
             <QRCode
-              value={JSON.stringify(purchaseEvent)}
+              value={`${userId}.${purchaseEvent?.ticketId ?? ""}`}
               style={{ backgroundColor: "transparent" }}
             />
           </div>
