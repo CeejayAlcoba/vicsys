@@ -12,12 +12,12 @@ import { IUser } from "../../../interfaces/firebase/IUser";
 export default function EventDetails() {
   const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
   const _eventService = eventService();
-  const { data: events } = useQuery({
+  const { data: events, refetch: refetchEvents } = useQuery({
     queryKey: ["events"],
     queryFn: _eventService.getAll,
     initialData: [],
   });
-  const { data: nonTechAndUsers, refetch } = useQuery({
+  const { data: nonTechAndUsers, refetch: refetchUsers } = useQuery({
     queryKey: ["nonTechAndUsers"],
     queryFn: async () =>
       await _eventService.getAttendeesByEventId(selectedEvent?.id ?? ""),
@@ -28,15 +28,19 @@ export default function EventDetails() {
     setIsModalOpen(false);
   };
   const handleClickEvent = async (event: IEvent) => {
-    await setSelectedEvent(event);
-    await setIsModalOpen(true);
-    await refetch();
+    setSelectedEvent(event);
+    setIsModalOpen(true);
+    refetchUsers();
+  };
+  const refetchAll = () => {
+    refetchEvents();
+    refetchUsers();
   };
 
   return (
     <>
       <EventDetailModal
-        refetch={refetch}
+        refetch={refetchAll}
         eventName={selectedEvent?.eventName || ""}
         nonTechAndUsers={nonTechAndUsers}
         isModalOpen={isModalOpen}
@@ -48,13 +52,11 @@ export default function EventDetails() {
           (curr, prev) => (curr += prev.ticketTotal),
           0
         );
-        const totalTicketRemaining = event.ticketCategories.reduce(
-          (curr, prev) => (curr += prev.ticketRemaining ?? 0),
+        const totalSold = event.ticketCategories.reduce(
+          (curr, prev) => (curr += prev.ticketSold ?? 0),
           0
         );
-        console.log(event.eventName, event.ticketCategories);
-        const ticketBookCount = ticketTotal - totalTicketRemaining;
-        const ticketPercent = (ticketBookCount / ticketTotal) * 100;
+        const ticketPercent = (totalSold / ticketTotal) * 100;
 
         return (
           <div
@@ -78,7 +80,7 @@ export default function EventDetails() {
                 </p>
                 <Progress percent={ticketPercent} showInfo={false} />
                 <p className="ticket-count text-sm text-gray-700">
-                  {ticketBookCount} / {ticketTotal}
+                  {totalSold} / {ticketTotal}
                 </p>
               </div>
             </div>

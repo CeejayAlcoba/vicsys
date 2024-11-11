@@ -2,10 +2,14 @@ import { IEvent, IEventSave } from "../../interfaces/firebase/IEvent";
 import documentRepository from "../repositories/documentRepository";
 import eventRepository from "../repositories/eventRepository";
 import { v4 as uuidv4 } from "uuid";
+import userRepository from "../repositories/userRepository";
+import { IMyPuchaseEvent } from "../../interfaces/firebase/INonTechUser";
+import { TicketStatus } from "../../interfaces/firebase/ITicket";
 
 export default function eventService() {
   const _eventRepository = eventRepository();
   const _documentRepository = documentRepository();
+  const _userRepository = userRepository();
 
   const add = async (data: IEventSave) => {
     let imageUrl = "";
@@ -77,6 +81,7 @@ export default function eventService() {
   const getAttendeesByEventId = async (eventId: string) => {
     return await _eventRepository.getAttendeesByEventId(eventId);
   };
+
   return {
     getAttendeesByEventId,
     add,

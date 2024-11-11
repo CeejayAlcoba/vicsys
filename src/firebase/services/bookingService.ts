@@ -53,11 +53,6 @@ export default function bookingService() {
     const user = await _userRepository.getById(userId);
     if (!event || !user) throw new Error("Event or user not found");
 
-    const updatedTicketCategories = event.ticketCategories.map((t) => ({
-      ...t,
-      ticketRemaining: (t.ticketRemaining ?? 0) - 1,
-    }));
-
     const udpatedAttendees = () => {
       if (event.attendees.some((u) => u.userId == userId) && event.attendees)
         return event.attendees;
@@ -68,7 +63,6 @@ export default function bookingService() {
 
     await _eventRepository.update(event?.id || "", {
       ...event,
-      ticketCategories: updatedTicketCategories,
       attendees: udpatedAttendees(),
     });
 

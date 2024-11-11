@@ -4,6 +4,8 @@ import genericRepository from "./genericRepository";
 import userRepository from "./userRepository";
 import { IUser } from "../../interfaces/firebase/IUser";
 import nonTechUserRepository from "./nonTechUserRepository";
+import { TicketStatus } from "../../interfaces/firebase/ITicket";
+import { IMyPuchaseEvent } from "../../interfaces/firebase/INonTechUser";
 
 export default function eventRepository() {
   const _genericRepository = genericRepository<IEvent>("events");
@@ -47,5 +49,75 @@ export default function eventRepository() {
       }));
     return filtered;
   };
-  return { ..._genericRepository, getAttendeesByEventId, getAll, addAttendee };
+  const updateTicketRemainingAndSold = async (
+    userId: string,
+    myPurchase: IMyPuchaseEvent
+  ) => {
+    const user = await _userRepository.getById(userId);
+    const userPurchased = user?.myPurchaseEvents.find(
+      (m) => m.ticketId == myPurchase.ticketId
+    );
+    if (!userPurchased) throw new Error("user myPurchaseEvent is not found");
+
+    const event = await _genericRepository.getById(myPurchase.eventId);
+    if (!event?.id) throw new Error("event is not found");
+
+    const updatetedTcketCategories = event.ticketCategories.map((t) => {
+      if (t.ticketName == myPurchase.ticketName)
+        return {
+          ...t,
+          ticketRemaining:
+            (t.ticketRemaining ?? 0) +
+            handleTicketRemaining(userPurchased.status, myPurchase.status),
+          ticketSold:
+            t.ticketSold +
+            handleTicketSold(userPurchased.status, myPurchase.status),
+        };
+      return t;
+    });
+    await _genericRepository.update(event?.id, {
+      ...event,
+      ticketCategories: updatetedTcketCategories,
+    });
+  };
+
+  const handleTicketRemaining = (
+    currentStatus: TicketStatus,
+    newStatus: TicketStatus
+  ) => {
+    if (
+      currentStatus == TicketStatus.Pending &&
+      newStatus != TicketStatus.Pending
+    )
+      return -1;
+    if (
+      currentStatus != TicketStatus.Pending &&
+      newStatus != TicketStatus.Pending
+    )
+      return 0;
+    else return +1;
+  };
+  const handleTicketSold = (
+    currentStatus: TicketStatus,
+    newStatus: TicketStatus
+  ) => {
+    if (
+      currentStatus == TicketStatus.Pending &&
+      newStatus != TicketStatus.Pending
+    )
+      return +1;
+    if (
+      currentStatus != TicketStatus.Pending &&
+      newStatus != TicketStatus.Pending
+    )
+      return 0;
+    else return -1;
+  };
+  return {
+    ..._genericRepository,
+    getAttendeesByEventId,
+    getAll,
+    addAttendee,
+    updateTicketRemainingAndSold,
+  };
 }

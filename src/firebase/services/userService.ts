@@ -7,10 +7,12 @@ import { Role } from "../../interfaces/firebase/Role";
 import IPieValue from "../../interfaces/components/IPieValue";
 import { IMyPuchaseEvent } from "../../interfaces/firebase/INonTechUser";
 import nonTechUserRepository from "../repositories/nonTechUserRepository";
+import eventRepository from "../repositories/eventRepository";
 
 export default function userService() {
   const _accountRepository = accountRepository();
   const _userRepository = userRepository();
+  const _eventRepository = eventRepository();
   const _nonTechUserRepository = nonTechUserRepository();
 
   const getAll = async () => {
@@ -84,6 +86,9 @@ export default function userService() {
     let user = null;
     let isNontechUser = false;
     user = await _userRepository.getById(userId);
+
+    await _eventRepository.updateTicketRemainingAndSold(userId, updatedData);
+
     if (!user) {
       isNontechUser = true;
       user = await _nonTechUserRepository.getById(userId);
