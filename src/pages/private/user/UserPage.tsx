@@ -16,7 +16,6 @@ import ChildrenModal, {
   useChildrenModal,
 } from "../../../components/ChildrenModal";
 import { Role } from "../../../interfaces/firebase/Role";
-import { IMyPuchaseEvent } from "../../../interfaces/firebase/INonTechUser";
 import MyPurchaseEventCollapse from "../../../components/MyPurchaseEventCollapse";
 export default function UserPage() {
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
@@ -147,6 +146,7 @@ export default function UserPage() {
       ),
     },
   ];
+  
   const updateFromGroups: FormGroupItemsProps[] = addFormGroups.filter(
     (c) => c.name !== "password"
   );

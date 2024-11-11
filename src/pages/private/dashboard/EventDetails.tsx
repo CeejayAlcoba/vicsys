@@ -98,8 +98,14 @@ export const EventDetailModal = (props: {
   handleClose: () => void;
   refetch: () => void;
 }) => {
-  const { nonTechAndUsers, eventName, isModalOpen, handleClose, refetch } =
-    props;
+  const {
+    eventName,
+    nonTechAndUsers = [],
+    isModalOpen,
+    handleClose,
+    refetch,
+  } = props;
+
 
   const columns: ColumnsType<IUser> = [
     {
