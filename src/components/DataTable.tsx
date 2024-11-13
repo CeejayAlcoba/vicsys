@@ -135,7 +135,7 @@ export default function DataTable<T extends object>({
         size="small"
         pagination={{
           total: filteredData.length,
-          pageSize: 5,
+          pageSize: 8,
           showSizeChanger: false,
           size: "small",
           showTotal: (total, range) =>
