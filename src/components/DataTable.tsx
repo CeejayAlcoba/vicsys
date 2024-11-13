@@ -31,12 +31,10 @@ export default function DataTable<T extends object>({
   const [searchColumn, setSearchColumn] = useState<string>();
   const [filteredData, setFilteredData] = useState<T[]>([]);
 
-  // Update filtered data when dataSource changes
   useEffect(() => {
     setFilteredData(dataSource);
   }, [dataSource]);
 
-  // Enhance columns with sorting capability
   const enhancedColumns: ColumnsType<T> = columns.map((column) => ({
     ...column,
     sorter: (a: any, b: any) => {
