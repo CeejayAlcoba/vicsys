@@ -1,4 +1,4 @@
-import { Button } from "antd";
+import { Button, Input } from "antd";
 import EventCard from "./components/EventCard";
 import { useQuery } from "@tanstack/react-query";
 import eventService from "../../../firebase/services/eventService";
@@ -7,13 +7,18 @@ import { IEvent } from "../../../interfaces/firebase/IEvent";
 import Swal from "sweetalert2";
 import { EventContext } from "./useEventContext";
 import EventSaveModal from "./modals/EventSave";
+import { SearchOutlined } from "@ant-design/icons";
 
 export default function EventPage() {
   const _eventService = eventService();
-
-  const { data: events, refetch } = useQuery({
+  const [events, setEvents] = useState<IEvent[]>([]);
+  const { refetch } = useQuery({
     queryKey: ["events"],
-    queryFn: _eventService.getAll,
+    queryFn: async () => {
+      const result = await _eventService.getAll();
+      setEvents(result);
+      return result;
+    },
   });
 
   const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
@@ -39,6 +44,14 @@ export default function EventPage() {
       }
     });
   };
+  const handleSearch = (value: string) => {
+    if (!value) return refetch();
+
+    const filteredEvents = events.filter((e) =>
+      e.eventName.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+    );
+    setEvents(filteredEvents);
+  };
   return (
     <EventContext.Provider
       value={{
@@ -56,6 +69,13 @@ export default function EventPage() {
       <div className="d-flex justify-content-between">
         <h1>Events</h1>
         <div>
+          <Input
+            className="m-2"
+            placeholder="Search..."
+            onChange={(e) => handleSearch(e.target.value)}
+            prefix={<SearchOutlined />}
+            style={{ width: "300px" }}
+          />
           <Button
             type="primary"
             onClick={() => {
