@@ -13,7 +13,6 @@ import {
   Select,
   Alert,
 } from "antd";
-import { ColumnsType } from "antd/es/table";
 import {
   INonTechUser,
   IMyPuchaseEvent,
@@ -27,7 +26,7 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import { useState } from "react";
-import DataTable from "../../../components/DataTable";
+import DataTable, { ColumnConfig } from "../../../components/DataTable";
 import FormGroupItems, {
   FormGroupItemsProps,
 } from "../../../components/FormControl";
@@ -39,6 +38,7 @@ import { TicketStatus } from "../../../interfaces/firebase/ITicket";
 import { v4 as uuidv4 } from "uuid";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../../firebase/firebaseConfig";
+
 
 export default function NonTechUserPage() {
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
@@ -151,7 +151,7 @@ export default function NonTechUserPage() {
     (c) => c.name !== "password"
   );
 
-  const columns: ColumnsType<INonTechUser> = [
+  const columns: ColumnConfig [] = [
     {
       title: "Name",
       dataIndex: "name",
@@ -213,6 +213,7 @@ export default function NonTechUserPage() {
     },
     {
       title: "My Purchases",
+      dataIndex: "",
       render: (data: INonTechUser) => (
         <MyPurchaseEventCollapse
           refetch={refetchnontechuser}
@@ -223,6 +224,7 @@ export default function NonTechUserPage() {
     },
     {
       title: "Actions",
+      dataIndex: "",
       render: (data: INonTechUser) => (
         <>
           <Button
@@ -273,13 +275,12 @@ export default function NonTechUserPage() {
       } else {
         await _nonTechUserService.add(values);
       }
+      refetchnontechuser();
+      setIsOpenSaveModal(false);
     } catch (_e: any) {
       let e: Error = _e;
       setError(e.message);
-    }
-    if (!error) {
-      refetchnontechuser();
-      setIsOpenSaveModal(false);
+      throw new Error(e.message)
     }
   };
 
@@ -747,51 +748,6 @@ export default function NonTechUserPage() {
             className="mt-4"
           />
         )}
-      </Modal>
-    );
-  };
-
-  const SaveUserModal = () => {
-    const handleFormSubmit = async () => {
-      try {
-        const values = await form.validateFields();
-        await handleSaveUser(values);
-        form.resetFields();
-        setSelectedUser(null);
-      } catch (error) {
-        console.error("Failed to save user:", error);
-      }
-    };
-
-    return (
-      <Modal
-        title={selectedUser ? "Update User Information" : "Add New User"}
-        open={isOpenSaveModal}
-        onOk={handleFormSubmit}
-        onCancel={() => {
-          setIsOpenSaveModal(false);
-          form.resetFields();
-          setSelectedUser(null);
-        }}
-      >
-        <Form
-          form={form}
-          initialValues={{
-            name: selectedUser?.name || "",
-            contact: selectedUser?.contact || "",
-            age: selectedUser?.age || "",
-            email: selectedUser?.email || "",
-            birthday: selectedUser?.birthday || "",
-            gender: selectedUser?.gender || "",
-            ministry: selectedUser?.ministry || "",
-          }}
-          layout="vertical"
-        >
-          <p className="text-danger">{error}</p>
-          <FormGroupItems
-            items={selectedUser ? updateFromGroups : addFormGroups}
-          />
-        </Form>
       </Modal>
     );
   };
