@@ -10,7 +10,7 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import { useState } from "react";
-import DataTable from "../../../components/DataTable";
+import DataTable, { ColumnConfig } from "../../../components/DataTable";
 import { FormGroupItemsProps } from "../../../components/FormControl";
 import Swal from "sweetalert2";
 import IChild from "../../../interfaces/firebase/IChild";
@@ -37,10 +37,10 @@ export default function KidsListPage() {
   //       component: <Input />,
   //     },
   //   ];
-  const columns: ColumnsType<IChild> = [
+  const columns: ColumnConfig[] = [
     {
       title: "Name",
-
+      dataIndex: "",
       width: 600,
       render: (data: IChild) => (
         <span>{`${data.lastName}, ${data.lastName}`}</span>
@@ -62,6 +62,7 @@ export default function KidsListPage() {
       width: 600,
     },
     {
+      dataIndex: "",
       title: "Food Allergies",
       width: 600,
       render: (data: IChild) => (

@@ -3,7 +3,7 @@ import { Button } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { EyeOutlined } from "@ant-design/icons";
 import { useState } from "react";
-import DataTable from "../../../components/DataTable";
+import DataTable, { ColumnConfig } from "../../../components/DataTable";
 import useUserContext from "../../../contexts/useUserContext";
 import userService from "../../../firebase/services/userService";
 import { IMyPuchaseEvent } from "../../../interfaces/firebase/INonTechUser";
@@ -30,7 +30,7 @@ export default function MyPurchasePage() {
   const hadnleGetEventNameById = (eventId: string) => {
     return events?.find((e) => e.id == eventId)?.eventName;
   };
-  const columns: ColumnsType<IMyPuchaseEvent> = [
+  const columns: ColumnConfig[] = [
     {
       title: "Event",
       dataIndex: "eventId",
@@ -62,6 +62,7 @@ export default function MyPurchasePage() {
     },
     {
       title: " QR code",
+      dataIndex: "",
       width: 300,
       render: (data: IMyPuchaseEvent) => (
         <>
@@ -78,10 +79,12 @@ export default function MyPurchasePage() {
       ),
     },
   ];
+  if (!user) return;
 
   return (
     <>
       <TicketQrCodeModal
+        userId={user.uid}
         purchaseEvent={selectedPurchase}
         isOpen={isQrModalVisible}
         setIsOpen={setIsQrModalVisible}

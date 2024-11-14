@@ -4,7 +4,7 @@ import { Button, Form, Input } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { useState } from "react";
-import DataTable from "../../../components/DataTable";
+import DataTable, { ColumnConfig } from "../../../components/DataTable";
 import { FormGroupItemsProps } from "../../../components/FormControl";
 import Swal from "sweetalert2";
 import ITicketCategory from "../../../interfaces/firebase/ITicketCategory";
@@ -31,7 +31,7 @@ export default function TicketCategoryPage() {
       component: <Input />,
     },
   ];
-  const columns: ColumnsType<ITicketCategory> = [
+  const columns: ColumnConfig[] = [
     {
       title: "Description",
       dataIndex: "description",
@@ -40,6 +40,7 @@ export default function TicketCategoryPage() {
 
     {
       title: "Actions",
+      dataIndex: "",
       render: (data: ITicketCategory) => (
         <>
           <Button
