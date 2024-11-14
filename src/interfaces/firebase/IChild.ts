@@ -9,6 +9,7 @@ export default interface IChild {
   age: number;
   hasFoodAllergies: boolean;
   foodAllergies: string;
+  qrId: string;
 }
 
 export enum ChildCategory {
