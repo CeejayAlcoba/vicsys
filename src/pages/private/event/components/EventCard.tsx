@@ -1,7 +1,9 @@
-import { Button, Card } from "antd";
+import { Button, Card, Collapse } from "antd";
 import { IEvent, IEventSave } from "../../../../interfaces/firebase/IEvent";
 import { convertUnixToDateText } from "../../../../utils/dateTimeFormat";
 import useEventContext from "../useEventContext";
+
+const { Panel } = Collapse;
 
 export default function EventCard(props: IEvent) {
   const {
@@ -19,6 +21,7 @@ export default function EventCard(props: IEvent) {
     setIsSaveModalOpen,
     setImageUpload,
   } = useEventContext();
+
   return (
     <Card
       style={{ width: 350, marginBottom: 20 }}
@@ -29,6 +32,7 @@ export default function EventCard(props: IEvent) {
           style={{ width: 350, height: 150 }}
         />
       }
+      bodyStyle={{ height: 400, overflowY: "auto" }}
       actions={[
         <Button
           type="primary"
@@ -52,7 +56,10 @@ export default function EventCard(props: IEvent) {
       ]}
     >
       <h4>{eventName}</h4>
-      <p>{description}</p>
+      <div>
+        <strong>Description: </strong>
+        {description}
+      </div>
       <p>
         <strong>Date and Time: </strong>
         {convertUnixToDateText(startTime)}-{convertUnixToDateText(endTime)}
@@ -61,18 +68,20 @@ export default function EventCard(props: IEvent) {
         <strong>Venue: </strong>
         {venue}
       </p>
-      <p>
-        <strong>Available Tickets by Category: </strong>
-      </p>
-      {ticketCategories?.map((ticket, index) => (
-        <p key={index}>
-          {ticket.ticketName} - ₱{ticket.ticketPrice}
-          <br />
-          Tickets Available: {ticket.ticketRemaining}
-          <br />
-          Tickets Per user: {ticket.ticketPerUser}
-        </p>
-      ))}
+      <Collapse accordion>
+        <Panel header="Available Tickets by Category" key="1">
+          {ticketCategories?.map((ticket, index) => (
+            <div key={index}>
+              {ticket.ticketName} - ₱{ticket.ticketPrice}
+              <br />
+              Tickets Available: {ticket.ticketRemaining}
+              <br />
+              Tickets Per user: {ticket.ticketPerUser}
+              <hr />
+            </div>
+          ))}
+        </Panel>
+      </Collapse>
     </Card>
   );
 }

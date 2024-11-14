@@ -90,7 +90,7 @@ export default function EventPage() {
       </div>
       <div className="row gap-2">
         {events?.map((event, index) => (
-          <div key={index} className="col-lg-4">
+          <div key={index} className="col-lg-5">
             <EventCard {...event} />
           </div>
         ))}
