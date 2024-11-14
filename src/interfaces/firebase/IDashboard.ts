@@ -1,3 +1,5 @@
+import IPieValue from "../components/IPieValue";
+import { IEvent, IOngoingEvent } from "./IEvent";
 import { TicketStatus } from "./ITicket";
 
 export default interface IDahsboard {
@@ -5,8 +7,10 @@ export default interface IDahsboard {
   totalKids: number;
   totalEvents: number;
   totalTicketSold: number;
-  totalKidsPieDetails: ITotalKidsPieChart[];
-  totalUserPieChart: ITotalUsersPieChart[];
+  totalKidsPieDetails: IPieValue[];
+  totalUserPieChart: IPieValue[];
+  ongoingEvents: IOngoingEvent[];
+  events: IEvent[];
 }
 export interface ITicketDetails {
   id?: string;
@@ -17,14 +21,4 @@ export interface ITicketDetails {
   totalTickets: number;
   ticketSolds: number;
   status: TicketStatus;
-}
-
-export interface ITotalKidsPieChart {
-  type: string;
-  total: number;
-}
-
-export interface ITotalUsersPieChart {
-  type: string;
-  total: number;
 }

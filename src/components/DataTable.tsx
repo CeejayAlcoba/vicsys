@@ -1,10 +1,15 @@
 import { useState, useEffect } from "react";
 import { Table, Input, Select, Space, Button } from "antd";
-import { SearchOutlined, ReloadOutlined } from "@ant-design/icons";
+import {
+  SearchOutlined,
+  ReloadOutlined,
+  FileExcelOutlined,
+} from "@ant-design/icons";
+import * as XLSX from "xlsx";
 import type { ColumnsType } from "antd/es/table";
 import type { TableProps } from "antd";
 
-interface ColumnConfig {
+export interface ColumnConfig {
   title: string;
   dataIndex: string;
   width?: number | string;
@@ -93,9 +98,29 @@ export default function DataTable<T extends object>({
     setFilteredData(dataSource);
   };
 
+  // Function to generate and download Excel report with the table columns
+  const handleExportToExcel = () => {
+    // Prepare data based on the columns
+    const dataToExport = filteredData.map((record: any) => {
+      const row: { [key: string]: any } = {};
+      columns.forEach((column) => {
+        row[column.title] = record[column.dataIndex];
+      });
+      return row;
+    });
+
+    // Generate worksheet and workbook
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+    // Export the file
+    XLSX.writeFile(workbook, "Report.xlsx");
+  };
+
   return (
     <div>
-      <Space style={{ marginBottom: 8 }}>
+      <Space style={{ marginBottom: 8 }} className="d-flex justify-content-end">
         <Select
           style={{ width: 200 }}
           placeholder="Select column"
@@ -124,6 +149,13 @@ export default function DataTable<T extends object>({
             Reset
           </Button>
         )}
+        <Button
+          icon={<FileExcelOutlined />}
+          onClick={handleExportToExcel}
+          size="small"
+        >
+          Export to Excel
+        </Button>
       </Space>
 
       <Table
