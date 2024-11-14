@@ -14,7 +14,7 @@ export interface ColumnConfig {
   dataIndex: string;
   width?: number | string;
   fixed?: boolean | "left" | "right";
-  render?: (value: any, record: any) => React.ReactNode;
+  render?: (value: any, record: any, index: number) => React.ReactNode;
 }
 
 interface DataTableProps<T extends object>

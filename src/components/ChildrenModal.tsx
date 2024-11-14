@@ -4,7 +4,7 @@ import { ColumnsType } from "antd/es/table";
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import IChild from "../interfaces/firebase/IChild";
 import FormGroupItems, { FormGroupItemsProps } from "./FormControl";
-import DataTable from "./DataTable";
+import DataTable, { ColumnConfig } from "./DataTable";
 import { useState } from "react";
 
 type AddChildModalProps = {
@@ -173,8 +173,9 @@ export default function ChildrenModal(props: AddChildModalProps) {
     setEditingIndex(null);
   };
 
-  const columns: ColumnsType<IChild> = [
+  const columns: ColumnConfig[] = [
     {
+      dataIndex: "",
       title: "Name",
       render: (data: IChild) => (
         <>
@@ -209,6 +210,7 @@ export default function ChildrenModal(props: AddChildModalProps) {
     },
     {
       title: "Actions",
+      dataIndex: "",
       render: (data: IChild, _: any, index: number) => (
         <>
           <Button type="link" onClick={() => handleEditChild(data, index)}>

@@ -43,7 +43,7 @@ export default function KidsListPage() {
       dataIndex: "",
       width: 600,
       render: (data: IChild) => (
-        <span>{`${data.lastName}, ${data.lastName}`}</span>
+        <span>{`${data.lastName}, ${data.firstName}`}</span>
       ),
     },
     {
