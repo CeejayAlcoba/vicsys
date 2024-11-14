@@ -39,9 +39,14 @@ export default function KidsListPage() {
   //   ];
   const columns: ColumnConfig[] = [
     {
+      title: "Parent",
+      dataIndex: "parentName",
+      width: 400,
+    },
+    {
       title: "Name",
       dataIndex: "",
-      width: 600,
+      width: 400,
       render: (data: IChild) => (
         <span>{`${data.lastName}, ${data.firstName}`}</span>
       ),
@@ -49,22 +54,22 @@ export default function KidsListPage() {
     {
       title: "nickname",
       dataIndex: "nickname",
-      width: 600,
+      width: 400,
     },
     {
       title: "gender",
       dataIndex: "gender",
-      width: 600,
+      width: 400,
     },
     {
       title: "birthday",
       dataIndex: "birthday",
-      width: 600,
+      width: 400,
     },
     {
       dataIndex: "",
       title: "Food Allergies",
-      width: 600,
+      width: 400,
       render: (data: IChild) => (
         <>
           {data.hasFoodAllergies ? (

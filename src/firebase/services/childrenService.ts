@@ -1,12 +1,38 @@
 import childrenRepository from "../repositories/childrenRepository";
 import IChild, { ChildCategory } from "../../interfaces/firebase/IChild";
 import IPieValue from "../../interfaces/components/IPieValue";
+import userRepository from "../repositories/userRepository";
+import nonTechUserRepository from "../repositories/nonTechUserRepository";
 
 export default function childrenService() {
   const _childrenRepository = childrenRepository();
-
+  const _userRepository = userRepository();
+  const _nontechRepository = nonTechUserRepository();
   const getAll = async () => {
-    return await _childrenRepository.getAll();
+    const children = await _childrenRepository.getAll();
+    const result = await Promise.all(
+      children.map(async (c) => {
+        let user;
+        if (c.userId) {
+          user = await _userRepository.getById(c.userId);
+          if (!user) {
+            user = await _nontechRepository.getById(c.userId);
+          }
+        }
+        return {
+          parentName: user?.name,
+          ...c,
+        };
+      })
+    );
+    result.sort((a, b) => {
+      if (!a.parentName || !b.parentName) return 0;
+      if (a.parentName < b.parentName) return -1;
+      if (a.parentName > b.parentName) return 1;
+      return 0;
+    });
+    console.log(result);
+    return result;
   };
 
   const addMany = async (userId: string, data: IChild[]) => {
