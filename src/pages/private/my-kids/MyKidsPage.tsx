@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { ColumnsType } from "antd/es/table";
-import DataTable from "../../../components/DataTable";
+import DataTable, { ColumnConfig } from "../../../components/DataTable";
 import useUserContext from "../../../contexts/useUserContext";
 import childrenService from "../../../firebase/services/childrenService";
 import IChild from "../../../interfaces/firebase/IChild";
@@ -26,10 +26,10 @@ export default function MyKidsPage() {
   // const [form] = Form.useForm();
   // const [isSaveModalVisible, setIsSaveModalVisible] = useState<boolean>(false);
   // const [selectedChild, setSelectedChild] = useState<IChild | null>(null);
-  const columns: ColumnsType<IChild> = [
+  const columns: ColumnConfig[] = [
     {
       title: "Name",
-
+      dataIndex: "",
       width: 600,
       render: (data: IChild) => (
         <span>{`${data.lastName}, ${data.lastName}`}</span>
@@ -52,6 +52,7 @@ export default function MyKidsPage() {
     },
     {
       title: "Food Allergies",
+      dataIndex: "",
       width: 600,
       render: (data: IChild) => (
         <>

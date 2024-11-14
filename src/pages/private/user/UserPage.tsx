@@ -5,7 +5,7 @@ import { ColumnsType } from "antd/es/table";
 import { IUser } from "../../../interfaces/firebase/IUser";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { useState } from "react";
-import DataTable from "../../../components/DataTable";
+import DataTable, { ColumnConfig } from "../../../components/DataTable";
 import { FormGroupItemsProps } from "../../../components/FormControl";
 import accountService from "../../../firebase/services/accountService";
 
@@ -151,7 +151,7 @@ export default function UserPage() {
     (c) => c.name !== "password"
   );
 
-  const columns: ColumnsType<IUser> = [
+  const columns: ColumnConfig[] = [
     {
       title: "Name",
       dataIndex: "name",
@@ -213,6 +213,7 @@ export default function UserPage() {
     },
     {
       title: "My Purchases",
+      dataIndex: "",
       render: (data: IUser) => (
         <MyPurchaseEventCollapse
           refetch={refetch}
@@ -238,6 +239,7 @@ export default function UserPage() {
     },
     {
       title: "Actions",
+      dataIndex: "",
       render: (data: IUser) => (
         <>
           <Button
