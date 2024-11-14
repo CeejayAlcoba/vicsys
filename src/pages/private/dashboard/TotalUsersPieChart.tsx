@@ -1,16 +1,11 @@
 import { Pie } from "@ant-design/charts";
-import { useQuery } from "@tanstack/react-query";
-import userService from "../../../firebase/services/userService";
+import IPieValue from "../../../interfaces/components/IPieValue";
 
-export default function TotalUsersPieChart() {
-  const _userService = userService();
-  const { data } = useQuery({
-    queryKey: ["roleCounts"],
-    queryFn: _userService.getUserRolePieChart,
-  });
+export default function TotalUsersPieChart(props: { users: IPieValue[] }) {
+  const { users } = props;
 
   const config = {
-    data,
+    data: users,
     angleField: "value",
     colorField: "type",
     width: 300,

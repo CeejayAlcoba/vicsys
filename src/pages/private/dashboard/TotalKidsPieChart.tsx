@@ -1,17 +1,14 @@
 import { Chart, Pie, PieConfig } from "@ant-design/charts";
 import childrenService from "../../../firebase/services/childrenService";
 import { useQuery } from "@tanstack/react-query";
+import IPieValue from "../../../interfaces/components/IPieValue";
 
-export default function TotalKidsPieChart() {
-  const _childrenService = childrenService();
-  const { data } = useQuery({
-    queryKey: ["childrenCategories"],
-    queryFn: _childrenService.getChildrenCategoryPieChart,
-  });
+export default function TotalKidsPieChart(props: { childrens: IPieValue[] }) {
+  const { childrens } = props;
 
   const config: React.PropsWithoutRef<PieConfig> & React.RefAttributes<Chart> =
     {
-      data,
+      data: childrens,
       angleField: "value",
       colorField: "type",
       width: 300,

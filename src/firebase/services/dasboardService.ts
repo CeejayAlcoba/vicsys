@@ -15,13 +15,21 @@ export default function dashboardService() {
     const totalTicketSold = await _ticketService.getTotalTicketSold();
     const totalEvents = await _eventService.getTotalEvents();
     const totalChildren = await _childrenService.getTotalChildren();
+    const ongoingEvents = await _eventService.getOngoingEvents();
+    const totalKidsPieDetails =
+      await _childrenService.getChildrenCategoryPieChart();
+    const totalUserPieChart = await _userService.getUserRolePieChart();
+    const events = await _eventService.getAll();
+
     const result: IDahsboard = {
       totalRegistration: totalUsers,
       totalKids: totalChildren,
       totalEvents: totalEvents,
       totalTicketSold: totalTicketSold,
-      totalKidsPieDetails: [],
-      totalUserPieChart: [],
+      totalKidsPieDetails: totalKidsPieDetails,
+      totalUserPieChart: totalUserPieChart,
+      ongoingEvents: ongoingEvents,
+      events: events,
     };
     return result;
   };

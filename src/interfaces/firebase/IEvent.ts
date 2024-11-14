@@ -1,3 +1,5 @@
+import { IUser } from "./IUser";
+
 export interface IAttendee {
   userId: string;
 }
@@ -32,4 +34,15 @@ export interface ITicketCategory {
   ticketRemaining?: number;
   ticketSold: number;
   ticketTotal: number;
+}
+export interface IOngoingEvent {
+  attendees: IUser[];
+  id?: string;
+  eventName: string;
+  description: string;
+  endTime: Date;
+  startTime: Date;
+  image: string;
+  venue: string;
+  ticketCategories: ITicketCategory[];
 }

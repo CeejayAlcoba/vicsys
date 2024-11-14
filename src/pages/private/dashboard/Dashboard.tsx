@@ -6,12 +6,23 @@ import { useQuery } from "@tanstack/react-query";
 import dashboardService from "../../../firebase/services/dasboardService";
 import moneyFormat from "../../../utils/moneyFormat";
 import EventDetails from "./EventDetails";
+import OngoingEventsPieCharts from "./OngoingEventsPieCharts";
 
 export default function Dashboard() {
   const _dahsboardService = dashboardService();
-  const { data } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey: ["dashboardDetails"],
     queryFn: _dahsboardService.getDashboardDetails,
+    initialData: {
+      totalRegistration: 0,
+      totalKids: 0,
+      totalEvents: 0,
+      totalTicketSold: 0,
+      totalKidsPieDetails: [],
+      totalUserPieChart: [],
+      ongoingEvents: [],
+      events: [],
+    },
   });
   return (
     <div className="row">
@@ -67,7 +78,7 @@ export default function Dashboard() {
           <div className="card mb-3">
             <div className="card-header">Events</div>
             <div className="card-body">
-              <EventDetails />
+              <EventDetails events={data.events} refetch={refetch} />
             </div>
           </div>
         </div>
@@ -77,7 +88,7 @@ export default function Dashboard() {
           <div className="card mb-3">
             <div className="card-header">Total of Kids (Kids Registration)</div>
             <div className="pie-chart">
-              <TotalKidsPieChart />
+              <TotalKidsPieChart childrens={data.totalKidsPieDetails} />
             </div>
           </div>
         </div>
@@ -87,7 +98,7 @@ export default function Dashboard() {
           <div className="card mb-3">
             <div className="card-header">Total of Users</div>
             <div className="card-body">
-              <TotalUsersPieChart />
+              <TotalUsersPieChart users={data.totalUserPieChart} />
             </div>
           </div>
         </div>
@@ -98,6 +109,11 @@ export default function Dashboard() {
             <div className="card-header">Calendar</div>
             <CalendarLayout />
           </div>
+        </div>
+
+        <div className="card">
+          <div className="card-header">Ongoing events</div>
+          <OngoingEventsPieCharts events={data?.ongoingEvents} />
         </div>
       </div>
     </div>

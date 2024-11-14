@@ -1,16 +1,17 @@
-import { IEvent, IEventSave } from "../../interfaces/firebase/IEvent";
+import {
+  IEvent,
+  IEventSave,
+  IOngoingEvent,
+} from "../../interfaces/firebase/IEvent";
 import documentRepository from "../repositories/documentRepository";
 import eventRepository from "../repositories/eventRepository";
 import { v4 as uuidv4 } from "uuid";
 import userRepository from "../repositories/userRepository";
-import { IMyPuchaseEvent } from "../../interfaces/firebase/INonTechUser";
-import { TicketStatus } from "../../interfaces/firebase/ITicket";
-
+import { convertUnixToDate } from "../../utils/dateTimeFormat";
+import moment, { Moment } from "moment";
 export default function eventService() {
   const _eventRepository = eventRepository();
   const _documentRepository = documentRepository();
-  const _userRepository = userRepository();
-
   const add = async (data: IEventSave) => {
     let imageUrl = "";
     if (data.image instanceof File) {
@@ -82,7 +83,49 @@ export default function eventService() {
     return await _eventRepository.getAttendeesByEventId(eventId);
   };
 
+  const getOngoingEvents = async (): Promise<IOngoingEvent[]> => {
+    const events = await _eventRepository.getAll();
+    const dateNow = moment();
+
+    const ongoingEvents = events.filter((event) => {
+      const startDate = convertUnixToDate(event.startTime);
+      const endDate = convertUnixToDate(event.endTime);
+      return startDate <= dateNow && endDate >= dateNow;
+    });
+
+    const result = await Promise.all(
+      ongoingEvents.map(async (event) => {
+        if (!event.id) {
+          throw new Error(`Event found with no ID: ${JSON.stringify(event)}`);
+        }
+        const attendees = await _eventRepository.getAttendeesByEventId(
+          event.id
+        );
+        return {
+          ...event,
+          attendees,
+        };
+      })
+    );
+
+    return result;
+  };
+  const getByDate = async (date: Moment): Promise<IEvent[]> => {
+    const events = await _eventRepository.getAll();
+
+    const filteredEvents = events.filter((event) => {
+      const startDate = convertUnixToDate(event.startTime);
+      const endDate = convertUnixToDate(event.endTime);
+      return startDate <= date && endDate >= date;
+    });
+
+    console.log(filteredEvents);
+
+    return filteredEvents;
+  };
   return {
+    getByDate,
+    getOngoingEvents,
     getAttendeesByEventId,
     add,
     update,

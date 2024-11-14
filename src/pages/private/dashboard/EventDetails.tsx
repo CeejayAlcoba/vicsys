@@ -1,40 +1,43 @@
 import { Modal, Progress } from "antd";
 import { convertUnixToTimeText } from "../../../utils/dateTimeFormat";
-import DataTable from "../../../components/DataTable";
-import { ColumnsType } from "antd/es/table";
+import DataTable, { ColumnConfig } from "../../../components/DataTable";
 import { IEvent } from "../../../interfaces/firebase/IEvent";
 import { useState } from "react";
 import MyPurchaseEventCollapse from "../../../components/MyPurchaseEventCollapse";
-import { useQuery } from "@tanstack/react-query";
 import eventService from "../../../firebase/services/eventService";
 import { IUser } from "../../../interfaces/firebase/IUser";
 
-export default function EventDetails() {
+export default function EventDetails(props: {
+  events: IEvent[];
+  refetch: () => void;
+}) {
   const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
   const _eventService = eventService();
-  const { data: events, refetch: refetchEvents } = useQuery({
-    queryKey: ["events"],
-    queryFn: _eventService.getAll,
-    initialData: [],
-  });
-  const { data: nonTechAndUsers, refetch: refetchUsers } = useQuery({
-    queryKey: ["nonTechAndUsers"],
-    queryFn: async () =>
-      await _eventService.getAttendeesByEventId(selectedEvent?.id ?? ""),
-    initialData: [],
-  });
+  const { events, refetch } = props;
+  const [nonTechAndUsers, setNonTechAndUsers] = useState<IUser[]>([]);
+  // const { data: nonTechAndUsers, refetch: refetchUsers } = useQuery({
+  //   queryKey: ["nonTechAndUsers"],
+  //   queryFn: async () =>
+  //     await _eventService.getAttendeesByEventId(selectedEvent?.id ?? ""),
+  //   initialData: [],
+  // });
+  const handleGetNonTechAndUsers = async (id: string | undefined) => {
+    if (!id) throw new Error("id must not null");
+    const attendees = await _eventService.getAttendeesByEventId(id);
+    setNonTechAndUsers(attendees);
+  };
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleClose = () => {
     setIsModalOpen(false);
   };
   const handleClickEvent = async (event: IEvent) => {
     setSelectedEvent(event);
+    handleGetNonTechAndUsers(event.id);
     setIsModalOpen(true);
-    refetchUsers();
   };
   const refetchAll = () => {
-    refetchEvents();
-    refetchUsers();
+    refetch();
+    handleGetNonTechAndUsers(selectedEvent?.id);
   };
 
   return (
@@ -46,7 +49,7 @@ export default function EventDetails() {
         isModalOpen={isModalOpen}
         handleClose={handleClose}
       />
-      {events.map((event, index) => {
+      {events?.map((event, index) => {
         const { image, eventName, endTime, startTime } = event;
         const ticketTotal = event.ticketCategories.reduce(
           (curr, prev) => (curr += prev.ticketTotal),
@@ -106,8 +109,7 @@ export const EventDetailModal = (props: {
     refetch,
   } = props;
 
-
-  const columns: ColumnsType<IUser> = [
+  const columns: ColumnConfig[] = [
     {
       title: "Name",
       dataIndex: "name",
@@ -130,6 +132,7 @@ export const EventDetailModal = (props: {
     },
     {
       title: "My Purchases",
+      dataIndex: "",
       render: (data: IUser) => {
         return (
           <MyPurchaseEventCollapse
