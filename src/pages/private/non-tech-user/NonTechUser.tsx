@@ -38,18 +38,39 @@ import { TicketStatus } from "../../../interfaces/firebase/ITicket";
 import { v4 as uuidv4 } from "uuid";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../../firebase/firebaseConfig";
+import SaveNonTechModal from "./modal/SaveNonTechModal";
+import ChildrenModal, { useChildrenModal } from "../../../components/ChildrenModal";
+import childrenService from "../../../firebase/services/childrenService";
+import Swal from "sweetalert2";
+
+const ministryOptions = [
+  { value: "Victory Group Leaders", label: "Victory Group Leaders" },
+  { value: "Ushering Ministry", label: "Ushering Ministry" },
+  { value: "Music Ministry", label: "Music Ministry" },
+  { value: "Kids Ministry", label: "Kids Ministry" },
+  { value: "Stage Management", label: "Stage Management" },
+  { value: "Technical Support", label: "Technical Support" },
+  { value: "Communication", label: "Communication" },
+  { value: "Prayer Ministry", label: "Prayer Ministry" },
+  { value: "Admin Support", label: "Admin Support" },
+  { value: "Real Life Coaches", label: "Real Life Coaches" },
+  { value: "Special Project Teams", label: "Special Project teams" },
+];
 
 
 export default function NonTechUserPage() {
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
   const [isOpenSaveModal, setIsOpenSaveModal] = useState<boolean>(false);
+  const [selectedUser, setSelectedUser] = useState<INonTechUser | null>(null);
+
   const [isOpenAssignEventModal, setIsOpenAssignEventModal] =
     useState<boolean>(false);
-  const [selectedUser, setSelectedUser] = useState<INonTechUser | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
+
   const [error, setError] = useState<string>("");
   const [form] = Form.useForm();
   const _nonTechUserService = nonTechUserService();
+  const _childrenService = childrenService();
   const _eventservice = eventService();
   const { data: nontechuser, refetch: refetchnontechuser } = useQuery({
     queryKey: ["nontechuser"],
@@ -63,6 +84,44 @@ export default function NonTechUserPage() {
     initialData: [],
   });
 
+  const {
+    children,
+    setChildren,
+    isChildrenModalVisible,
+    setIsChildrenModalVisible,
+    childData,
+  } = useChildrenModal();
+  useQuery({
+    queryKey: ["nontechuser", selectedUser],
+    queryFn: async () => {
+      const result = await _childrenService.getByUserId(selectedUser?.id ?? "");
+      setChildren(result);
+      return result;
+    },
+
+    initialData: [],
+  });
+
+  const handleMinistryChange = async (value: string, userId: string) => {
+    try {
+      const currentUser = nontechuser.find(user => user.id === userId);
+      
+      if (!currentUser) {
+        throw new Error('User not found');
+      }
+
+      await _nonTechUserService.update(userId, {
+        ...currentUser,  
+        ministry: value  
+      });
+      
+      message.success('Ministry updated successfully');
+      refetchnontechuser();
+    } catch (error) {
+      message.error('Failed to update ministry');
+      console.error('Error updating ministry:', error);
+    }
+  };
   const addFormGroups: FormGroupItemsProps[] = [
     {
       name: "name",
@@ -179,36 +238,18 @@ export default function NonTechUserPage() {
     {
       title: "Ministry",
       dataIndex: "ministry",
-      render: (data: string) => (
-        <>
-          <Select defaultValue={data} style={{ width: 180 }}>
-            <Select.Option value="Victory Group Leaders">
-              Victory Group Leaders
+      render: (value: string, record: INonTechUser) => (
+        <Select
+          value={value}
+          style={{ width: 180 }}
+          onChange={(newValue) => handleMinistryChange(newValue, record.id || "")}
+        >
+          {ministryOptions.map(option => (
+            <Select.Option key={option.value} value={option.value}>
+              {option.label}
             </Select.Option>
-            <Select.Option value="Ushering Ministry">
-              Ushering Ministry
-            </Select.Option>
-            <Select.Option value="Music Ministry">Music Ministry</Select.Option>
-            <Select.Option value="Kids Ministry">Kids Ministry</Select.Option>
-            <Select.Option value="Stage Management">
-              Stage Management
-            </Select.Option>
-            <Select.Option value="Technical Support">
-              Technical Support
-            </Select.Option>
-            <Select.Option value="Communication">Communication</Select.Option>
-            <Select.Option value="Prayer Ministry">
-              Prayer Ministry
-            </Select.Option>
-            <Select.Option value="Admin Support">Admin Support</Select.Option>
-            <Select.Option value="Real Life Coaches">
-              Real Life Coaches
-            </Select.Option>
-            <Select.Option value="Special Project Teams">
-              Special Project teams
-            </Select.Option>
-          </Select>
-        </>
+          ))}
+        </Select>
       ),
     },
     {
@@ -244,6 +285,7 @@ export default function NonTechUserPage() {
             icon={<EditOutlined />}
             style={{ marginLeft: 8 }}
             onClick={() => {
+              form.setFieldsValue(data);
               setSelectedUser(data);
               setIsOpenSaveModal(true);
             }}
@@ -272,9 +314,19 @@ export default function NonTechUserPage() {
     try {
       if (selectedUser) {
         await _nonTechUserService.update(selectedUser.id || "", values);
+        await _childrenService.updateManyByUserId(
+          selectedUser.id || "",
+          children
+        );
       } else {
         await _nonTechUserService.add(values);
       }
+      Swal.fire({
+        icon: "success",
+        title: "User successfully saved!",
+        showConfirmButton: false,
+        timer: 1500,
+      });
       refetchnontechuser();
       setIsOpenSaveModal(false);
     } catch (_e: any) {
@@ -766,7 +818,26 @@ export default function NonTechUserPage() {
         Add User
       </Button>
       <DeleteModalConfirmation />
-      <SaveUserModal />
+      <SaveNonTechModal
+        form={form}
+        handleSave={handleSaveUser}
+        setSelectedUser={setSelectedUser}
+        selectedUser={selectedUser}
+        isOpenSaveModal={isOpenSaveModal}
+        setIsOpenSaveModal={setIsOpenSaveModal}
+        setIsChildrenModalVisible={setIsChildrenModalVisible}
+        updateFromGroups={updateFromGroups}
+        addFormGroups={addFormGroups}
+        children={children}
+        error={error}
+      />
+      <ChildrenModal
+        children={children}
+        setChildren={setChildren}
+        isModalVisible={isChildrenModalVisible}
+        setIsModalVisible={setIsChildrenModalVisible}
+        childData={childData}
+      />
       <AssignToEventModal />
       <DataTable dataSource={nontechuser} columns={columns} />
     </>

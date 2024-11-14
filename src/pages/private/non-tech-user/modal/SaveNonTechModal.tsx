@@ -2,14 +2,14 @@ import { Badge, Button, Form, FormInstance, Modal } from "antd";
 import FormGroupItems, {
   FormGroupItemsProps,
 } from "../../../../components/FormControl";
-import { IUser } from "../../../../interfaces/firebase/IUser";
 import IChild from "../../../../interfaces/firebase/IChild";
+import { INonTechUser } from "../../../../interfaces/firebase/INonTechUser";
 
 interface SaveUserModalProps {
   form: FormInstance<any>;
   handleSave: (value: any) => void;
-  setSelectedUser: (value: React.SetStateAction<IUser | null>) => void;
-  selectedUser: IUser | null;
+  setSelectedUser: (value: React.SetStateAction<INonTechUser | null>) => void;
+  selectedUser: INonTechUser | null;
   setIsOpenSaveModal: (value: React.SetStateAction<boolean>) => void;
   isOpenSaveModal: boolean;
   error: string;
@@ -19,7 +19,7 @@ interface SaveUserModalProps {
   children: IChild[];
 }
 
-const SaveUserModal = (props: SaveUserModalProps) => {
+const SaveNonTechModal = (props: SaveUserModalProps) => {
   const {
     form,
     handleSave,
@@ -78,4 +78,4 @@ const SaveUserModal = (props: SaveUserModalProps) => {
   );
 };
 
-export default SaveUserModal;
+export default SaveNonTechModal;

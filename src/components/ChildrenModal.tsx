@@ -1,10 +1,9 @@
 import { Button, Form, Input, Modal, Radio } from "antd";
 import { useForm } from "antd/es/form/Form";
-import { ColumnsType } from "antd/es/table";
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import IChild from "../interfaces/firebase/IChild";
 import FormGroupItems, { FormGroupItemsProps } from "./FormControl";
-import DataTable from "./DataTable";
+import DataTable, { ColumnConfig } from "./DataTable";
 import { useState } from "react";
 
 type AddChildModalProps = {
@@ -173,9 +172,10 @@ export default function ChildrenModal(props: AddChildModalProps) {
     setEditingIndex(null);
   };
 
-  const columns: ColumnsType<IChild> = [
+  const columns: ColumnConfig [] = [
     {
       title: "Name",
+      dataIndex: "",
       render: (data: IChild) => (
         <>
           {data.lastName}, {data.firstName}
@@ -209,6 +209,7 @@ export default function ChildrenModal(props: AddChildModalProps) {
     },
     {
       title: "Actions",
+      dataIndex: "",
       render: (data: IChild, _: any, index: number) => (
         <>
           <Button type="link" onClick={() => handleEditChild(data, index)}>

@@ -1,14 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import userService from "../../../firebase/services/userService";
 import { Button, Modal, Form, Input, Select } from "antd";
-import { ColumnsType } from "antd/es/table";
 import { IUser } from "../../../interfaces/firebase/IUser";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import DataTable, { ColumnConfig } from "../../../components/DataTable";
 import { FormGroupItemsProps } from "../../../components/FormControl";
 import accountService from "../../../firebase/services/accountService";
-
 import SaveUserModal from "./modal/SaveUserModal";
 import childrenService from "../../../firebase/services/childrenService";
 import Swal from "sweetalert2";
@@ -17,6 +15,7 @@ import ChildrenModal, {
 } from "../../../components/ChildrenModal";
 import { Role } from "../../../interfaces/firebase/Role";
 import MyPurchaseEventCollapse from "../../../components/MyPurchaseEventCollapse";
+import nonTechUserService from "../../../firebase/services/nonTechUserService";
 export default function UserPage() {
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
   const [isOpenSaveModal, setIsOpenSaveModal] = useState<boolean>(false);
@@ -27,9 +26,14 @@ export default function UserPage() {
   const _userService = userService();
   const _childrenService = childrenService();
   const _accounService = accountService();
+  const _nontechService = nonTechUserService();
   const { data: users, refetch } = useQuery({
     queryKey: ["users"],
-    queryFn: async () => await _userService.getAll(),
+    queryFn: async () => {
+      const user = await _userService.getAll();
+      const nontech = await _nontechService.getAll();
+      return [...user, ...nontech]
+    },
     initialData: [],
   });
   const {
