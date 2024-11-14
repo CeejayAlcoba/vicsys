@@ -1,6 +1,5 @@
 import { Button, Form, Input, Modal, Radio } from "antd";
 import { useForm } from "antd/es/form/Form";
-import { ColumnsType } from "antd/es/table";
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import IChild from "../interfaces/firebase/IChild";
 import FormGroupItems, { FormGroupItemsProps } from "./FormControl";
@@ -175,8 +174,8 @@ export default function ChildrenModal(props: AddChildModalProps) {
 
   const columns: ColumnConfig[] = [
     {
-      dataIndex: "",
       title: "Name",
+      dataIndex: "",
       render: (data: IChild) => (
         <>
           {data.lastName}, {data.firstName}
