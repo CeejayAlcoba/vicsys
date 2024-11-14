@@ -11,6 +11,13 @@ export default function nonTechUserService() {
   };
 
   const add = async (data: INonTechUser) => {
+    const { email } = data;
+
+    const isEmailExisted = await _nonTechUserRepository.isEmailExisted(email);
+    if (isEmailExisted)
+      throw new Error(
+        "Email already in use. Try logging in or use a different email to sign up."
+      );
     return await _nonTechUserRepository.add(data);
   };
 

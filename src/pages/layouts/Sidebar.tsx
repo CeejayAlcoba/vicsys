@@ -47,7 +47,36 @@ export default function Sidebar() {
       icon: <PieChartOutlined />,
       onClick: () => navigate("events"),
     },
-
+    {
+      label: "Ticket Categories",
+      key: "5",
+      icon: <UserOutlined />,
+      onClick: () => navigate("ticket-categories"),
+    },
+    {
+      label: "Kids list",
+      key: "6",
+      icon: <UserOutlined />,
+      onClick: () => navigate("kids-list"),
+    },
+    {
+      label: "My Purchase",
+      key: "7",
+      icon: <ShoppingCartOutlined />,
+      onClick: () => navigate("my-purchase"),
+    },
+    {
+      label: "My Kids",
+      key: "8",
+      icon: <ShoppingCartOutlined />,
+      onClick: () => navigate("my-kids"),
+    },
+    {
+      label: "Event Booking",
+      key: "9",
+      icon: <ShoppingCartOutlined />,
+      onClick: () => navigate("event-booking"),
+    },
     {
       label: "Account",
       key: "sub1",
@@ -55,59 +84,17 @@ export default function Sidebar() {
       children: [
         {
           label: "Settings",
-          key: "5",
+          key: "10",
           icon: <SettingOutlined />,
           onClick: () => navigate("account-settings"),
         },
         {
           label: "Logout",
-          key: "6",
+          key: "11",
           icon: <LogoutOutlined />,
           onClick: () => handleLogout(),
         },
       ],
-    },
-    {
-      label: "Test",
-      key: "sub2",
-      icon: <QrcodeOutlined />,
-      children: [
-        {
-          label: "QR",
-          key: "7",
-          onClick: () => navigate("test"),
-        },
-      ],
-    },
-    {
-      label: "Ticket Categories",
-      key: "8",
-      icon: <UserOutlined />,
-      onClick: () => navigate("ticket-categories"),
-    },
-    {
-      label: "Kids list",
-      key: "9",
-      icon: <UserOutlined />,
-      onClick: () => navigate("kids-list"),
-    },
-    {
-      label: "My Purchase",
-      key: "10",
-      icon: <ShoppingCartOutlined />,
-      onClick: () => navigate("my-purchase"),
-    },
-    {
-      label: "My Kids",
-      key: "11",
-      icon: <ShoppingCartOutlined />,
-      onClick: () => navigate("my-kids"),
-    },
-    {
-      label: "Event Booking",
-      key: "12",
-      icon: <ShoppingCartOutlined />,
-      onClick: () => navigate("event-booking"),
     },
   ];
 
