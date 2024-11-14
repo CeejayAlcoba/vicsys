@@ -352,25 +352,56 @@ export default function NonTechUserPage() {
 
     const MAX_TICKETS_PER_CATEGORY = 2;
 
-    const getExistingTicketsCount = (eventId: string): number => {
-      if (!selectedUser?.myPurchaseEvents) return 0;
+    const getExistingTicketsCount = (
+      eventId: string
+    ): {
+      total: number;
+      byCategory: { [key: string]: number };
+    } => {
+      if (!selectedUser?.myPurchaseEvents) return { total: 0, byCategory: {} };
 
-      return selectedUser.myPurchaseEvents.filter(
+      const purchases = selectedUser.myPurchaseEvents.filter(
         (purchase) => purchase.eventId === eventId
-      ).length;
+      );
+
+      const byCategory = purchases.reduce((acc, purchase) => {
+        acc[purchase.ticketName] = (acc[purchase.ticketName] || 0) + 1;
+        return acc;
+      }, {} as { [key: string]: number });
+
+      return {
+        total: purchases.length,
+        byCategory,
+      };
+    };
+
+    const getMaxTicketsForEvent = (event: IEvent): number => {
+      return event.ticketCategories.length * MAX_TICKETS_PER_CATEGORY;
     };
 
     const handleQuantityChange = (increment: boolean) => {
       setTicketQuantity((prev) => {
-        const existingTickets = getExistingTicketsCount(selectedEventId || "");
-        const maxAllowed = Math.min(
-          MAX_TICKETS_PER_CATEGORY - existingTickets,
-          MAX_TICKETS_PER_CATEGORY
+        if (!selectedEventId || !selectedCategoryId) return prev;
+
+        const selectedEvent = event.find((e) => e.id === selectedEventId);
+        if (!selectedEvent) return prev;
+
+        const selectedCategory = selectedEvent.ticketCategories.find(
+          (tc) => tc.ticketCategoryId === selectedCategoryId
         );
+        if (!selectedCategory) return prev;
+
+        const { byCategory } = getExistingTicketsCount(selectedEventId);
+        const existingCategoryTickets =
+          byCategory[selectedCategory.ticketName] || 0;
+
+        const remainingInCategory =
+          MAX_TICKETS_PER_CATEGORY - existingCategoryTickets;
 
         const newQuantity = increment
-          ? Math.min(prev + 1, maxAllowed)
+          ? Math.min(prev + 1, remainingInCategory)
           : Math.max(prev - 1, 0);
+
         return newQuantity;
       });
     };
@@ -431,23 +462,35 @@ export default function NonTechUserPage() {
         return;
       }
 
-      const existingTickets = getExistingTicketsCount(selectedEventId);
-      if (existingTickets + ticketQuantity > MAX_TICKETS_PER_CATEGORY) {
+      const selectedEvent = event.find((e) => e.id === selectedEventId);
+      if (!selectedEvent) throw new Error("Event not found");
+
+      const selectedCategory = selectedEvent.ticketCategories.find(
+        (tc) => tc.ticketCategoryId === selectedCategoryId
+      );
+      if (!selectedCategory) throw new Error("Ticket category not found");
+
+      const { total: existingTotal, byCategory } =
+        getExistingTicketsCount(selectedEventId);
+      const existingCategoryTickets =
+        byCategory[selectedCategory.ticketName] || 0;
+      const maxEventTickets = getMaxTicketsForEvent(selectedEvent);
+
+      if (existingTotal + ticketQuantity > maxEventTickets) {
         message.error(
-          `You can only have a maximum of ${MAX_TICKETS_PER_CATEGORY} tickets per event`
+          `You can only have a maximum of ${maxEventTickets} tickets total for this event`
+        );
+        return;
+      }
+
+      if (existingCategoryTickets + ticketQuantity > MAX_TICKETS_PER_CATEGORY) {
+        message.error(
+          `You can only have a maximum of ${MAX_TICKETS_PER_CATEGORY} tickets for the ${selectedCategory.ticketName} category`
         );
         return;
       }
 
       try {
-        const selectedEvent = event.find((e) => e.id === selectedEventId);
-        if (!selectedEvent) throw new Error("Event not found");
-
-        const selectedCategory = selectedEvent.ticketCategories.find(
-          (tc) => tc.ticketCategoryId === selectedCategoryId
-        );
-        if (!selectedCategory) throw new Error("Ticket category not found");
-
         if ((selectedCategory.ticketRemaining || 0) < ticketQuantity) {
           message.error("Not enough tickets remaining!");
           return;
@@ -459,16 +502,19 @@ export default function NonTechUserPage() {
           ticketQuantity
         );
 
-        const bookingPromises = Array(ticketQuantity)
-          .fill(null)
-          .map(() =>
-            Promise.all([
-              handleSaveToPurchase(selectedEvent, selectedCategory),
-              handleSaveToAttendees(selectedEventId),
-            ])
-          );
+        const purchasePromises = [];
+        const attendeePromises = [];
 
-        await Promise.all(bookingPromises.flat());
+        for (let i = 0; i < ticketQuantity; i++) {
+          purchasePromises.push(
+            handleSaveToPurchase(selectedEvent, selectedCategory)
+          );
+          attendeePromises.push(handleSaveToAttendees(selectedEventId));
+        }
+
+        await Promise.all(purchasePromises);
+        await Promise.all(attendeePromises);
+
         await Promise.all([refetchnontechuser(), refetchevent()]);
 
         message.success(`Successfully booked ${ticketQuantity} ticket(s)!`);
@@ -497,8 +543,10 @@ export default function NonTechUserPage() {
       >
         <div className="space-y-4">
           {event?.map((events) => {
-            const existingTickets = getExistingTicketsCount(events.id || "");
-            const remainingAllowed = MAX_TICKETS_PER_CATEGORY - existingTickets;
+            const { total: existingTotal, byCategory } =
+              getExistingTicketsCount(events.id || "");
+            const maxEventTickets = getMaxTicketsForEvent(events);
+            const remainingEventTickets = maxEventTickets - existingTotal;
 
             return (
               <Card
@@ -537,10 +585,10 @@ export default function NonTechUserPage() {
                         <Typography.Text type="secondary">
                           {events.venue} <br />
                           <br />
-                          {existingTickets >= MAX_TICKETS_PER_CATEGORY ? (
+                          {existingTotal >= maxEventTickets ? (
                             <Tag color="red">Maximum tickets reached</Tag>
                           ) : (
-                            `You can book ${remainingAllowed} more ticket(s) for this event`
+                            `You can book ${remainingEventTickets} more ticket(s) for this event`
                           )}
                         </Typography.Text>
                       </div>
@@ -550,6 +598,11 @@ export default function NonTechUserPage() {
                             selectedEventId === events.id &&
                             selectedCategoryId === category.ticketCategoryId;
 
+                          const existingCategoryTickets =
+                            byCategory[category.ticketName] || 0;
+                          const remainingCategoryTickets =
+                            MAX_TICKETS_PER_CATEGORY - existingCategoryTickets;
+
                           return (
                             <div
                               key={index}
@@ -558,17 +611,19 @@ export default function NonTechUserPage() {
                               <Tag
                                 color={isSelected ? "green" : "blue"}
                                 className={`cursor-pointer ${
-                                  existingTickets >= MAX_TICKETS_PER_CATEGORY
+                                  existingCategoryTickets >=
+                                  MAX_TICKETS_PER_CATEGORY
                                     ? "opacity-50"
                                     : ""
                                 }`}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   if (
-                                    existingTickets >= MAX_TICKETS_PER_CATEGORY
+                                    existingCategoryTickets >=
+                                    MAX_TICKETS_PER_CATEGORY
                                   ) {
                                     message.warning(
-                                      `Maximum ${MAX_TICKETS_PER_CATEGORY} tickets per event allowed`
+                                      `Maximum ${MAX_TICKETS_PER_CATEGORY} tickets per category allowed`
                                     );
                                     return;
                                   }
@@ -589,35 +644,45 @@ export default function NonTechUserPage() {
                                 {category.ticketName}:{" "}
                                 {category.ticketRemaining}/
                                 {category.ticketTotal} Available
-                              </Tag>
-                              {isSelected && remainingAllowed > 0 && (
-                                <div
-                                  className="flex items-center gap-1"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  <Button
-                                    size="small"
-                                    type="text"
-                                    icon={<MinusOutlined />}
-                                    onClick={() => handleQuantityChange(false)}
-                                    disabled={ticketQuantity === 0}
-                                  />
-                                  <span className="min-w-[20px] text-center">
-                                    {ticketQuantity}
+                                {existingCategoryTickets > 0 && (
+                                  <span className="ml-2">
+                                    (You have {existingCategoryTickets})
                                   </span>
-                                  <Button
-                                    size="small"
-                                    type="text"
-                                    icon={<PlusOutlined />}
-                                    onClick={() => handleQuantityChange(true)}
-                                    disabled={
-                                      ticketQuantity >= remainingAllowed ||
-                                      ticketQuantity >=
-                                        (category.ticketRemaining || 0)
-                                    }
-                                  />
-                                </div>
-                              )}
+                                )}
+                              </Tag>
+                              {isSelected &&
+                                remainingCategoryTickets > 0 &&
+                                remainingEventTickets > 0 && (
+                                  <div
+                                    className="flex items-center gap-1"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <Button
+                                      size="small"
+                                      type="text"
+                                      icon={<MinusOutlined />}
+                                      onClick={() =>
+                                        handleQuantityChange(false)
+                                      }
+                                      disabled={ticketQuantity === 0}
+                                    />
+                                    <span className="min-w-[20px] text-center">
+                                      {ticketQuantity}
+                                    </span>
+                                    <Button
+                                      size="small"
+                                      type="text"
+                                      icon={<PlusOutlined />}
+                                      onClick={() => handleQuantityChange(true)}
+                                      disabled={
+                                        ticketQuantity >=
+                                          remainingCategoryTickets ||
+                                        ticketQuantity >=
+                                          (category.ticketRemaining || 0)
+                                      }
+                                    />
+                                  </div>
+                                )}
                             </div>
                           );
                         })}
