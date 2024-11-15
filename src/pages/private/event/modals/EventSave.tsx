@@ -7,6 +7,7 @@ import {
   Space,
   Modal,
   Select,
+  Switch,
 } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import useEventContext from "../useEventContext";
@@ -16,9 +17,9 @@ import EventImageUpload from "../components/EventImageUpload";
 import { IEventSave } from "../../../../interfaces/firebase/IEvent";
 import eventService from "../../../../firebase/services/eventService";
 import Swal from "sweetalert2";
-import { useQuery } from "@tanstack/react-query";
-import ticketCategoryService from "../../../../firebase/services/ticketCategoryService";
-import ITicketCategory from "../../../../interfaces/firebase/ITicketCategory";
+// import { useQuery } from "@tanstack/react-query";
+// import ticketCategoryService from "../../../../firebase/services/ticketCategoryService";
+// import ITicketCategory from "../../../../interfaces/firebase/ITicketCategory";
 
 export default function EventSaveModal() {
   const {
@@ -31,13 +32,13 @@ export default function EventSaveModal() {
     refetch,
   } = useEventContext();
   const _eventService = eventService();
-  const _ticketCategoryService = ticketCategoryService();
+  // const _ticketCategoryService = ticketCategoryService();
   const [form] = Form.useForm();
 
-  const { data: ticketCategories } = useQuery({
-    queryKey: ["ticketCategories"],
-    queryFn: _ticketCategoryService.getAll,
-  });
+  // const { data: ticketCategories } = useQuery({
+  //   queryKey: ["ticketCategories"],
+  //   queryFn: _ticketCategoryService.getAll,
+  // });
   const onFinish = async (values: IEventSave) => {
     try {
       const formattedValues: IEventSave = {
@@ -84,6 +85,7 @@ export default function EventSaveModal() {
       venue: "",
       ticketCategories: [],
       attendees: [],
+      isForKids: false,
     });
   }, [isSaveModalOpen]);
 
@@ -140,6 +142,15 @@ export default function EventSaveModal() {
             <Input.TextArea rows={4} placeholder="Enter event description" />
           </Form.Item>
 
+          {/* Is for Kids */}
+          <Form.Item
+            label="Is this event for kids?"
+            name="isForKids"
+            valuePropName="checked"
+          >
+            <Switch />
+          </Form.Item>
+
           <div className="d-flex gap-2">
             {/* Start Time */}
             <Form.Item
@@ -183,24 +194,6 @@ export default function EventSaveModal() {
                     style={{ display: "flex", marginBottom: 8 }}
                     align="baseline"
                   >
-                    {/* <Form.Item
-                      {...restField}
-                      name={[name, "ticketCategoryId"]}
-                      label="Category"
-                      rules={[{ required: true, message: "Required" }]}
-                    >
-                      <Select
-                        placeholder="Select an option"
-                        style={{ width: 200 }}
-                      >
-                        {ticketCategories?.map((category: ITicketCategory) => (
-                          <Select.Option value={category.id}>
-                            {category.description}
-                          </Select.Option>
-                        ))}
-                      </Select>
-                    </Form.Item> */}
-
                     <Form.Item
                       {...restField}
                       name={[name, "ticketName"]}

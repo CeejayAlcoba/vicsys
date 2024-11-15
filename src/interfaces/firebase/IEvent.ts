@@ -14,6 +14,7 @@ export interface IEvent {
   venue: string;
   ticketCategories: ITicketCategory[];
   attendees: IAttendee[];
+  isForKids: boolean;
 }
 export interface IEventSave {
   id?: string;
@@ -25,6 +26,7 @@ export interface IEventSave {
   venue: string;
   ticketCategories: ITicketCategory[];
   attendees: IAttendee[];
+  isForKids: boolean;
 }
 export interface ITicketCategory {
   ticketCategoryId?: string;

@@ -32,7 +32,7 @@ export default function EventCard(props: IEvent) {
           style={{ width: 350, height: 150 }}
         />
       }
-      bodyStyle={{ height: 400, overflowY: "auto" }}
+      bodyStyle={{ height: 470, overflowY: "auto" }}
       actions={[
         <Button
           type="primary"
@@ -68,7 +68,7 @@ export default function EventCard(props: IEvent) {
         <strong>Venue: </strong>
         {venue}
       </p>
-      <Collapse accordion>
+      <Collapse accordion style={{ width: 250 }}>
         <Panel header="Available Tickets by Category" key="1">
           {ticketCategories?.map((ticket, index) => (
             <div key={index}>

@@ -1,4 +1,4 @@
-import { Badge, Button, Modal } from "antd";
+import { Badge, Button, Form, Input, Modal } from "antd";
 import {
   IEvent,
   ITicketCategory,
@@ -13,7 +13,6 @@ import useUserContext from "../../../../contexts/useUserContext";
 import userService from "../../../../firebase/services/userService";
 import bookingService from "../../../../firebase/services/bookingService";
 import Swal from "sweetalert2";
-
 interface TicketNameStatus {
   ticketName: string;
   ticketBookCount: number;
@@ -31,11 +30,15 @@ export default function BookingModal(props: {
 
   const _userService = userService();
   const _bookingService = bookingService();
+  const [gcashRefNo, setGcashRefNo] = useState<string>("");
+  const [purchaseTotalPrice, setPurchaseTotalPrice] = useState<number>(0);
   const [myPurchase, setMyPurchase] = useState<IMyPuchaseEvent[]>([]);
   const [ticketNameStatus, setTicketNameStatus] = useState<TicketNameStatus[]>(
     []
   );
-  const handleAddPurchase = (ticketName: string) => {
+  const [form] = Form.useForm();
+  const handleAddPurchase = (ticketName: string, price: number) => {
+    setPurchaseTotalPrice((prev) => prev + price);
     setMyPurchase((prev) => [
       ...prev,
       {
@@ -50,7 +53,8 @@ export default function BookingModal(props: {
     ]);
   };
 
-  const handleRemovePurchase = (ticketName: string) => {
+  const handleRemovePurchase = (ticketName: string, price: number) => {
+    setPurchaseTotalPrice((prev) => prev - price);
     const foundPurchase = myPurchase.find((m) => m.ticketName == ticketName);
 
     setMyPurchase((prev) =>
@@ -83,11 +87,16 @@ export default function BookingModal(props: {
     setTicketNameStatus(initialTicketnameStatus);
   };
   const handleBook = async () => {
+    form.validateFields();
+    const updatedmyPurchase = myPurchase.map((m) => ({
+      ...m,
+      gcashRefNo: gcashRefNo,
+    }));
     if (!selectedEvent.id || !user.uid || myPurchase.length == 0) return;
     await _bookingService.bookEventPurchases(
       selectedEvent.id,
       user.uid,
-      myPurchase
+      updatedmyPurchase
     );
     refetch();
     setIsOpen(false);
@@ -112,15 +121,21 @@ export default function BookingModal(props: {
       return true;
     return false;
   };
+
+  const handleCancelModal = () => {
+    setPurchaseTotalPrice(0);
+    setIsOpen(false);
+  };
   useEffect(() => {
     handleSetInitialTicketStatus();
     setMyPurchase([]);
   }, [selectedEvent]);
+
   return (
     <Modal
       open={isOpen}
       onOk={handleBook}
-      onCancel={() => setIsOpen(false)}
+      onCancel={handleCancelModal}
       okText="Book now"
       width={700}
     >
@@ -132,7 +147,6 @@ export default function BookingModal(props: {
           style={{ width: 200 }}
         />
       </center>
-
       <center>
         <h3>{selectedEvent.eventName}</h3>
         <p>{selectedEvent.description}</p>
@@ -147,7 +161,6 @@ export default function BookingModal(props: {
       </center>
       <hr />
       <h5>Ticket Categories</h5>
-
       {selectedEvent.ticketCategories.map((ticket, index) => {
         return (
           <div key={index} className="d-flex justify-content-between mb-1">
@@ -169,7 +182,7 @@ export default function BookingModal(props: {
                   size="small"
                   //   shape="round"
                   onClick={() => {
-                    handleRemovePurchase(ticket.ticketName);
+                    handleRemovePurchase(ticket.ticketName, ticket.ticketPrice);
                   }}
                   icon={<MinusOutlined />}
                   disabled={handleCountPurchase(ticket.ticketName) === 0}
@@ -182,7 +195,7 @@ export default function BookingModal(props: {
                   size="small"
                   //   shape="round"
                   onClick={() => {
-                    handleAddPurchase(ticket.ticketName);
+                    handleAddPurchase(ticket.ticketName, ticket.ticketPrice);
                   }}
                   icon={<PlusOutlined />}
                   disabled={handleIsDisabledAddTicketCount(ticket)}
@@ -193,8 +206,27 @@ export default function BookingModal(props: {
           </div>
         );
       })}
-
       <hr />
+      <label>
+        <strong>Total fee: </strong>₱{purchaseTotalPrice}
+      </label>
+
+      {myPurchase.length > 0 && (
+        <Form form={form}>
+          <Form.Item
+            label="Gcash Reference number"
+            name="gcashRefNo"
+            rules={[
+              { required: true, message: "Gcash Reference No. is required" },
+            ]}
+          >
+            <Input
+              value={gcashRefNo}
+              onChange={(e) => setGcashRefNo(e.target.value)}
+            />
+          </Form.Item>
+        </Form>
+      )}
     </Modal>
   );
 }

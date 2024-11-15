@@ -1,8 +1,8 @@
-import { Button, Card } from "antd";
+import { Button, Card, Collapse } from "antd";
 import { IEvent } from "../../../../interfaces/firebase/IEvent";
 import { convertUnixToDateText } from "../../../../utils/dateTimeFormat";
 import { BookOutlined } from "@ant-design/icons";
-
+const { Panel } = Collapse;
 export default function BookingEventCard(props: {
   event: IEvent;
   setSelectedEvent: (value: IEvent) => void;
@@ -28,6 +28,7 @@ export default function BookingEventCard(props: {
           style={{ width: 350, height: 150 }}
         />
       }
+      bodyStyle={{ height: 470, overflowY: "auto" }}
       actions={[
         <Button
           type="primary"
@@ -54,15 +55,19 @@ export default function BookingEventCard(props: {
       <p>
         <strong>Available Tickets by Category: </strong>
       </p>
-      {ticketCategories?.map((ticket, index) => (
-        <p key={index}>
-          {ticket.ticketName} - ₱{ticket.ticketPrice}
-          <br />
-          Tickets Available: {ticket.ticketRemaining}
-          <br />
-          Tickets Per user: {ticket.ticketPerUser}
-        </p>
-      ))}
+      <Collapse accordion style={{ width: 290 }}>
+        <Panel header="Available Tickets by Category" key="1">
+          {ticketCategories?.map((ticket, index) => (
+            <p key={index}>
+              {ticket.ticketName} - ₱{ticket.ticketPrice}
+              <br />
+              Tickets Available: {ticket.ticketRemaining}
+              <br />
+              Tickets Per user: {ticket.ticketPerUser}
+            </p>
+          ))}
+        </Panel>
+      </Collapse>
     </Card>
   );
 }
