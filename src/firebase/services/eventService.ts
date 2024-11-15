@@ -6,12 +6,12 @@ import {
 import documentRepository from "../repositories/documentRepository";
 import eventRepository from "../repositories/eventRepository";
 import { v4 as uuidv4 } from "uuid";
-import userRepository from "../repositories/userRepository";
 import { convertUnixToDate } from "../../utils/dateTimeFormat";
 import moment, { Moment } from "moment";
 export default function eventService() {
   const _eventRepository = eventRepository();
   const _documentRepository = documentRepository();
+
   const add = async (data: IEventSave) => {
     let imageUrl = "";
     if (data.image instanceof File) {
@@ -28,6 +28,8 @@ export default function eventService() {
       imageUrl = url;
       const newData: IEvent = {
         ...data,
+        attendees: [],
+        childrenAttendees: [],
         endTime: new Date(data.endTime),
         startTime: new Date(data.startTime),
         image: typeof data.image == "string" ? data.image : imageUrl,
@@ -118,11 +120,9 @@ export default function eventService() {
       const endDate = convertUnixToDate(event.endTime);
       return startDate <= date && endDate >= date;
     });
-
-    console.log(filteredEvents);
-
     return filteredEvents;
   };
+
   return {
     getByDate,
     getOngoingEvents,

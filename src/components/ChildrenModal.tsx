@@ -26,6 +26,7 @@ export function useChildrenModal() {
     age: 0,
     hasFoodAllergies: false,
     foodAllergies: "",
+    qrId: "",
   });
 
   return {

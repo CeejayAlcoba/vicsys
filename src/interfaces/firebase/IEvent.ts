@@ -3,6 +3,9 @@ import { IUser } from "./IUser";
 export interface IAttendee {
   userId: string;
 }
+export interface IChildAttendee {
+  childId: string;
+}
 
 export interface IEvent {
   id?: string;
@@ -14,6 +17,8 @@ export interface IEvent {
   venue: string;
   ticketCategories: ITicketCategory[];
   attendees: IAttendee[];
+  childrenAttendees: IChildAttendee[];
+  isForKids: boolean;
 }
 export interface IEventSave {
   id?: string;
@@ -25,6 +30,8 @@ export interface IEventSave {
   venue: string;
   ticketCategories: ITicketCategory[];
   attendees: IAttendee[];
+  childrenAttendees: IChildAttendee[];
+  isForKids: boolean;
 }
 export interface ITicketCategory {
   ticketCategoryId?: string;

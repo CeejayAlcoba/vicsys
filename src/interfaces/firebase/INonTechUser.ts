@@ -8,6 +8,7 @@ export interface IMyPuchaseEvent {
   status: TicketStatus;
   ticketId?: string;
   ticketName: string;
+  gcashRefNo?: string;
 }
 
 export interface INonTechUser {

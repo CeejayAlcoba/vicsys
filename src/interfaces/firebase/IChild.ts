@@ -9,8 +9,12 @@ export default interface IChild {
   age: number;
   hasFoodAllergies: boolean;
   foodAllergies: string;
+  qrId: string;
 }
 
+export interface IChildWithParent extends IChild {
+  parentName?: string;
+}
 export enum ChildCategory {
   FamilyRoom = "Family Room",
   Preschool = "Preschool",

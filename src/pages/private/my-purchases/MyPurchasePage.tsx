@@ -61,6 +61,11 @@ export default function MyPurchasePage() {
       width: 600,
     },
     {
+      title: "Gcash RefNo",
+      dataIndex: "gcashRefNo",
+      width: 600,
+    },
+    {
       title: " QR code",
       dataIndex: "",
       width: 300,

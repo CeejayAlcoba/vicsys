@@ -73,6 +73,7 @@ export default function MyPurchaseEventCollapse(props: {
           </span>
 
           <span>Ticket Name: {event.ticketName}</span>
+          <span>Gcash RefNo: {event.gcashRefNo}</span>
           <span>
             Status: <TicketStatusText status={event?.status} />{" "}
             <Button
@@ -87,6 +88,7 @@ export default function MyPurchaseEventCollapse(props: {
               icon={<EditOutlined />}
             />
           </span>
+
           <a
             // href={event.qrcodeUrl}
             className="text-blue-600 hover:underline"
