@@ -55,7 +55,7 @@ export default function BookingEventCard(props: {
       <p>
         <strong>Available Tickets by Category: </strong>
       </p>
-      <Collapse accordion style={{ width: 290 }}>
+      <Collapse accordion style={{ width: 240 }}>
         <Panel header="Available Tickets by Category" key="1">
           {ticketCategories?.map((ticket, index) => (
             <p key={index}>

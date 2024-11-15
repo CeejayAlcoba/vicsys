@@ -12,6 +12,9 @@ export default interface IChild {
   qrId: string;
 }
 
+export interface IChildWithParent extends IChild {
+  parentName?: string;
+}
 export enum ChildCategory {
   FamilyRoom = "Family Room",
   Preschool = "Preschool",

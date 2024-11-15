@@ -1,3 +1,5 @@
+import IChild from "../../interfaces/firebase/IChild";
+import { IChildAttendee, IEvent } from "../../interfaces/firebase/IEvent";
 import { IMyPuchaseEvent } from "../../interfaces/firebase/INonTechUser";
 import eventRepository from "../repositories/eventRepository";
 import userRepository from "../repositories/userRepository";
@@ -43,8 +45,24 @@ export default function bookingService() {
         : [...myPurchases],
     });
   };
+  const bookChildren = async (eventId: string, newChildren: IChild[]) => {
+    const event = await _eventRepository.getById(eventId);
+    if (!event) throw new Error("Event not found");
+
+    console.log(newChildren);
+    const newChildrenIds: IChildAttendee[] = newChildren.map((n) => ({
+      childId: n?.id ?? "",
+    }));
+
+    const updatedEvent: IEvent = {
+      ...event,
+      childrenAttendees: [...event.childrenAttendees, ...newChildrenIds],
+    };
+    await _eventRepository.update(eventId, updatedEvent);
+  };
 
   return {
+    bookChildren,
     bookEventPurchases,
   };
 }

@@ -1,13 +1,18 @@
 import childrenRepository from "../repositories/childrenRepository";
-import IChild, { ChildCategory } from "../../interfaces/firebase/IChild";
+import IChild, {
+  ChildCategory,
+  IChildWithParent,
+} from "../../interfaces/firebase/IChild";
 import IPieValue from "../../interfaces/components/IPieValue";
 import userRepository from "../repositories/userRepository";
 import nonTechUserRepository from "../repositories/nonTechUserRepository";
+import eventRepository from "../repositories/eventRepository";
 
 export default function childrenService() {
   const _childrenRepository = childrenRepository();
   const _userRepository = userRepository();
   const _nontechRepository = nonTechUserRepository();
+  const _eventRepository = eventRepository();
   const getAll = async () => {
     const children = await _childrenRepository.getAll();
     const result = await Promise.all(
@@ -83,7 +88,28 @@ export default function childrenService() {
     return result;
   };
 
+  const getByEventId = async (eventId: string) => {
+    const event = await _eventRepository.getById(eventId);
+
+    if (!event) throw new Error("Can't find event");
+
+    let result: IChildWithParent[] = [];
+    await Promise.all(
+      event?.childrenAttendees.map(async ({ childId }) => {
+        const child = await _childrenRepository.getById(childId);
+        if (!child) return;
+        let user;
+        user = await _userRepository.getById(child.userId ?? "");
+        if (!user) user = await _nontechRepository.getById(child.userId ?? "");
+        result = [...result, { ...child, parentName: user?.name ?? "" }];
+      })
+    );
+
+    return result;
+  };
+
   return {
+    getByEventId,
     getChildrenCategoryPieChart,
     getTotalChildren,
     updateManyByUserId,

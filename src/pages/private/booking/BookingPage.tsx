@@ -6,6 +6,7 @@ import BookingModal from "./components/BookingModal";
 import { useState } from "react";
 import { IEvent } from "../../../interfaces/firebase/IEvent";
 import { SearchOutlined } from "@ant-design/icons";
+import BookingKidsModal from "./components/BookingKidsModal";
 
 export default function BookingPage() {
   const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
@@ -23,7 +24,6 @@ export default function BookingPage() {
       return filtredEvents;
     },
   });
-
   const handleIsKidChange = async (value: boolean) => {
     setIsforKids(value);
     const events = await _eventService.getAll();
@@ -43,12 +43,22 @@ export default function BookingPage() {
   };
   return (
     <>
-      <BookingModal
-        isOpen={isBookingModalVisible}
-        setIsOpen={setIsBookingModalVisible}
-        selectedEvent={selectedEvent}
-        refetch={refetch}
-      />
+      {isForKids ? (
+        <BookingKidsModal
+          isOpen={isBookingModalVisible}
+          setIsOpen={setIsBookingModalVisible}
+          selectedEvent={selectedEvent}
+          setSelectedEvent={setSelectedEvent}
+        />
+      ) : (
+        <BookingModal
+          isOpen={isBookingModalVisible}
+          setIsOpen={setIsBookingModalVisible}
+          selectedEvent={selectedEvent}
+          refetch={refetch}
+        />
+      )}
+
       <div className="d-flex ">
         <Input
           placeholder="Search..."

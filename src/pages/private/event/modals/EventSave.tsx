@@ -85,6 +85,7 @@ export default function EventSaveModal() {
       venue: "",
       ticketCategories: [],
       attendees: [],
+      children: [],
       isForKids: false,
     });
   }, [isSaveModalOpen]);
