@@ -12,7 +12,10 @@ import Swal from "sweetalert2";
 import useUserContext from "../../../../contexts/useUserContext";
 import nonTechUserService from "../../../../firebase/services/nonTechUserService";
 import userService from "../../../../firebase/services/userService";
-import { IMyPuchaseEvent, INonTechUser } from "../../../../interfaces/firebase/INonTechUser";
+import {
+  IMyPuchaseEvent,
+  INonTechUser,
+} from "../../../../interfaces/firebase/INonTechUser";
 import { TicketStatus } from "../../../../interfaces/firebase/ITicket";
 
 interface IChildBook extends IChild {
@@ -38,10 +41,9 @@ export default function BookingKidsModal(props: {
   const [gcashRefNo, setGcashRefNo] = useState<string>("");
   const _bookingService = bookingService();
 
-
   const getAllBookedChildren = () => {
-    return newBookChildren.concat(bookedChildren)
-  }
+    return newBookChildren.concat(bookedChildren);
+  };
 
   const handlGetCurrentChildren = async () => {
     const currentChildren = await _childrenService.getByEventId(
@@ -77,7 +79,7 @@ export default function BookingKidsModal(props: {
       const child = await _childrenService.getById(childId);
       if (!child?.userId) throw new Error("Child's parent not found");
       let nonTechParent = await _nonTechUserService.getById(child.userId);
-      
+
       if (nonTechParent) {
         const purchaseEvent: IMyPuchaseEvent = {
           eventId: selectedEvent.id,
@@ -101,7 +103,8 @@ export default function BookingKidsModal(props: {
         await _nonTechUserService.update(child.userId, updatedUser);
       } else {
         const regularParent = await _userService.getById(child.userId);
-        if (!regularParent) throw new Error("Parent not found in either user system");
+        if (!regularParent)
+          throw new Error("Parent not found in either user system");
 
         const purchaseEvent: IMyPuchaseEvent = {
           eventId: selectedEvent.id,
@@ -132,10 +135,10 @@ export default function BookingKidsModal(props: {
 
   const handleBookChild = async (child: IChild) => {
     try {
-      if (selectedEvent?.id) {
-        await _bookingService.bookChildren(selectedEvent.id, [{ ...child }]);
-      }
-      await handleSaveToPurchase(child.id || "");
+      // if (selectedEvent?.id) {
+      //   await _bookingService.bookChildren(selectedEvent.id, [{ ...child }]);
+      // }
+      // await handleSaveToPurchase(child.id || "");
 
       setNewBookChildren((prev) => [...prev, { ...child, status: "New" }]);
       setChildren(children.filter((c) => c.id !== child.id));
@@ -150,24 +153,26 @@ export default function BookingKidsModal(props: {
     try {
       const childData = await _childrenService.getById(child.id || "");
       if (childData?.userId) {
-        const nonTechParent = await _nonTechUserService.getById(childData.userId);
+        const nonTechParent = await _nonTechUserService.getById(
+          childData.userId
+        );
         if (nonTechParent?.myPurchaseEvents) {
           const updatedPurchases = nonTechParent.myPurchaseEvents.filter(
-            purchase => purchase.eventId !== selectedEvent?.id
+            (purchase) => purchase.eventId !== selectedEvent?.id
           );
           await _nonTechUserService.update(childData.userId, {
             ...nonTechParent,
-            myPurchaseEvents: updatedPurchases
+            myPurchaseEvents: updatedPurchases,
           });
         } else {
           const regularParent = await _userService.getById(childData.userId);
           if (regularParent?.myPurchaseEvents) {
             const updatedPurchases = regularParent.myPurchaseEvents.filter(
-              purchase => purchase.eventId !== selectedEvent?.id
+              (purchase) => purchase.eventId !== selectedEvent?.id
             );
             await _userService.update(childData.userId, {
               ...regularParent,
-              myPurchaseEvents: updatedPurchases
+              myPurchaseEvents: updatedPurchases,
             });
           }
         }
@@ -178,7 +183,9 @@ export default function BookingKidsModal(props: {
       message.info(`${child.firstName}'s booking has been removed.`);
     } catch (error) {
       console.error("Failed to remove booking:", error);
-      message.error(`Failed to remove ${child.firstName}'s booking. Please try again.`);
+      message.error(
+        `Failed to remove ${child.firstName}'s booking. Please try again.`
+      );
     }
   };
 
@@ -186,6 +193,12 @@ export default function BookingKidsModal(props: {
     if (!selectedEvent?.id || newBookChildren.length == 0)
       throw new Error("selectedEvent.id or newBookChildren must not null");
     await _bookingService.bookChildren(selectedEvent.id, newBookChildren);
+    Promise.all(
+      newBookChildren.map(async (n) => {
+        await handleSaveToPurchase(n.id || "");
+      })
+    );
+
     Swal.fire({
       position: "top-end",
       icon: "success",
@@ -270,7 +283,6 @@ export default function BookingKidsModal(props: {
             <DataTable
               columns={availableChildrenColumns}
               dataSource={children}
-
             />
           </Card>
 
@@ -278,22 +290,24 @@ export default function BookingKidsModal(props: {
             <DataTable
               columns={bookedChildrenColumns}
               dataSource={getAllBookedChildren()}
-
             />
-             <Form>
-          <Form.Item
-            label="Gcash Reference number"
-            name="gcashRefNo"
-            rules={[
-              { required: true, message: "Gcash Reference No. is required" },
-            ]}
-          >
-            <Input
-              value={gcashRefNo}
-              onChange={(e) => setGcashRefNo(e.target.value)}
-            />
-          </Form.Item>
-        </Form>
+            <Form>
+              <Form.Item
+                label="Gcash Reference number"
+                name="gcashRefNo"
+                rules={[
+                  {
+                    required: true,
+                    message: "Gcash Reference No. is required",
+                  },
+                ]}
+              >
+                <Input
+                  value={gcashRefNo}
+                  onChange={(e) => setGcashRefNo(e.target.value)}
+                />
+              </Form.Item>
+            </Form>
           </Card>
         </div>
       </Card>
