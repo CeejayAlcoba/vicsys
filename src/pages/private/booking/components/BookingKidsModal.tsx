@@ -40,6 +40,7 @@ export default function BookingKidsModal(props: {
   const [children, setChildren] = useState<IChild[]>([]);
   const [gcashRefNo, setGcashRefNo] = useState<string>("");
   const _bookingService = bookingService();
+  const [form] = Form.useForm();
 
   const getAllBookedChildren = () => {
     return newBookChildren.concat(bookedChildren);
@@ -135,11 +136,6 @@ export default function BookingKidsModal(props: {
 
   const handleBookChild = async (child: IChild) => {
     try {
-      // if (selectedEvent?.id) {
-      //   await _bookingService.bookChildren(selectedEvent.id, [{ ...child }]);
-      // }
-      // await handleSaveToPurchase(child.id || "");
-
       setNewBookChildren((prev) => [...prev, { ...child, status: "New" }]);
       setChildren(children.filter((c) => c.id !== child.id));
       message.success(`${child.firstName} has been booked successfully!`);
@@ -190,7 +186,8 @@ export default function BookingKidsModal(props: {
   };
 
   const handleBookChildren = async () => {
-    if (!selectedEvent?.id || newBookChildren.length == 0)
+    form.validateFields();
+    if (!selectedEvent?.id || newBookChildren.length == 0 || !gcashRefNo)
       throw new Error("selectedEvent.id or newBookChildren must not null");
     await _bookingService.bookChildren(selectedEvent.id, newBookChildren);
     Promise.all(
@@ -291,7 +288,7 @@ export default function BookingKidsModal(props: {
               columns={bookedChildrenColumns}
               dataSource={getAllBookedChildren()}
             />
-            <Form>
+            <Form form={form}>
               <Form.Item
                 label="Gcash Reference number"
                 name="gcashRefNo"
