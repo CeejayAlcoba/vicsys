@@ -92,7 +92,8 @@ export default function BookingModal(props: {
       ...m,
       gcashRefNo: gcashRefNo,
     }));
-    if (!selectedEvent.id || !user.uid || myPurchase.length == 0) return;
+    if (!selectedEvent.id || !user.uid || myPurchase.length == 0 || !gcashRefNo)
+      return;
     await _bookingService.bookEventPurchases(
       selectedEvent.id,
       user.uid,
