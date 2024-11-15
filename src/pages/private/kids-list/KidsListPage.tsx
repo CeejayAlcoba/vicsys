@@ -52,17 +52,17 @@ export default function KidsListPage() {
       ),
     },
     {
-      title: "nickname",
+      title: "Nickname",
       dataIndex: "nickname",
       width: 400,
     },
     {
-      title: "gender",
+      title: "Gender",
       dataIndex: "gender",
       width: 400,
     },
     {
-      title: "birthday",
+      title: "Birthday",
       dataIndex: "birthday",
       width: 400,
     },
