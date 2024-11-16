@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import eventService from "../../../firebase/services/eventService";
 import BookingEventCard from "./components/BookingEventCard";
 import { Input, Switch, Typography } from "antd";

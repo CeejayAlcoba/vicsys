@@ -27,9 +27,7 @@ import {
 } from "@ant-design/icons";
 import { useState } from "react";
 import DataTable, { ColumnConfig } from "../../../components/DataTable";
-import FormGroupItems, {
-  FormGroupItemsProps,
-} from "../../../components/FormControl";
+import { FormGroupItemsProps } from "../../../components/FormControl";
 import eventService from "../../../firebase/services/eventService";
 import { IEvent, ITicketCategory } from "../../../interfaces/firebase/IEvent";
 import { convertUnixToTimeText } from "../../../utils/dateTimeFormat";
@@ -39,7 +37,9 @@ import { v4 as uuidv4 } from "uuid";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../../firebase/firebaseConfig";
 import SaveNonTechModal from "./modal/SaveNonTechModal";
-import ChildrenModal, { useChildrenModal } from "../../../components/ChildrenModal";
+import ChildrenModal, {
+  useChildrenModal,
+} from "../../../components/ChildrenModal";
 import childrenService from "../../../firebase/services/childrenService";
 import Swal from "sweetalert2";
 
@@ -56,7 +56,6 @@ const ministryOptions = [
   { value: "Real Life Coaches", label: "Real Life Coaches" },
   { value: "Special Project Teams", label: "Special Project teams" },
 ];
-
 
 export default function NonTechUserPage() {
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
@@ -104,22 +103,22 @@ export default function NonTechUserPage() {
 
   const handleMinistryChange = async (value: string, userId: string) => {
     try {
-      const currentUser = nontechuser.find(user => user.id === userId);
-      
+      const currentUser = nontechuser.find((user) => user.id === userId);
+
       if (!currentUser) {
-        throw new Error('User not found');
+        throw new Error("User not found");
       }
 
       await _nonTechUserService.update(userId, {
-        ...currentUser,  
-        ministry: value  
+        ...currentUser,
+        ministry: value,
       });
-      
-      message.success('Ministry updated successfully');
+
+      message.success("Ministry updated successfully");
       refetchnontechuser();
     } catch (error) {
-      message.error('Failed to update ministry');
-      console.error('Error updating ministry:', error);
+      message.error("Failed to update ministry");
+      console.error("Error updating ministry:", error);
     }
   };
   const addFormGroups: FormGroupItemsProps[] = [
@@ -210,7 +209,7 @@ export default function NonTechUserPage() {
     (c) => c.name !== "password"
   );
 
-  const columns: ColumnConfig [] = [
+  const columns: ColumnConfig[] = [
     {
       title: "Name",
       dataIndex: "name",
@@ -242,9 +241,11 @@ export default function NonTechUserPage() {
         <Select
           value={value}
           style={{ width: 180 }}
-          onChange={(newValue) => handleMinistryChange(newValue, record.id || "")}
+          onChange={(newValue) =>
+            handleMinistryChange(newValue, record.id || "")
+          }
         >
-          {ministryOptions.map(option => (
+          {ministryOptions.map((option) => (
             <Select.Option key={option.value} value={option.value}>
               {option.label}
             </Select.Option>
@@ -332,7 +333,7 @@ export default function NonTechUserPage() {
     } catch (_e: any) {
       let e: Error = _e;
       setError(e.message);
-      throw new Error(e.message)
+      throw new Error(e.message);
     }
   };
 
@@ -663,7 +664,7 @@ export default function NonTechUserPage() {
                             >
                               <Tag
                                 color={isSelected ? "green" : "blue"}
-                                className={`cursor-pointer ${
+                                className={`cursor-pointer px-4 py-2 text-lg font-semibold ${
                                   existingCategoryTickets >=
                                   MAX_TICKETS_PER_CATEGORY
                                     ? "opacity-50"

@@ -1,6 +1,5 @@
-import { Button, Card, Form, Input, Modal, Table, message } from "antd";
+import { Button, Card, Form, Input, Modal, message } from "antd";
 import { IEvent } from "../../../../interfaces/firebase/IEvent";
-import { useQuery } from "@tanstack/react-query";
 import childrenService from "../../../../firebase/services/childrenService";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
