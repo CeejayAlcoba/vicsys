@@ -20,6 +20,7 @@ import KidsListPage from "../private/kids-list/KidsListPage";
 import MyPurchasePage from "../private/my-purchases/MyPurchasePage";
 import MyKidsPage from "../private/my-kids/MyKidsPage";
 import BookingPage from "../private/booking/BookingPage";
+import ReportsPage from "../private/reports/ReportsPage";
 import NotificationCreate from "../notification/create/NotificationForm";
 
 export default function AppRoute() {
@@ -88,6 +89,10 @@ export default function AppRoute() {
         {
           path: "event-booking",
           element: <BookingPage />,
+        },
+        {
+          path: "reports",
+          element: <ReportsPage />,
         },
         {
           path: "notification/create",

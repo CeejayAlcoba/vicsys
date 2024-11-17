@@ -5,18 +5,22 @@ import documentService from "../firebase/services/documentService";
 import eventService from "../firebase/services/eventService";
 import { useQuery } from "@tanstack/react-query";
 import { v4 as uuidv4 } from "uuid";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
+import IChild, { IChildWithParent } from "../interfaces/firebase/IChild";
+import childrenService from "../firebase/services/childrenService";
 
 export default function TicketQrCodeModal(props: {
   purchaseEvent: IMyPuchaseEvent | null;
   userId: string;
+  isForKids: boolean;
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
 }) {
-  const { userId, purchaseEvent, isOpen, setIsOpen } = props;
+  const { userId, purchaseEvent, isForKids, isOpen, setIsOpen } = props;
   const _documentService = documentService();
   const _eventService = eventService();
+  const _childrenService = childrenService();
   const {
     data: event,
     refetch,
@@ -26,11 +30,17 @@ export default function TicketQrCodeModal(props: {
     queryFn: async () =>
       await _eventService.getById(purchaseEvent?.eventId ?? ""),
   });
+  const [child, setChild] = useState<IChild | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrintFn = useReactToPrint({ contentRef });
 
   useEffect(() => {
-    if (isOpen) refetch();
+    if (isOpen) {
+      refetch();
+      if (purchaseEvent?.ticketId) {
+        _childrenService.getById(purchaseEvent.ticketId).then(setChild);
+      }
+    }
   }, [isOpen]);
 
   return (
@@ -82,7 +92,7 @@ export default function TicketQrCodeModal(props: {
 
           <div className="qr-code-wrapper mb-4">
             <QRCode
-              value={`${userId}.${purchaseEvent?.ticketId ?? ""}`}
+              value={isForKids ? `${userId}.${child?.qrId ?? ""}` : `${userId}.${purchaseEvent?.ticketId ?? ""}`}
               style={{ backgroundColor: "transparent" }}
             />
           </div>

@@ -7,6 +7,7 @@ import {
   LogoutOutlined,
   HomeOutlined,
   ShoppingCartOutlined,
+  FolderOpenOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import useSidebarContext from "./contexts/useSidebarContext";
@@ -72,9 +73,15 @@ export default function Sidebar() {
     // },
     {
       label: "Event Booking",
-      key: "9",
+      key: "8",
       icon: <ShoppingCartOutlined />,
       onClick: () => navigate("event-booking"),
+    },
+    {
+      label: "Reports",
+      key: "9",
+      icon: <FolderOpenOutlined />,
+      onClick: () => navigate("reports"),
     },
     {
       label: "Account",
