@@ -60,7 +60,7 @@ export default function Sidebar() {
       onClick: () => navigate("kids-list"),
     },
     {
-      label: "My Purchase",
+      label: "My Events",
       key: "7",
       icon: <ShoppingCartOutlined />,
       onClick: () => navigate("my-purchase"),

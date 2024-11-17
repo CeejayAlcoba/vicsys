@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "antd";
-import { ColumnsType } from "antd/es/table";
 import { EyeOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import DataTable, { ColumnConfig } from "../../../components/DataTable";
@@ -27,8 +26,8 @@ export default function MyPurchasePage() {
     queryKey: ["events"],
     queryFn: _eventService.getAll,
   });
-  const hadnleGetEventNameById = (eventId: string) => {
-    return events?.find((e) => e.id == eventId)?.eventName;
+  const handleGetEvent = (eventId: string) => {
+    return events?.find((e) => e.id == eventId);
   };
   const columns: ColumnConfig[] = [
     {
@@ -36,7 +35,7 @@ export default function MyPurchasePage() {
       dataIndex: "eventId",
       width: 600,
       render: (eventId: string) => (
-        <span>{hadnleGetEventNameById(eventId)}</span>
+        <span>{handleGetEvent(eventId)?.eventName}</span>
       ),
     },
     {
@@ -89,6 +88,9 @@ export default function MyPurchasePage() {
   return (
     <>
       <TicketQrCodeModal
+        isForKids={
+          handleGetEvent(selectedPurchase?.eventId ?? "")?.isForKids ?? false
+        }
         userId={user.uid}
         purchaseEvent={selectedPurchase}
         isOpen={isQrModalVisible}

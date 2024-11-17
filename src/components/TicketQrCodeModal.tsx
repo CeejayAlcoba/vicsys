@@ -92,7 +92,11 @@ export default function TicketQrCodeModal(props: {
 
           <div className="qr-code-wrapper mb-4">
             <QRCode
-              value={isForKids ? `${userId}.${child?.qrId ?? ""}` : `${userId}.${purchaseEvent?.ticketId ?? ""}`}
+              value={
+                isForKids
+                  ? `${userId}.${child?.qrId ?? ""}`
+                  : `${userId}.${purchaseEvent?.ticketId ?? ""}`
+              }
               style={{ backgroundColor: "transparent" }}
             />
           </div>

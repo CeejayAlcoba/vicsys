@@ -32,7 +32,7 @@ export default function EventCard(props: IEvent) {
           style={{ width: 350, height: 150 }}
         />
       }
-      bodyStyle={{ height: 470, overflowY: "auto" }}
+      bodyStyle={{ height: 350, overflowY: "auto" }}
       actions={[
         <Button
           type="primary"
