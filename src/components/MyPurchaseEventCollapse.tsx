@@ -108,6 +108,10 @@ export default function MyPurchaseEventCollapse(props: {
   return (
     <>
       <TicketQrCodeModal
+        isForKids={
+          handleGetEventById(selectedPurchase?.eventId ?? "")?.isForKids ??
+          false
+        }
         userId={userId}
         setIsOpen={setIsQrModalVisible}
         isOpen={isQrModalVisible}
