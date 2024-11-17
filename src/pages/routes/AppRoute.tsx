@@ -20,6 +20,7 @@ import KidsListPage from "../private/kids-list/KidsListPage";
 import MyPurchasePage from "../private/my-purchases/MyPurchasePage";
 import MyKidsPage from "../private/my-kids/MyKidsPage";
 import BookingPage from "../private/booking/BookingPage";
+import NotificationCreate from "../notification/create/NotificationForm";
 
 export default function AppRoute() {
   const { user } = useUserContext();
@@ -87,6 +88,10 @@ export default function AppRoute() {
         {
           path: "event-booking",
           element: <BookingPage />,
+        },
+        {
+          path: "notification/create",
+          element: <NotificationCreate />,
         },
       ],
     },

@@ -5,7 +5,6 @@ import {
   UserOutlined,
   SettingOutlined,
   LogoutOutlined,
-  QrcodeOutlined,
   HomeOutlined,
   ShoppingCartOutlined,
 } from "@ant-design/icons";
@@ -96,6 +95,25 @@ export default function Sidebar() {
         },
       ],
     },
+    // {
+    //   label: "Notification",
+    //   key: "sub2",
+    //   icon: <SettingOutlined />,
+    //   children: [
+    //     {
+    //       label: "Create",
+    //       key: "12",
+    //       icon: <ShoppingCartOutlined />,
+    //       onClick: () => navigate("notification/create"),
+    //     },
+    //     // {
+    //     //   label: "Logout",
+    //     //   key: "11",
+    //     //   icon: <LogoutOutlined />,
+    //     //   onClick: () => handleLogout(),
+    //     // },
+    //   ],
+    // },
   ];
 
   const { collapsed, setCollapsed } = useSidebarContext();
