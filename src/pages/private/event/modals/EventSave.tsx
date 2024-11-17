@@ -17,9 +17,12 @@ import EventImageUpload from "../components/EventImageUpload";
 import { IEventSave } from "../../../../interfaces/firebase/IEvent";
 import eventService from "../../../../firebase/services/eventService";
 import Swal from "sweetalert2";
+import ticketCategoryService from "../../../../firebase/services/ticketCategoryService";
+import { useQuery } from "@tanstack/react-query";
 // import { useQuery } from "@tanstack/react-query";
 // import ticketCategoryService from "../../../../firebase/services/ticketCategoryService";
 // import ITicketCategory from "../../../../interfaces/firebase/ITicketCategory";
+const { Option } = Select;
 
 export default function EventSaveModal() {
   const {
@@ -32,13 +35,13 @@ export default function EventSaveModal() {
     refetch,
   } = useEventContext();
   const _eventService = eventService();
-  // const _ticketCategoryService = ticketCategoryService();
+  const _ticketCategoryService = ticketCategoryService();
   const [form] = Form.useForm();
 
-  // const { data: ticketCategories } = useQuery({
-  //   queryKey: ["ticketCategories"],
-  //   queryFn: _ticketCategoryService.getAll,
-  // });
+  const { data: ticketCategories } = useQuery({
+    queryKey: ["ticketCategories"],
+    queryFn: _ticketCategoryService.getAll,
+  });
   const onFinish = async (values: IEventSave) => {
     try {
       const formattedValues: IEventSave = {
@@ -201,7 +204,11 @@ export default function EventSaveModal() {
                       label="Ticket Name"
                       rules={[{ required: true, message: "Required" }]}
                     >
-                      <Input placeholder="Ticket Name" min={0} />
+                      <Select>
+                        {ticketCategories?.map((t) => (
+                          <Option value={t.description}>{t.description}</Option>
+                        ))}
+                      </Select>
                     </Form.Item>
 
                     <Form.Item

@@ -3,7 +3,7 @@ import { Layout, Alert } from "antd";
 import { SidebarContext } from "./contexts/useSidebarContext";
 import Sidebar from "./Sidebar";
 import Footer from "./Footer";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import HeaderLayout from "./HeaderLayout";
 import accountService from "../../firebase/services/accountService";
 import { MainContext } from "./contexts/useMainContext";
@@ -12,7 +12,6 @@ import { useQuery } from "@tanstack/react-query";
 const { Content } = Layout;
 
 export default function Main() {
-  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const _accounService = accountService();
   const [isEmailVerified, setIsEmailVerified] = useState(true);
@@ -24,11 +23,6 @@ export default function Main() {
       return isVerified;
     },
   });
-
-  const open = async (qrValue: string) => {
-    const qrValEncoded = encodeURI(qrValue);
-    navigate(`/ticket-qr/${qrValEncoded}`);
-  };
 
   return (
     <MainContext.Provider value={{ isEmailVerified, setIsEmailVerified }}>

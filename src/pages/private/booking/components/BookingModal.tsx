@@ -49,6 +49,8 @@ export default function BookingModal(props: {
         status: TicketStatus.Pending,
         ticketId: uuidv4(),
         ticketName: ticketName,
+        startTime: selectedEvent.startTime,
+        endTime: selectedEvent.endTime,
       },
     ]);
   };

@@ -24,3 +24,31 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const messaging = getMessaging(app);
+
+export const requestForToken = () => {
+  return getToken(messaging, {
+    vapidKey:
+      "BLkKHqJqyq246VxcyKz702XVwupcBRlU3iNi_6eSESeogln571ROZXnQpyixERlnf9nyRviYeHNlNMp1uYHY-5o",
+  })
+    .then((currentToken) => {
+      if (currentToken) {
+        return currentToken;
+      } else {
+        alert(
+          "No registration token available. Request permission to generate one."
+        );
+        return null;
+      }
+    })
+    .catch((err) => {
+      alert("An error occurred while retrieving token - " + err);
+      return null;
+    });
+};
+
+onMessage(messaging, ({ notification }) => {
+  new Notification(notification?.title ?? "s", {
+    body: notification?.body,
+    icon: notification?.icon,
+  });
+});

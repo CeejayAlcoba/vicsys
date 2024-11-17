@@ -6,6 +6,8 @@ export interface IMyPuchaseEvent {
   isPaid: boolean;
   location: string;
   status: TicketStatus;
+  startTime: Date;
+  endTime: Date;
   ticketId?: string;
   ticketName: string;
   gcashRefNo?: string;

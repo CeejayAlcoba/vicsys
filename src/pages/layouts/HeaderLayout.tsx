@@ -1,4 +1,4 @@
-import { Button, Layout, theme } from "antd";
+import { Avatar, Button, Layout, theme } from "antd";
 import useSidebarContext from "./contexts/useSidebarContext";
 import {
   MenuFoldOutlined,
@@ -6,15 +6,30 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import vicsys1 from "../../assets/vicsys1.png";
+import useUserContext from "../../contexts/useUserContext";
+import userService from "../../firebase/services/userService";
+import { useEffect, useState } from "react";
+import { IUser } from "../../interfaces/firebase/IUser";
 
 const { Header } = Layout;
 export default function HeaderLayout() {
+  const { user } = useUserContext();
+  if (!user?.uid) return;
   const { collapsed, setCollapsed } = useSidebarContext();
 
+  const [userLogged, setUserLogged] = useState<IUser | null>(null);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
 
+  const _userService = userService();
+  const getUserProfile = async () => {
+    const newUser = await _userService.getById(user.uid);
+    setUserLogged(newUser);
+  };
+  useEffect(() => {
+    getUserProfile();
+  }, []);
   return (
     <Header
       style={{
@@ -38,13 +53,17 @@ export default function HeaderLayout() {
         <img src={vicsys1} style={{ width: 120 }} />
       </div>
       <div style={{ marginRight: 40 }}>
-        <UserOutlined
-          style={{
-            fontSize: "16px",
-            marginRight: 10,
-          }}
+        <Avatar
+          size={30}
+          style={{ marginRight: 6 }}
+          icon={
+            <img
+              src={userLogged?.profile_picture_url ?? user.photoURL ?? ""}
+              alt="profile"
+            />
+          }
         />
-        Admin
+        {userLogged?.name}
       </div>
     </Header>
   );
