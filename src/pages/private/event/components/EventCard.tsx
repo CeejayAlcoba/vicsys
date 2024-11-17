@@ -24,12 +24,12 @@ export default function EventCard(props: IEvent) {
 
   return (
     <Card
-      style={{ width: 350, marginBottom: 20 }}
+      style={{ width: 300, marginBottom: 20 }}
       cover={
         <img
           alt={eventName}
           src={typeof image == "string" ? image : ""}
-          style={{ width: 350, height: 150 }}
+          style={{ width: 300, height: 150 }}
         />
       }
       bodyStyle={{ height: 350, overflowY: "auto" }}

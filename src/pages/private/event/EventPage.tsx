@@ -88,9 +88,9 @@ export default function EventPage() {
           </Button>
         </div>
       </div>
-      <div className="row gap-2">
+      <div className="row">
         {events?.map((event, index) => (
-          <div key={index} className="col-lg-5">
+          <div key={index} className="col-lg-4">
             <EventCard {...event} />
           </div>
         ))}
