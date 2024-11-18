@@ -9,7 +9,7 @@ export default function ticketRepository() {
     return tickets.filter(
       (t) =>
         t.eventId == eventId &&
-        t.ticketBooks.some((tb) => tb.category == category || !category)
+        t.ticketBooks.some((tb) => tb.ticketName == category || !category)
     );
   };
   return { ..._genericRepository, getByEventId };

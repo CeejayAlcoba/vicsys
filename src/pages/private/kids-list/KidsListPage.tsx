@@ -47,9 +47,11 @@ export default function KidsListPage() {
       title: "Name",
       dataIndex: "",
       width: 400,
-      render: (data: IChild) => (
-        <span>{`${data.lastName}, ${data.firstName}`}</span>
-      ),
+      render: (data: IChild) => {
+        if (data && data?.lastName && data?.firstName)
+          return <span>{`${data?.lastName}, ${data?.firstName}`}</span>;
+        return <span>-</span>;
+      },
     },
     {
       title: "Nickname",
@@ -67,21 +69,20 @@ export default function KidsListPage() {
       width: 400,
     },
     {
-      dataIndex: "",
       title: "Food Allergies",
+      dataIndex: "",
       width: 400,
-      render: (data: IChild) => (
-        <>
-          {data.hasFoodAllergies ? (
-            <>
-              <CheckCircleOutlined style={{ color: "green" }} />{" "}
-              {data.foodAllergies}
-            </>
-          ) : (
+      render: (data: IChild) => {
+        // Check if data is defined and has the necessary properties
+        if (data?.hasFoodAllergies) {
+          return <span>{data.foodAllergies}</span>;
+        }
+        return (
+          <span>
             <CloseCircleOutlined style={{ color: "red" }} />
-          )}
-        </>
-      ),
+          </span>
+        );
+      },
     },
 
     // {

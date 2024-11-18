@@ -8,6 +8,7 @@ import {
 import * as XLSX from "xlsx";
 import type { ColumnsType } from "antd/es/table";
 import type { TableProps } from "antd";
+import React from "react";
 
 export interface ColumnConfig {
   title: string;
@@ -97,14 +98,48 @@ export default function DataTable<T extends object>({
     setSearchColumn(undefined);
     setFilteredData(dataSource);
   };
+  const getTextFromRender = (render: any, record: any): string => {
+    if (render) {
+      const renderedValue = render(record, record, 0);
 
+      // Check if the rendered value is a valid React element
+      if (React.isValidElement(renderedValue)) {
+        return extractTextFromReactElement(renderedValue);
+      }
+
+      // If not a React element, return the string value directly
+      return String(renderedValue);
+    }
+
+    return "";
+  };
+
+  // Helper function to extract text from React elements
+  const extractTextFromReactElement = (element: React.ReactNode): string => {
+    if (typeof element === "string" || typeof element === "number") {
+      return String(element); // If it's already a string or number, return it
+    }
+
+    if (React.isValidElement(element)) {
+      // If it's a valid React element, recursively extract text from its children
+      return React.Children.toArray(element.props.children)
+        .map((child) => extractTextFromReactElement(child))
+        .join(""); // Join children in case of nested elements
+    }
+
+    return ""; // Return empty string if unable to extract text
+  };
   // Function to generate and download Excel report with the table columns
   const handleExportToExcel = () => {
     // Prepare data based on the columns
     const dataToExport = filteredData.map((record: any) => {
       const row: { [key: string]: any } = {};
+
       columns.forEach((column) => {
-        row[column.title] = record[column.dataIndex];
+        console.log(getTextFromRender(column?.render, record));
+        row[column.title] = column?.render
+          ? getTextFromRender(column?.render, record)
+          : record[column.dataIndex];
       });
       return row;
     });
