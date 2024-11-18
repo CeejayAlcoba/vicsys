@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "antd";
 import { EyeOutlined } from "@ant-design/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DataTable, { ColumnConfig } from "../../../components/DataTable";
 import useUserContext from "../../../contexts/useUserContext";
 import userService from "../../../firebase/services/userService";
@@ -10,14 +10,15 @@ import eventService from "../../../firebase/services/eventService";
 import { TicketStatus } from "../../../interfaces/firebase/ITicket";
 import { TicketStatusText } from "../../../components/TicketStatusText";
 import TicketQrCodeModal from "../../../components/TicketQrCodeModal";
+
+interface NewMyPurchase extends IMyPuchaseEvent {
+  event?: string;
+}
 export default function MyPurchasePage() {
   const { user } = useUserContext();
   const _userService = userService();
   const _eventService = eventService();
-  const { data: me } = useQuery({
-    queryKey: ["me"],
-    queryFn: async () => await _userService.getById(user?.uid ?? ""),
-  });
+  const [myPurchaseEvents, setMyPurchaseEvents] = useState<NewMyPurchase[]>([]);
   const [isQrModalVisible, setIsQrModalVisible] = useState<boolean>(false);
   const [selectedPurchase, setSelectedPurchase] =
     useState<IMyPuchaseEvent | null>(null);
@@ -29,14 +30,36 @@ export default function MyPurchasePage() {
   const handleGetEvent = (eventId: string) => {
     return events?.find((e) => e.id == eventId);
   };
+  // const { data: myPurchaseEvents } = useQuery({
+  //   queryKey: ["me"],
+  //   queryFn: async () => {
+  //     const newUser = await _userService.getById(user?.uid ?? "");
+  //     return newUser?.myPurchaseEvents.map((m) => ({
+  //       ...m,
+  //       event: handleGetEvent(m.eventId ?? "")?.eventName,
+  //     }));
+  //   },
+  // });
+  const handleGetMyPurchase = async () => {
+    const newUser = await _userService.getById(user?.uid ?? "");
+    const newMyPurchase = newUser?.myPurchaseEvents.map((m) => ({
+      ...m,
+      event: handleGetEvent(m.eventId ?? "")?.eventName,
+    }));
+    console.log(newMyPurchase);
+    setMyPurchaseEvents(newMyPurchase ?? []);
+  };
+  useEffect(() => {
+    if (events) handleGetMyPurchase();
+  }, [events]);
   const columns: ColumnConfig[] = [
     {
       title: "Event",
-      dataIndex: "eventId",
+      dataIndex: "event",
       width: 600,
-      render: (eventId: string) => (
-        <span>{handleGetEvent(eventId)?.eventName}</span>
-      ),
+      // render: (eventId: string) => (
+      //   <span>{handleGetEvent(eventId)?.eventName}</span>
+      // ),
     },
     {
       title: "location",
@@ -96,7 +119,7 @@ export default function MyPurchasePage() {
         isOpen={isQrModalVisible}
         setIsOpen={setIsQrModalVisible}
       />
-      <DataTable dataSource={me?.myPurchaseEvents} columns={columns} />
+      <DataTable dataSource={myPurchaseEvents} columns={columns} />
     </>
   );
 }
