@@ -53,7 +53,14 @@ export default function eventRepository() {
     userId: string,
     myPurchase: IMyPuchaseEvent
   ) => {
-    const user = await _userRepository.getById(userId);
+    let user;
+    user = await _userRepository.getById(userId);
+    if (!user) {
+      user = await _nonTechUserRepository.getById(userId);
+    }
+    console.log(user);
+    if (!user?.myPurchaseEvents)
+      throw new Error("user has no myPurchaseEvents");
     const userPurchased = user?.myPurchaseEvents.find(
       (m) => m.ticketId == myPurchase.ticketId
     );
