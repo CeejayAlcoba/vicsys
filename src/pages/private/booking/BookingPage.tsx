@@ -64,7 +64,7 @@ export default function BookingPage() {
           placeholder="Search..."
           onChange={(e) => handleSearch(e.target.value)}
           prefix={<SearchOutlined />}
-          style={{ width: "300px", marginRight: "5px" }}
+          style={{ width: "300px", marginRight: "2rem" }}
         />
         <Typography>
           <Switch
@@ -74,7 +74,8 @@ export default function BookingPage() {
               console.log(value);
             }}
           />
-          For Kids
+          <label style={{marginLeft: "1rem"}}> For Kids </label>
+          
         </Typography>
       </div>
 

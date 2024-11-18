@@ -8,8 +8,8 @@ export default function TotalUsersPieChart(props: { users: IPieValue[] }) {
     data: users,
     angleField: "value",
     colorField: "type",
-    width: 300,
-    height: 300,
+    width: 450,
+    height: 450,
     label: {
       text: "value",
       style: {

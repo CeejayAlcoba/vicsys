@@ -254,7 +254,7 @@ export default function NonTechUserPage() {
       ),
     },
     {
-      title: "My Purchases",
+      title: "My Events",
       dataIndex: "",
       render: (data: INonTechUser) => (
         <MyPurchaseEventCollapse
@@ -352,6 +352,8 @@ export default function NonTechUserPage() {
         location: event?.venue ?? "",
         status: TicketStatus.Pending,
         ticketName: selectedTicketCategory.ticketName,
+        startTime: event.startTime,
+        endTime: event.endTime,
       };
 
       const updatedUser: INonTechUser = {
