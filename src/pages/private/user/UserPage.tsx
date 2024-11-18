@@ -216,7 +216,7 @@ export default function UserPage() {
       ),
     },
     {
-      title: "My Purchases",
+      title: "My Events",
       dataIndex: "",
       render: (data: IUser) => (
         <MyPurchaseEventCollapse
